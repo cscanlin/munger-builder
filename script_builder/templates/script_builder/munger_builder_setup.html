@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+
+{% block back_link %}
+    <p><a class=back-link href="{% url 'app_index' %}">< Apps</a></p>
+{% endblock %}
+
+
+{% block content %}
+    <h3>Setup Munger</h3>
+    {% crispy form %}
+{% endblock content %}

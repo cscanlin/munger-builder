@@ -1,0 +1,47 @@
+{% load compile_static %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dot & Bo Marketing Tools</title>
+
+    <!-- Bootstrap -->
+
+    <link href="{{ STATIC_URL }}bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="{{ STATIC_URL }}extra_css.css" rel="stylesheet" media="screen">
+    <link href="{{ STATIC_URL }}pivot_table.css" rel="stylesheet" media="screen">
+
+  </head>
+  <body>
+    <!-- <div class="navbar-header navbar"></div> -->
+    <div class=user-session-info>
+      {{ user }}
+      {% if user.is_anonymous %}
+      <a href="{% url 'django.contrib.auth.views.login' %}">login</a>
+      {% else %}
+      <a href="{% url 'django.contrib.auth.views.logout' %}">logout</a>
+      {% endif %}
+    </div>
+
+    <div id="content" class='main-content'>
+        {% block back_link %}{% endblock %}
+
+        {% if messages %}
+          <ul class="messages">
+              {% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+              {% endfor %}
+          </ul>
+        {% else %}
+          </br>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+    <script src="{{ STATIC_URL }}jquery-2.1.4.min.js"></script>
+    <script src="{{ STATIC_URL }}interact.min.js"></script>
+    <script src="{{ STATIC_URL }}jquery.cookie.js"></script>
+    <script src="{{ STATIC_URL }}jquery.editable.min.js"></script>
+    <script src="{{ STATIC_URL }}pivot_table.js"></script>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block back_link %}
+  <p><a class=back-link href="{% url 'app_index' %}">< Restart</a></p>
+{% endblock %}
+
+{% block content %}
+    <h3>{{ mb.munger_name }}</h3>
+
+    {% for field in fields %}
+        {% if not field.aggregate_type and not field.is_index %}
+          <div id="field-{{ field.id }}" type="{{ field.aggregate_type }}" class="draggable drag-drop">
+            <div class="field-text">
+              <span class="agg-text"></span>
+              <span class="editable-{{ field.id }} name-text">{{ field.active_name }}</span>
+              <input id="edit-{{ field.id }}" type="image" src="{{ STATIC_URL }}edit-icon.png" value="edit" class="btn-{{ field.id }} small-image-button">
+            </div>
+          </div>
+        {% endif %}
+    {% endfor %}
+  </br>
+
+    {% for field_type in field_types %}
+      <div id="{{ field_type }}-dropzone" type="{{ field_type }}" class="dropzone"> {{ field_type|capfirst }} Fields
+        {% for field in fields %}
+            {% if field.aggregate_type == field_type %}
+              <div id="field-{{ field.id }}" type="{{ field.aggregate_type }}" class="draggable drag-drop">
+                <div class="field-text">
+                  <span class="agg-text"></span>
+                  <span class="editable-{{ field.id }} name-text">{{ field.active_name }}</span>
+                  <input id="edit-{{ field.id }}" type="image" src="{{ STATIC_URL }}edit-icon.png" value="edit" class="btn-{{ field.id }} small-image-button">
+                </div>
+              </div>
+            {% elif field.is_index and field_type == "index" %}
+              <div id="field-{{ field.id }}" type="index" class="draggable drag-drop">
+                <div class="field-text">
+                  <span class="agg-text"></span>
+                  <span class="editable-{{ field.id }} name-text">{{ field.active_name }}</span>
+                  <input id="edit-{{ field.id }}" type="image" src="{{ STATIC_URL }}edit-icon.png" value="edit" class="btn-{{ field.id }} small-image-button">
+                </div>
+              </div>
+            {% endif %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    </br>
+    <input id="save-pivot-fields" name="save-pivot-fields" class="btn btn-primary" type="submit" value="Save" />
+    <div id="mb-id" name="mb-id" class="hidden" value="{{ mb.id }}"></div>
+
+{% endblock content %}

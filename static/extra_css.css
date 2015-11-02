@@ -1,0 +1,224 @@
+/*BASE*/
+
+.main-content {
+  margin-left: 10px;
+}
+
+.index-link {
+  font-size: 25px;
+}
+.index-heading {
+  font-weight: bold;
+}
+.index-link-small {
+  font-size: 20px;
+}
+
+.back-link {
+  font-size: 18px;
+}
+
+.home-button {
+  float: left;
+  margin-left: 10px;
+  margin-top: 5px;
+}
+
+/*BIDS*/
+
+.small-fields {
+  width: 140px;
+  font-size: 11px;
+}
+.form-group {
+  display: inline-block;
+  margin-bottom: 0px;
+}
+.heading-block {
+  min-width: 1400px;
+}
+.form-heading {
+  width: 140px;
+  font-size: 13px;
+  display: inline-block;
+  text-align: center;
+  margin-right: -4px;
+  font-weight: bold
+}
+
+fieldset {
+  min-width: 1400px;
+}
+
+#id-BidForm .form-actions {
+  padding-top: 10px;
+}
+
+.bid-upload-form {
+  margin-left: 100px;
+  margin-top: -26px;
+}
+
+/*AUDIENCE*/
+
+.audience-table {
+  margin-bottom: 5px;
+  margin-left: 20px;
+  font-size: large;
+}
+
+.audience-cell {
+  padding-right: 10px;
+  padding-left: 5px;
+}
+
+.audience-heading-block {
+  margin-left: 45px;
+  min-width: 1120px;
+  margin-bottom: 2px;
+}
+.audience-heading {
+  font-size: 20px;
+  display: inline-block;
+  text-align: center;
+  margin-right: 115px;
+  font-weight: bold
+}
+.audience-entry {
+  font-size: 20px;
+}
+.audience-name-holder {
+  width: 175px;
+  border: solid #000;
+  border-width: 1px 1px;
+}
+.audience-type-holder {
+  width: 300px;
+  /*border: solid #000;
+  border-width: 1px 1px 1px 0px;*/
+}
+.audience-name-input {
+  display: inline-block;
+  width: 175px;
+}
+.audience-type-input {
+  display: inline-block;
+  width: 300px;
+}
+.audience-delete-holder {
+  display: inline-block;
+}
+
+.audience-form {
+  margin-left: 20px;
+}
+.audience-upload-form {
+  margin-top: 10px;
+  margin-left: 20px;
+}
+.form-actions {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+/*IMAGE HASHER*/
+
+.image-hasher-cell {
+  padding-right: 10px
+}
+
+/*CONSTANCE*/
+
+h2:before {
+  display: block;
+  content: " ";
+  margin-top: -70px;
+  height: 70px;
+  visibility: hidden;
+}
+
+.constance-table {
+    table-layout: fixed;
+    border-collapse: collapse;
+    /*font-size: large;*/
+}
+
+#changelist table tbody tr {
+  padding: 10px;
+  display: table-row;
+  border: 1px solid #ddd;
+}
+
+#changelist table tbody td {
+  border-left: 0px;
+  padding: 10px;
+}
+
+#changelist table tbody th:first-child {
+  padding-left: 10px;
+  border-right: 0px;
+}
+
+.constance-heading-name {
+  width: 320px;
+}
+
+.constance-heading-default {
+  width: 300px;
+}
+
+.constance-heading-value {
+  width: 300px;
+}
+
+
+.constance-heading-modified {
+  width: 80px;
+}
+
+#changelist table tbody td {
+  word-wrap: break-word;
+}
+#changelist table tbody td textarea {
+  max-width: 383px;
+}
+
+/*IMAGE HASHER*/
+
+.url-input {
+  display: inline-block;
+  width: 700px;
+  height: 400px;
+}
+
+.hashed-image {
+  width:  150px;
+  height: auto;
+}
+
+.hash-table {
+margin-bottom: 10px
+}
+
+a.hashed-image:hover img {
+    position: relative; z-index: 999; -o-transform: scale(1.03,1.03); -ms-transform: scale(1.03,1.03); -moz-transform: scale(1.03,1.03); -webkit-transform: scale(1.1,1.1); transform: scale(1.1,1.1);
+}
+
+/*AUTHENTICATION*/
+.user-session-info {
+  position:absolute;
+  top:10px;
+  right:15px;
+}
+
+/*DPAs*/
+.wide-column {
+  width: 500px;
+}
+
+.dpa-heading {
+  border: solid #000;
+  border-width: 1px 1px 1px 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}

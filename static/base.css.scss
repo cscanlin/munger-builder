@@ -1,0 +1,238 @@
+/* ----------------------------- Basic Setup 
+##########################################*/
+@import "font-awesome-sprockets";
+@import "font-awesome";
+
+@font-face {
+    font-family: "ProximaNova";
+    src: url(font-path('Mark Simonson - Proxima Nova Regular.otf')) format("opentype");
+    font-weight: normal;
+    font-style:normal;
+}
+
+@font-face {
+    font-family: "ProximaNova";
+    src: url(font-path('Mark Simonson - Proxima Nova Bold.otf')) format("opentype");
+    font-weight: bold;
+    font-style:normal;
+}
+
+@font-face{
+    font-family: "ProximaNova";
+    src: url(font-path('Mark Simonson - Proxima Nova Light.otf')) format("opentype");
+    font-weight: 200; /*same as "font-weight: lighter;" */
+    font-style: normal;
+}
+
+body{
+  font-family: "Proxima Nova", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
+h1 { font-size: 36px; line-height: 40px; font-weight:normal; }
+h2 { font-size: 30px; line-height: 40px; }
+h3 { font-size: 24px; line-height: 40px; }
+h4 { font-size: 18px; line-height: 20px; }
+h5 { font-size: 14px; line-height: 20px; }
+h6 { font-size: 12px; line-height: 20px; }
+
+.caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px solid;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+/* ------------------------ Page Layout 
+######################################*/
+#holy-grail{
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+#middle-container{
+  display: flex;
+  flex: 1;
+}
+
+#middle-container .sidebar{
+  flex-basis: 200px;
+  min-width:200px;
+  background-color: #626262;
+  order: -1;
+}
+
+#middle-container .content{
+  background-color: #f8f8f6;
+  order: 2;
+  padding:15px;
+  width:100%;
+}
+/* ----------------------------- Navbar 
+######################################*/
+.navbar{
+  background-color: #ff9600;
+  display:flex;
+  height:50px;
+  color: #ffffff;
+}
+
+.navbar .title-area{
+  order: 1;
+  flex-basis: 200px;
+  display:flex;
+}
+
+.navbar .name{
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 14px;
+  align-self: center;
+}
+
+.navbar .brand-image{
+  align-self: center;
+  margin-right:5px;
+  margin-left:5px;
+}
+
+.navbar .dropdown{
+  cursor:pointer;
+  order: 2;
+  margin-left:auto;
+  align-self:center;
+  position: relative;
+  height:100%;
+  display:flex;
+  padding-left:10px;
+  padding-right:10px;
+}
+
+.navbar .dropdown.selected{
+ background-color: #FFA11A;
+
+}
+
+.navbar .dropdown .content{
+  align-self:center;
+}
+
+.navbar .dropdown ul{
+  display:none;
+}
+.navbar .dropdown.selected ul{
+  display:block;
+  position: absolute;
+  top:50px;
+  left:0px;
+  background-color:white;
+  width:100%;
+  color:black;
+  list-style-type:none;
+  list-style-position:inside;
+  margin:0;
+  padding:0;
+  border: 1px solid rgba(0,0,0,0.15);
+  box-shadow: 0px 5px 15px #cccccc;
+}
+.navbar .dropdown a{
+  text-decoration:none;
+}
+
+.navbar .dropdown li{
+  font-weight:lighter;
+  color:#333333;
+  padding:10px;
+}
+
+.navbar .dropdown li:hover{
+  color: #ff9700;
+}
+
+.navbar .dropdown .caret{
+  margin-left:5px;
+  margin-right:5px;
+}
+
+/* Sidebar */
+.sidebar a{
+  text-decoration:none;
+}
+
+.sidebar i{
+  margin-right:10px;
+}
+
+.sidebarLinks{
+  margin-top:15px;
+}
+
+.sidebarLink{
+  background-color: #626262;
+  color: #f8f8f6;
+  font-weight: bold;
+  padding:15px 10px;
+  width:100%;
+  box-sizing: border-box;
+}
+
+.sidebarLink.selected{
+  color: #626262;
+  background-color: #f8f8f6;
+}
+
+/* Typeahead */
+// Note: important! needed to override inline style (https://github.com/twitter/typeahead.js/issues/677)
+.tt-input,
+.tt-hint {
+    width: 396px;
+    height: 30px;
+    padding: 8px 12px;
+    font-size: 24px;
+    line-height: 30px;
+    border: 2px solid #FFF;
+    outline: none;
+}
+
+.tt-input { 
+    background-color: #fff !important;
+}
+
+.tt-hint {
+    color: #999
+}
+
+.tt-dropdown-menu {
+    width: 422px;
+    margin-top: 12px;
+    padding: 8px 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion {
+    padding: 3px 20px;
+    font-size: 18px;
+    line-height: 24px;
+    background-color:white;
+}
+
+.tt-suggestion.tt-cursor {
+    background-color: #f8f8f6;
+
+}
+
+.tt-suggestion p {
+    margin: 0;
+}
+
+.tt-hint {
+  background-color: #f8f8f6 !important; 
+} 

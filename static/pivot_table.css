@@ -1,0 +1,112 @@
+/*interact*/
+
+#index-dropzone {
+  background-color: #b7b7b7;
+}
+
+.dropzone {
+  background-color: #ccc;
+  border: dashed 4px transparent;
+  border-radius: 4px;
+  margin: 10px auto 30px;
+  padding: 10px;
+  width: 220px;
+  height: 200px;
+  display: inline-block;
+  transition: background-color 0.3s;
+}
+
+.drop-active {
+  border-color: #aaa;
+}
+
+.drop-target {
+  /*background-color: #29e;*/
+  border-color: #fff;
+  border-style: solid;
+}
+
+.drag-drop {
+  visibility: hidden;
+  position: absolute;
+  display: inline-block;
+  width: 200px;
+  height: 35px;
+  text-align: center;
+  font-size: 1.2em;
+  margin-top: 10px;
+
+  color: #fff;
+  background-color: #29e;
+  /*border: solid 2px #fff;*/
+
+  -webkit-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+
+  transition: background-color 0.3s;
+}
+
+.drag-drop.can-drop {
+  color: #000;
+}
+
+/*Tap Logic*/
+
+.tap-target {
+  color: #000;
+}
+.tap-target.tap-index {
+  background-color: #4e4;
+}
+.tap-target.tap-sum {
+  background-color: #008000;
+}
+.tap-target.tap-count {
+  background-color: #800000;
+}
+.tap-target.tap-mean {
+  background-color: #800080;
+}
+.tap-target.tap-median {
+  background-color: #c06000;
+}
+
+/*Edit Button Transforms*/
+
+.field-text {
+  /*display: inline;*/
+  margin-top: 4px;
+  margin-left: 17px;
+}
+.name-text .agg-text {
+  /*display: inline;*/
+}
+span.agg-text:first-letter {
+  text-transform:capitalize;
+}
+
+.small-image-button {
+  display: inline;
+  padding-top: 2px;
+  padding-right: 2px;
+  width:15px;
+  height:15px;
+  float:right;
+}
+
+.editable {
+  height: 30px;
+  background-color: inherit;
+}
+
+.field-bank {
+  width: 90%
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}

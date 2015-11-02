@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block back_link %}
+  <p><a class=back-link href="{% url 'app_index' %}">< Restart</a></p>
+{% endblock %}
+
+{% block content %}
+    <h3>{{ mb.munger_name }}</h3>
+
+    {% if fields %}
+        <div id="field-bank" class="field-bank">
+        {% for field in fields %}
+            {% if field.is_index %}
+              <div id="field-{{ field.id }}-source" field-id="{{ field.id }}" type="index" class="draggable draggable-source drag-drop">
+            {% else %}
+              <div id="field-{{ field.id }}-source" field-id="{{ field.id }}" type="{{ field.aggregate_type }}" class="draggable draggable-source drag-drop">
+            {% endif %}
+                <div class="field-text">
+                  <span class="agg-text"></span>
+                  <span class="editable-{{ field.id }} name-text">{{ field.active_name }}</span>
+                  <input id="edit-{{ field.id }}" type="image" src="{{ STATIC_URL }}edit-icon.png" value="edit" class="btn-{{ field.id }} small-image-button">
+                </div>
+              </div>
+        {% endfor %}
+      </div>
+    {% else %}
+        <p>No fields are available.</p>
+    {% endif %}
+
+    <!-- <div id="no-drop" class="draggable drag-drop"> #no-drop </div> -->
+  </br></br></br>
+
+    {% for field_type in field_types %}
+      <div id="{{ field_type }}-dropzone" type="{{ field_type }}" class="dropzone"> {{ field_type|capfirst }} Fields</div>
+
+    {% endfor %}
+
+    </br>
+    <input id="save-pivot-fields" name="save-pivot-fields" class="btn btn-primary" type="submit" value="Save" />
+    <div id="mb-id" name="mb-id" class="hidden" value="{{ mb.id }}"></div>
+    <div id="field-types" name="field-types" class="hidden" value="{{ field_types }}"></div>
+
+{% endblock content %}

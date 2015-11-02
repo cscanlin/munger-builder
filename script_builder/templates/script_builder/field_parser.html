@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+
+{% block back_link %}
+    <p><a class=back-link href="{% url 'app_index' %}">< Apps</a></p>
+{% endblock %}
+
+
+{% block content %}
+    {% crispy input_form %}
+
+    <form class="field-upload-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ upload_form.csv_file }}
+        <input name='upload-fields-csv' class="btn btn-primary" type="submit" value="Upload" />
+    </form>
+{% endblock content %}

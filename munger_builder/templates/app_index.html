@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+    <h2>Apps</h2>
+    <ul>
+        <li><a class="index-link index-heading" href="{% url 'munger_builder_setup' %}">Start Building!</a></li>
+        <li><a class="index-link index-heading" href="{% url 'admin:index' %}">Admin</a></li>
+        <ul>
+            <li><a class="index-link" href="{% url 'admin:script_builder_mungerbuilder_changelist' %}">Munger Builder</a></li>
+            <li><a class="index-link" href="{% url 'dump-data' %}">Export Data File</a></li>
+            <li><a class="index-link" href="{% url 'load-data' %}">Import Data File</a></li>
+        </ul>
+        <li><a class="index-link index-heading" href="{% url 'script_runner_index' %}">Script Runner</a></li>
+    </ul>
+{% endblock content %}

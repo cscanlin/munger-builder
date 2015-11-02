@@ -1,0 +1,115 @@
+textarea {
+  border-radius: 0px;
+}
+.btn {
+  border-radius: 0px;
+  border: none;
+}
+.btn:hover,
+.btn:focus,
+.btn.focus {
+  color: white;
+}
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:disabled,
+.btn-primary:disabled:hover {
+  color: white;
+  background-color: #ff9600;
+}
+.navbar {
+  background-color: #ff9600;
+  display: flex;
+  height: 50px;
+  color: #ffffff;
+}
+.navbar-default {
+  border: 0;
+}
+.navbar-header {
+  min-width: 16.66666%;
+  padding-left: 15px;
+}
+.navbar-brand,
+.navbar-brand a {
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 0px;
+}
+.navbar-brand.text {
+  padding: 15px;
+  padding-left: 20px;
+}
+.navbar-brand.text:hover {
+  color: white;
+}
+.navbar-brand img {
+  margin-left: 5px;
+  margin-top: 5px;
+}
+.navbar button {
+  background-color: #995a00;
+  position: relative;
+  left: -3px;
+  border: solid 1px #995a00;
+  border-radius: 0;
+  color: white;
+  font-weight: normal;
+  text-transform: uppercase;
+  font-size: 12px;
+  height: 32px;
+}
+.navbar button:hover {
+  background-color: #995a00;
+  color: white;
+  border: solid 1px #995a00;
+}
+.navbar input {
+  border-radius: 0;
+  border: solid 1px #e68700;
+  border-right: none;
+}
+.navbar-form {
+  padding-left: 0px;
+}
+.navbar .dropdown {
+  width: 100%;
+}
+.navbar .dropdown-menu {
+  width: 100%;
+}
+.dropdown-menu > li > a {
+  font-weight: lighter;
+}
+.dropdown-menu > li > a:hover {
+  color: #ff9700;
+  font-weight: lighter;
+  background-color: white;
+}
+/* Login */
+.login-box {
+  background-color: white;
+  width: 400px;
+  padding-bottom: 50px;
+  padding-left: 70px;
+  margin: 0 auto;
+  padding-top: 50px;
+  margin-top: 150px;
+  box-shadow: 0px 0px 15px #cccccc;
+}
+.login-box h1 {
+  color: #626262;
+  text-align: center;
+  margin-top: -15px;
+}
+.login-box h2 {
+  color: #626262;
+  font-size: 16px;
+  padding-right: 5px;
+}
+.login-box .btn-primary {
+  width: 260px;
+}
