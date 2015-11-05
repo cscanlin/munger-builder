@@ -1,8 +1,0 @@
-order_num,product,sales_name,region,revenue,shipping
-a001,foo,chris,west,200,40
-a002,bar,ian,south,120,90
-a003,bar,melanie,north,250,50
-a004,foo,chris,north,250,50
-a005,bow,tim,west,420,10
-a006,bow,melanie,north,180,20
-a007,foo,ian,east,300,140

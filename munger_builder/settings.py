@@ -46,7 +46,6 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'constance.backends.database',
     'pipeline',
-    'compressor',
     'crispy_forms',
     'bootstrap3',
     'constance',
@@ -83,6 +82,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'munger_builder.wsgi.application'
 
+STATICFILES_FINDERS = (
+    'compressor.finders.CompressorFinder',
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
 
 DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
 
