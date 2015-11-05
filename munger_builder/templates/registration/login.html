@@ -22,10 +22,14 @@
 </tr>
 </table>
 
+
 <input class="btn btn-primary" type="submit" value="Login" />
+<input type="button" class="btn btn-primary" onclick="location.href='{% url 'register' %}';" value="Register" />
 <input type="hidden" name="next" value="{{ next }}" />
+
 </form>
 
-<!-- <p><a href="{% url 'password_reset' %}">Reset Password</a></p> -->
+<p><a href="{% url 'password_reset' %}">Reset Password</a></p>
+
 
 {% endblock %}

@@ -20,11 +20,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    url(r'^$', views.app_index, name='app_index'),
+    url(r'^$', views.home_page, name='home_page'),
+    url(r'^app_index/$', views.app_index, name='app_index'),
     url(r'^admin/', include('smuggler.urls')),  # before admin url patterns!
     url(r'^admin/', include(admin.site.urls)),
     url(r'^script_builder/', include('script_builder.urls')),
     url(r'^script_runner_index/', include('task_scheduler.urls')),
+    url(r'^register/$', views.register, name='register'),
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}),
     url('^', include('django.contrib.auth.urls')),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {

@@ -80,26 +80,3 @@ class DataField(models.Model):
 
 class CSVDocument(models.Model):
     csv_file = models.FileField(upload_to='csv-files/%Y-%m')
-
-
-
-    # def save(self, *args, **kwargs):
-    #     if self.schedule:
-    #         task_obj, created = PeriodicTask.objects.get_or_create(
-    #             name=self.set_name,
-    #         )
-    #         task_obj.task = 'task_scheduler.tasks.munger_builder'
-    #         task_obj.kwargs = json.dumps({
-    #             'ruleset_id': str(self.id),
-    #             'sale_day': 'False',
-    #             'manual_run': 'False',
-    #         })
-    #         task_obj.crontab = self.schedule
-    #         task_obj.enabled = self.set_enabled
-    #         task_obj.save()
-    #     super(AutomationRuleSet, self).save(*args, **kwargs)
-    #
-    # def delete(self, *args, **kwargs):
-    #     task_obj = get_object_or_404(PeriodicTask, name=self.set_name)
-    #     task_obj.delete()
-    #     super(AutomationRuleSet, self).delete(*args, **kwargs)

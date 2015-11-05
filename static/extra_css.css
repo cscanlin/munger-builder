@@ -32,3 +32,8 @@ fieldset {
   display: inline-block;
   margin-left: 5px;
 }
+
+.user-session-info {
+  float: right;
+  margin-right: 10px;
+}

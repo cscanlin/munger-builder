@@ -1,6 +1,5 @@
 var field_types = $('#field-types').attr('value').replace(/\W+/g, " ").split(" ").slice(1, -1);
 
-
 // target elements with the "draggable" class
 interact('.draggable')
 

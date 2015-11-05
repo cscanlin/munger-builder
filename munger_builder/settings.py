@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'kombu.transport.django',
     'storages',
     'smuggler',
+    'guardian',
     'script_builder',
     'task_scheduler',
     'munger_builder',
@@ -169,6 +170,13 @@ SMUGGLER_EXCLUDE_LIST = [
     'auth.permission',
     'kombu_transport_django.queue'
 ]
+
+ANONYMOUS_USER_ID = -1
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # default
+    'guardian.backends.ObjectPermissionBackend',
+)
 
 if env('DJANGO_CONFIGURATION') == 'Prod':
     DEBUG = False

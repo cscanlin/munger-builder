@@ -48,3 +48,7 @@
     <div id="field-types" name="field-types" class="hidden" value="{{ field_types }}"></div>
 
 {% endblock content %}
+
+{% block extra_js %}
+<script src="{{ STATIC_URL }}pivot_table.js"></script>
+{% endblock %}

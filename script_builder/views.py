@@ -11,12 +11,19 @@ from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required
 from django.forms.models import model_to_dict
 from django.contrib import messages
+from django.contrib.auth.models import User
+
+from guardian.shortcuts import assign_perm, get_perms, get_objects_for_user
 
 from .models import DataField, FieldType, CSVDocument, MungerBuilder
 from .forms import SetupForm, FieldParser, UploadFileForm
 
+INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
+
 def munger_builder_index(request):
-    munger_builder_list = MungerBuilder.objects.order_by('id')
+
+    munger_builder_list = get_objects_for_user(request.user, 'script_builder.change_mungerbuilder')
+
     context = {'munger_builder_list': munger_builder_list}
     return render(request, 'script_builder/munger_builder_index.html', context)
 
@@ -24,22 +31,38 @@ def munger_tools(request, munger_builder_id):
 
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
-
     # if request.method == 'POST':
     #     return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder.id))
+
+    if not has_mb_permission(mb, request):
+        return INDEX_REDIRECT
 
     context = {'mb': mb}
     return render(request, 'script_builder/munger_tools.html', context)
 
 def munger_builder_setup(request, munger_builder_id=None):
+
     if munger_builder_id:
         mb = MungerBuilder.objects.get(pk=munger_builder_id)
+        if not has_mb_permission(mb, request):
+            return INDEX_REDIRECT
+        else:
+            pass
     else:
-        mb = None
+        current_munger_builders = get_objects_for_user(request.user, 'script_builder.change_mungerbuilder')
+        if len(current_munger_builders) >= 10:
+            messages.warning(request, 'Cannot Create more Munger Builders - Delete some to make space')
+            return INDEX_REDIRECT
+        else:
+            mb = None
 
     if request.method == 'POST':
         form = SetupForm(request.POST, instance=mb)
         mb = form.save()
+
+        assign_perm('add_mungerbuilder', request.user, mb)
+        assign_perm('change_mungerbuilder', request.user, mb)
+        assign_perm('delete_mungerbuilder', request.user, mb)
 
         return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(mb.id))
 
@@ -49,7 +72,10 @@ def munger_builder_setup(request, munger_builder_id=None):
     return render(request, 'script_builder/munger_builder_setup.html', context)
 
 
-def field_import(request, munger_builder_id):
+def field_parser(request, munger_builder_id):
+
+    if not has_mb_permission(munger_builder_id, request):
+        return INDEX_REDIRECT
 
     if request.method == 'POST':
         if 'upload-fields-csv' in request.POST:
@@ -70,10 +96,28 @@ def field_import(request, munger_builder_id):
     context = {'input_form': input_form, 'upload_form': upload_form}
     return render(request, 'script_builder/field_parser.html', context)
 
+def pivot_builder(request, munger_builder_id):
+    mb = MungerBuilder.objects.get(pk=munger_builder_id)
+
+    if not has_mb_permission(mb, request):
+        return INDEX_REDIRECT
+
+    fields = mb.data_fields.all()
+    field_types = [ft.type_name for ft in FieldType.objects.all()]
+    context = {'mb': mb, 'fields': fields, 'field_types': field_types}
+    return render(request, 'script_builder/pivot_builder.html', context)
+
+# Helper Functions
+
+def has_mb_permission(mb, request):
+    if not isinstance(mb, MungerBuilder):
+        mb = MungerBuilder.objects.get(pk=mb)
+    return request.user.has_perm('script_builder.change_mungerbuilder', mb)
+
 def validate_and_save_fields(request, munger_builder_id, form, input_type):
     if form.is_valid():
 
-        fields_list = parse_fields(form, request, input_type)
+        fields_list = parse_text_fields(form, request, input_type)
 
         mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
@@ -92,7 +136,7 @@ def validate_and_save_fields(request, munger_builder_id, form, input_type):
         messages.error(request, 'Field Creation Failed Unexpectedly')
         return None
 
-def parse_fields(form, request, input_type):
+def parse_text_fields(form, request, input_type):
     if input_type == 'text':
         return re.split('[,\t\n]', form.cleaned_data['fields_paste'])
 
@@ -101,13 +145,6 @@ def parse_fields(form, request, input_type):
         new_csv.save()
         reader = csv.DictReader(request.FILES['csv_file'])
         return reader.fieldnames
-
-def pivot_builder(request, munger_builder_id):
-    mb = MungerBuilder.objects.get(pk=munger_builder_id)
-    fields = mb.data_fields.all()
-    field_types = [ft.type_name for ft in FieldType.objects.all()]
-    context = {'mb': mb, 'fields': fields, 'field_types': field_types}
-    return render(request, 'script_builder/pivot_builder.html', context)
 
 def save_pivot_fields(request, munger_builder_id):
     if request.is_ajax():
