@@ -46,6 +46,10 @@
   transition: background-color 0.3s;
 }
 
+.draggable-source {
+  position: relative;
+}
+
 .drag-drop.can-drop {
   color: #000;
 }
@@ -99,7 +103,7 @@ span.agg-text:first-letter {
   background-color: inherit;
 }
 
-.field-bank {
+.field-sources {
   width: 90%
 }
 

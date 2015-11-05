@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+
+{% block back_link %}
+    <p><a class=back-link href="{% url 'munger_builder_index' %}">< Mungers</a></p>
+{% endblock %}
+
+{% block content %}
+    <h2>{{ mb.munger_name }}</h2>
+    <h3><a href="{% url 'munger_builder_setup' mb.id %}" id='setup-{{ mb.id }}' name="run" type="submit" >Setup</a></h3>
+    <h3><a href="{% url 'field_parser' mb.id %}" id='pivot-{{ mb.id }}' name="run" type="submit" >Add Fields</a></h3>
+    <h3><a href="{% url 'pivot_builder' mb.id %}" id='pivot-{{ mb.id }}' name="run" type="submit" >Pivot Builder</a></h3>
+{% endblock content %}

@@ -12,8 +12,8 @@ class MungerBuilder(models.Model):
 
     munger_name = models.CharField(max_length=200)
 
-    input_folder = models.CharField(max_length=999)
-    input_filename = models.CharField(max_length=200)
+    input_folder = models.CharField(max_length=999, null=True, blank=True)
+    input_filename = models.CharField(max_length=200, null=True, blank=True)
 
     output_folder = models.CharField(max_length=999, null=True, blank=True)
     output_filename = models.CharField(max_length=200, null=True, blank=True)
@@ -39,40 +39,34 @@ class MungerBuilder(models.Model):
     def __unicode__(self):
         return str(self.munger_name)
 
+class FieldType(models.Model):
+    type_name = models.CharField(max_length=200)
+
+    def type_func(self):
+        func_dict = {
+            'index': 'index',
+            'count': len,
+            'sum': np.sum,
+            'mean': np.mean,
+            'median': np.median,
+        }
+        return func_dict[self.type_name]
+
+    def __unicode__(self):
+        return str(self.type_name).capitalize()
+
 class DataField(models.Model):
 
-    AGGREGATE_FUNCTIONS = (
-        (None, 'None'),
-        ('count', 'Count'),
-        ('sum', 'Sum'),
-        ('mean', 'Average'),
-        ('median', 'Median'),
-    )
-    munger_builder = models.ForeignKey('MungerBuilder', related_name='data_fields', related_query_name='data_fields')
-    include_field = models.BooleanField(default=False)
-    is_index = models.BooleanField(default=False)
+    munger_builder = models.ForeignKey(MungerBuilder, related_name='data_fields', related_query_name='data_fields')
     current_name = models.CharField(max_length=200)
     new_name = models.CharField(max_length=200, null=True, blank=True)
-    aggregate_type = models.CharField(
-        max_length=20, choices=AGGREGATE_FUNCTIONS,
-        default=None, null=True, blank=True
-    )
+    field_types = models.ManyToManyField(FieldType, blank=True)
 
     def __unicode__(self):
         if self.new_name:
             return str(self.new_name)
         else:
             return str(self.current_name)
-
-    def aggfunc(self):
-        agg_dict = {
-            None: None,
-            'count': len,
-            'sum': np.sum,
-            'mean': np.mean,
-            'median': np.median,
-        }
-        return agg_dict[self.aggregate_type]
 
     def active_name(self):
         if self.new_name:
@@ -86,6 +80,8 @@ class DataField(models.Model):
 
 class CSVDocument(models.Model):
     csv_file = models.FileField(upload_to='csv-files/%Y-%m')
+
+
 
     # def save(self, *args, **kwargs):
     #     if self.schedule:

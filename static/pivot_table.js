@@ -24,9 +24,7 @@ interact('.draggable')
       var textEl = event.target.querySelector('p');
 
       if (draggable.attr('type') == 'None') {
-        draggable.css('transform',"")
-        draggable.attr('data-x', 0);
-        draggable.attr('data-y', 0);
+        draggable.remove()
       }
 
       textEl && (textEl.textContent =
@@ -46,24 +44,18 @@ interact('.draggable')
 
       // create a clone of the currentTarget element
       var clone = event.currentTarget.cloneNode(true);
+      $(clone).attr('data-x', original.position().left - 10)
+      // var top_offset = original.position().top - 156
+      var top_offset = original.position().top - $('#active-fields').position().top
+      $(clone).attr('data-y', top_offset)
+      $(clone).removeAttr('id');
+      $(clone).find('.field-text').find('input').remove()
 
       // Remove CSS class using JS only (not jQuery or jQLite) - http://stackoverflow.com/a/2155786/4972844
       clone.className = clone.className.replace(/\bdraggable-source\b/,'');
 
-      //Adding TOP LEFT and WIDTH and HEIGHT to the cloned element
-        // var css = {
-        //                   top: original.offsetTop + 'px',
-        //                   left: original.offsetLeft+ 'px',
-        //                   width: original.offsetWidth+ 'px',
-        //                   height: original.offsetHeight+ 'px'
-        //               };
-        // for(var prop in css) {
-        //     clone.style[prop] = css[prop];
-        // }
-
-      // insert the clone to the page
       // TODO: position the clone appropriately
-      document.getElementById('field-bank').appendChild(clone);
+      document.getElementById('active-fields').appendChild(clone);
 
       // start a drag interaction targeting the clone
       interaction.start({ name: 'drag' }, event.interactable, clone);
@@ -122,6 +114,7 @@ interact('.dropzone').dropzone({
     dropzone.addClass('drop-target');
     draggable.addClass('can-drop');
     draggable.addClass('tap-target');
+    draggable.addClass('agg-text');
     draggable.addClass('tap-' + draggable.attr('type'));
 
   },
@@ -210,14 +203,14 @@ $.ajaxSetup({
 $('#save-pivot-fields').click(function() {
     var active_fields = new Array();
     $('.draggable').each(function() {
-      var field_text = $(this).find('span.name-text').text().trim()
-      console.log(field_text);
-      active_fields.push({id: this.id, type: $(this).attr('type'), new_name: field_text});
+      if ($(this).attr('type') != 'None') {
+        var field_text = $(this).find('span.name-text').text().trim()
+        active_fields.push({field_id: $(this).attr('field-id'), type: $(this).attr('type'), new_name: field_text});
+      }
     });
 
     var mb_id = $('#mb-id').attr('value');
 
-    console.log(active_fields);
 
     $.ajax({
         method: 'POST',
@@ -243,8 +236,6 @@ function add_edit_buttons() {
 
 function setRowIndex() {
 
-  var initial_offset = 70;
-
   var count_array = new Array();
   var iter_count = field_types.length;
 
@@ -269,8 +260,10 @@ function setRowIndex() {
 }
 
 function moveDraggable(draggable, dropzone) {
+  var y_offset = dropzone.position().top - $('#active-fields').position().top + 45
   draggable.attr('data-x', dropzone.position().left);
-  draggable.attr('data-y', dropzone.position().top - 60 + (draggable.attr('row_index'))*40)
+  console.log(dropzone.position().top);
+  draggable.attr('data-y', y_offset + (draggable.attr('row_index'))*40)
   var translate_string = 'translate(' + draggable.attr('data-x') + 'px, ' + draggable.attr('data-y') + 'px)'
   draggable.css('webkitTransform',"")
   draggable.css('transform', translate_string);
@@ -299,9 +292,9 @@ $( document ).ready(function() {
 
     if (draggable.attr('type') == 'None') {
       agg_span.text('');
-      none_offset += 210
-      draggable.attr('data-x', none_offset);
-      draggable.css('transform', 'translate(' + none_offset + 'px)');
+      // none_offset += 210
+      // draggable.attr('data-x', none_offset);
+      // draggable.css('transform', 'translate(' + none_offset + 'px)');
     } else {
       agg_span.text(draggable.attr('type')+sep);
       dropzone.addClass('drop-target');

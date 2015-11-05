@@ -1,6 +1,8 @@
 import csv
 import re
 import json
+import sys
+import traceback
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
@@ -10,20 +12,40 @@ from django.contrib.auth.decorators import login_required
 from django.forms.models import model_to_dict
 from django.contrib import messages
 
-from .models import DataField, CSVDocument, MungerBuilder
+from .models import DataField, FieldType, CSVDocument, MungerBuilder
 from .forms import SetupForm, FieldParser, UploadFileForm
 
-def munger_builder_setup(request):
+def munger_builder_index(request):
+    munger_builder_list = MungerBuilder.objects.order_by('id')
+    context = {'munger_builder_list': munger_builder_list}
+    return render(request, 'script_builder/munger_builder_index.html', context)
+
+def munger_tools(request, munger_builder_id):
+
+    mb = MungerBuilder.objects.get(pk=munger_builder_id)
+
+
+    # if request.method == 'POST':
+    #     return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder.id))
+
+    context = {'mb': mb}
+    return render(request, 'script_builder/munger_tools.html', context)
+
+def munger_builder_setup(request, munger_builder_id=None):
+    if munger_builder_id:
+        mb = MungerBuilder.objects.get(pk=munger_builder_id)
+    else:
+        mb = None
+
     if request.method == 'POST':
-        mb = MungerBuilder()
         form = SetupForm(request.POST, instance=mb)
-        munger_builder = form.save()
+        mb = form.save()
 
-        return HttpResponseRedirect('/script_builder/field_parser/{0}'.format(munger_builder.id))
+        return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(mb.id))
 
-    form = SetupForm()
+    form = SetupForm(instance=mb)
 
-    context = {'form': form}
+    context = {'form': form, 'formset': form, 'mb': mb}
     return render(request, 'script_builder/munger_builder_setup.html', context)
 
 
@@ -39,7 +61,7 @@ def field_import(request, munger_builder_id):
             fields = validate_and_save_fields(request, munger_builder_id, upload_form, 'text')
 
         # munger_builder_id =
-        return HttpResponseRedirect('/script_builder/pivot_builder/{0}'.format(munger_builder_id))
+        return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder_id))
 
     else:
         input_form = FieldParser()
@@ -83,43 +105,29 @@ def parse_fields(form, request, input_type):
 def pivot_builder(request, munger_builder_id):
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
     fields = mb.data_fields.all()
-    field_types = get_field_types()
+    field_types = [ft.type_name for ft in FieldType.objects.all()]
     context = {'mb': mb, 'fields': fields, 'field_types': field_types}
     return render(request, 'script_builder/pivot_builder.html', context)
 
-def get_field_types():
-    return ['index'] + [agg[0] for agg in DataField.AGGREGATE_FUNCTIONS if agg[0]]
-
 def save_pivot_fields(request, munger_builder_id):
     if request.is_ajax():
-        request_data = request.POST
-        active_fields_data = json.loads(request_data['active_fields'])
+        active_fields_data = json.loads(request.POST['active_fields'])
 
         clear_field_data(munger_builder_id)
 
         for field_data in active_fields_data:
-            field_data['id'] = int(field_data['id'].split('-')[1])
-
-            field_object = DataField.objects.get(pk=field_data['id'])
+            field_object = DataField.objects.get(pk=field_data['field_id'])
             field_object.new_name = field_data['new_name']
 
-            if field_data['type'] == 'index':
-                field_object.include_field = True
-                field_object.is_index = True
-            elif field_data['type'] in ['sum','count','mean','median']:
-                field_object.include_field = True
-                field_object.aggregate_type = field_data['type']
-                field_object.is_index = False
-            else:
-                pass
+            field_type = FieldType.objects.get(type_name=field_data['type'])
+            field_object.field_types.add(field_type)
 
             field_object.save()
+
     messages.success(request, 'Pivot Fields Saved Successfully')
     return HttpResponse("OK")
 
 def clear_field_data(munger_builder_id):
     for field in MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all():
-        field.include_field = False
-        field.is_index = False
-        field.aggregate_type = None
+        field.field_types.clear()
         field.save()

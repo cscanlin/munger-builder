@@ -16,9 +16,9 @@ import task_scheduler.tasks
 
 @login_required
 def script_runner_index(request):
-    template = loader.get_template('task_scheduler/script_runner_index.html')
-    context = RequestContext(request)
-    return HttpResponse(template.render(context))
+    munger_builder_list = MungerBuilder.objects.order_by('id')
+    context = {'munger_builder_list': munger_builder_list}
+    return render(request, 'task_scheduler/script_runner_index.html', context)
 
 @login_required
 def munger_builder_index(request):

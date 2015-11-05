@@ -1,7 +1,0 @@
-@font-face {
-  font-family: xecret;
-  src: url('/static/assets/xecret.ttf');
-}
-#secret {
-  font-family: xecret, sans-serif;
-}

@@ -46,7 +46,6 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'constance.backends.database',
     'pipeline',
-    'static_precompiler',
     'compressor',
     'crispy_forms',
     'bootstrap3',
@@ -56,12 +55,8 @@ INSTALLED_APPS = (
     'storages',
     'smuggler',
     'script_builder',
-    # 'scripts.fb',
-    # 'scripts.img',
     'task_scheduler',
-    # 'image_hasher',
     'munger_builder',
-    # 'facebook_automator',
 )
 
 ROOT_URLCONF = 'munger_builder.urls'
@@ -88,21 +83,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'munger_builder.wsgi.application'
 
-STATICFILES_FINDERS = (
-    'compressor.finders.CompressorFinder',
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'static_precompiler.finders.StaticPrecompilerFinder',
-)
-
-
-STATIC_PRECOMPILER_COMPILERS = (
-    'static_precompiler.compilers.CoffeeScript',
-    'static_precompiler.compilers.Babel',
-    'static_precompiler.compilers.SASS',
-    'static_precompiler.compilers.SCSS',
-    'static_precompiler.compilers.LESS',
-)
 
 DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
 
@@ -158,18 +138,8 @@ CELERYD_HIJACK_ROOT_LOGGER = False
 
 # Name and email addresses of recipients
 ADMINS = (
-    ('Chris Scanlin', 'cscanlin@dotandbo.com'),
+    ('Chris Scanlin', 'cscanlin@gmail.com'),
 )
-
-
-# Email address used as sender (From field).
-# SERVER_EMAIL = 'no-reply@vandelay.com'
-
-# Mailserver configuration
-# EMAIL_HOST = 'mail.vandelay.com'
-EMAIL_PORT = 25
-# EMAIL_HOST_USER = 'servers'
-# EMAIL_HOST_PASSWORD = 's3cr3t'
 
 djcelery.setup_loader()
 
@@ -193,7 +163,6 @@ SMUGGLER_EXCLUDE_LIST = [
     'admin.logentry',
     'djcelery.taskmeta',
     'auth.permission',
-    'image_hasher.image',
     'kombu_transport_django.queue'
 ]
 
