@@ -14,12 +14,11 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import djcelery
 from django.contrib.messages import constants as messages
-from getenv import env
 import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'c%fcm=5&k=i1eek2(4mnn$2b=3hbp4ga6tpx6ustas(4s9&$d8'
+SECRET_KEY = os.getenv('MUNGER_BUILDER_SECRET')
 
 MESSAGE_TAGS = {
     messages.SUCCESS: 'alert-success success',
@@ -178,7 +177,7 @@ AUTHENTICATION_BACKENDS = (
     'guardian.backends.ObjectPermissionBackend',
 )
 
-if env('DJANGO_CONFIGURATION') == 'Prod':
+if os.getenv('DJANGO_CONFIGURATION') == 'Prod':
     DEBUG = False
     DATABASES = {'default': dj_database_url.config()}
     MIDDLEWARE_CLASSES = (
