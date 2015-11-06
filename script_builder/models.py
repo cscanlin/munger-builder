@@ -21,20 +21,11 @@ class MungerBuilder(models.Model):
     rows_to_delete_top = models.IntegerField(null=True, blank=True)
     rows_to_delete_bottom = models.IntegerField(null=True, blank=True)
 
-    def included_fields(self):
-        return self.data_fields.all().filter(include_field=True)
-
-    def fields_to_rename(self):
-        data_fields = self.included_fields()
-        return {field.current_name: field.new_name for field in data_fields.filter(new_name__isnull=False)}
-
     def index_fields(self):
-        data_fields = self.included_fields()
-        return [field.current_name for field in data_fields.filter(is_index=True)]
+        return [field.current_name for field in self.data_fields.all() if field.is_index()]
 
     def agg_fields(self):
-        data_fields = self.included_fields()
-        return {field.current_name: field.aggfunc() for field in data_fields.filter(aggregate_type__isnull=False)}
+        return {field.current_name: field.agg_types() for field in self.data_fields.all() if field.agg_types()}
 
     def __unicode__(self):
         return str(self.munger_name)
@@ -60,7 +51,7 @@ class DataField(models.Model):
     munger_builder = models.ForeignKey(MungerBuilder, related_name='data_fields', related_query_name='data_fields')
     current_name = models.CharField(max_length=200)
     new_name = models.CharField(max_length=200, null=True, blank=True)
-    field_types = models.ManyToManyField(FieldType, blank=True)
+    field_types = models.ManyToManyField(FieldType, blank=True, related_name='field_types', related_query_name='field_types')
 
     def __unicode__(self):
         if self.new_name:
@@ -73,6 +64,16 @@ class DataField(models.Model):
             return self.new_name
         else:
             return self.current_name
+
+    def is_index(self):
+        for field_type in self.field_types.all():
+            if field_type.type_name == 'index':
+                return True
+        else:
+            return False
+
+    def agg_types(self):
+        return [ft.type_name for ft in self.field_types.all() if ft.type_name != 'index']
 
     #path to list
     # if not contains . then append csv

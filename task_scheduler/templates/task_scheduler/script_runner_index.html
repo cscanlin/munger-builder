@@ -10,9 +10,20 @@
 {% block content %}
     <h2>Munger Builders</h2>
     {% if munger_builder_list %}
+        <table class="mb-table">
+          <tr>
+            <th><div class="heading-text">Run</div></th>
+            <th><div class="heading-text">Build</div></th>
+            <th><div class="heading-text">Name</div></th>
+          </tr>
         {% for munger_builder in munger_builder_list %}
-            <h3><a href="{% url 'munger_builder_results' munger_builder.id %}" id='{{ munger_builder.id }}' name="run" type="submit" >{{ munger_builder.munger_name }}</a></h3>
+            <tr>
+                <td class="mb-cell mb-run-holder"><a href="{% url 'run_munger_output' munger_builder.id %}" id='{{ munger_builder.id }}' name="run" type="submit" >Run</a></td>
+                <td class="mb-cell mb-build-holder"><a href="{% url 'build_munger_output' munger_builder.id %}" id='{{ munger_builder.id }}' name="build" type="submit" >Build</a></td>
+                <td class="mb-cell mb-name-holder"><div>{{ munger_builder.munger_name }}</div></td>
+            </tr>
         {% endfor %}
+        </table>
     {% else %}
         <p>No Munger Buiders are Available.</p>
     {% endif %}

@@ -11,7 +11,7 @@ import traceback
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from script_builder.models import MungerBuilder
 
-INPUT_FOLDER = os.path.join(os.path.expanduser("~"), 'Python Scripts', 'munger_builder','scripts')
+INPUT_FOLDER = os.path.join(os.path.expanduser("~"), 'python_scripts', 'munger_builder','scripts')
 
 OUTPUT_FOLDER = None
 
@@ -24,7 +24,7 @@ def main(munger_builder_id=1):
 
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
-    mb.input_folder = os.path.join(os.path.expanduser("~"), 'Python Scripts', 'munger_builder','scripts')
+    mb.input_folder = os.path.join(os.path.expanduser("~"), 'python_scripts', 'munger_builder','scripts')
 
     if not mb.output_folder:
         mb.output_folder = mb.input_folder
@@ -43,8 +43,8 @@ def main(munger_builder_id=1):
         values=mb.agg_fields().keys(),
         aggfunc=mb.agg_fields(),
     )
-    if mb.fields_to_rename():
-        pivot_output = pivot_output.rename(columns=mb.fields_to_rename())
+    # if mb.fields_to_rename():
+    #     pivot_output = pivot_output.rename(columns=mb.fields_to_rename())
 
     print(pivot_output)
     yield pivot_output

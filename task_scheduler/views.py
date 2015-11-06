@@ -10,9 +10,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.http import StreamingHttpResponse
 
-import scripts.munger
+import scripts.run_munger
+import scripts.build_munger
+
 from script_builder.models import MungerBuilder
-import task_scheduler.tasks
 
 @user_passes_test(lambda u: u.is_superuser)
 def script_runner_index(request):
@@ -28,9 +29,15 @@ def munger_builder_index(request):
 
 
 @user_passes_test(lambda u: u.is_superuser)
-def munger_builder_results(request, munger_builder_id):
+def run_munger_output(request, munger_builder_id):
     return StreamingHttpResponse(
-        content_generator(scripts.munger.main(munger_builder_id))
+        content_generator(scripts.run_munger.main(munger_builder_id))
+    )
+
+@user_passes_test(lambda u: u.is_superuser)
+def build_munger_output(request, munger_builder_id):
+    return StreamingHttpResponse(
+        content_generator(scripts.build_munger.main(munger_builder_id))
     )
 
 def content_generator(script_main):
