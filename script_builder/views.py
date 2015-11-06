@@ -42,6 +42,11 @@ def munger_tools(request, munger_builder_id):
 
 def munger_builder_setup(request, munger_builder_id=None):
 
+    if request.user.id:
+        max_munger_builders = 10
+    else:
+        max_munger_builders = 2
+
     if munger_builder_id:
         mb = MungerBuilder.objects.get(pk=munger_builder_id)
         if not has_mb_permission(mb, request):
@@ -50,7 +55,7 @@ def munger_builder_setup(request, munger_builder_id=None):
             pass
     else:
         current_munger_builders = get_objects_for_user(request.user, 'script_builder.change_mungerbuilder')
-        if len(current_munger_builders) >= 10:
+        if len(current_munger_builders) >= max_munger_builders:
             messages.warning(request, 'Cannot Create more Munger Builders - Delete some to make space')
             return INDEX_REDIRECT
         else:

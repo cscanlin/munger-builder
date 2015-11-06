@@ -12,5 +12,9 @@ import scripts.munger
 logger = get_task_logger(__name__)
 
 @shared_task
-def munger_builder(munger_builder_id=1):
+def run_munger(munger_builder_id=1):
+    return [log_entry for log_entry in scripts.munger.main(munger_builder_id)]
+
+@shared_task
+def build_munger(munger_builder_id=1):
     return [log_entry for log_entry in scripts.munger.main(munger_builder_id)]
