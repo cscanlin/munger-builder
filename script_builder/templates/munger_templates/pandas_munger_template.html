@@ -12,7 +12,6 @@ def print_run_status(run_start_time,message):
 
 run_start_time = datetime.now()
 
-# Read data from singups with orders CSV from Looker and load into pandas DataFrame
 {% if input_path %}
 input_file = glob(os.path.abspath(r'{{ input_path }}'))[0]
 {% else %}
@@ -28,10 +27,8 @@ pivot_output = pd.pivot_table(
     df,
     index={{ index_fields }},
     values={{ agg_field_names }},
-    aggfunc={
-      {% for key, value in aggfunc_dict.iteritems() %}
-            '{{ key }}': {{ value }},
-      {% endfor %}
+    aggfunc={ {% for key, value in aggfunc_dict.iteritems() %}
+        '{{ key }}': {{ value }},{% endfor %}
     },
 )
 

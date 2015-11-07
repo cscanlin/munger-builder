@@ -19,13 +19,13 @@ from script_builder.models import MungerBuilder
 def script_runner_index(request):
     munger_builder_list = MungerBuilder.objects.order_by('id')
     context = {'munger_builder_list': munger_builder_list}
-    return render(request, 'task_scheduler/script_runner_index.html', context)
+    return render(request, 'script_runner/script_runner_index.html', context)
 
 @user_passes_test(lambda u: u.is_superuser)
 def munger_builder_index(request):
     munger_builder_list = MungerBuilder.objects.order_by('id')
     context = {'munger_builder_list': munger_builder_list}
-    return render(request, 'task_scheduler/munger_builder_index.html', context)
+    return render(request, 'script_runner/munger_builder_index.html', context)
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -36,11 +36,12 @@ def run_munger_output(request, munger_builder_id):
 
 @user_passes_test(lambda u: u.is_superuser)
 def build_munger_output(request, munger_builder_id):
-    return StreamingHttpResponse(
-        content_generator(scripts.build_munger.main(munger_builder_id))
-    )
+    script_string = scripts.build_munger.main(munger_builder_id)
+    context = {'script_string': script_string}
+    return render(request, 'script_runner/build_munger_output.html', context)
 
 def content_generator(script_main):
     for line in script_main:
         time.sleep(.1)
+        # print '{0} <br />\n'.format(line)
         yield '{0} <br />\n'.format(line)

@@ -23,6 +23,7 @@ from .models import DataField, FieldType, CSVDocument, MungerBuilder
 from .forms import SetupForm, FieldParser, UploadFileForm
 
 import scripts.build_munger
+import tasks
 
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
@@ -119,12 +120,14 @@ def pivot_builder(request, munger_builder_id):
 
 def download_munger(request, munger_builder_id):
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
-    script_text = scripts.build_munger.main(munger_builder_id)
-    file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}.py'.format(mb.munger_name))
-    with open(file_path, 'r') as mf:
-        response = HttpResponse(mf, content_type='application/octet-stream')
-        response['Content-Disposition'] = 'filename={0}.py'.format(mb.munger_name)
-        return response
+    # script_string = scripts.build_munger.main(munger_builder_id)
+    tasks.download_munger_async.delay(munger_builder_id)
+    return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(mb.id))
+    # file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}.py'.format(mb.munger_name))
+    # with open(file_path, 'r') as mf:
+    #     response = HttpResponse(mf, content_type='application/octet-stream')
+    #     response['Content-Disposition'] = 'filename={0}.py'.format(mb.munger_name)
+    #     return response
 
 # Helper Functions
 

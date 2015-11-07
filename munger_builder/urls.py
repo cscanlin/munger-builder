@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'^admin/', include('smuggler.urls')),  # before admin url patterns!
     url(r'^admin/', include(admin.site.urls)),
     url(r'^script_builder/', include('script_builder.urls')),
-    url(r'^script_runner_index/', include('task_scheduler.urls')),
+    url(r'^script_runner_index/', include('script_runner.urls')),
     url(r'^register/$', views.register, name='register'),
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}),
     url('^', include('django.contrib.auth.urls')),

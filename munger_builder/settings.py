@@ -55,7 +55,7 @@ INSTALLED_APPS = (
     'smuggler',
     'guardian',
     'script_builder',
-    'task_scheduler',
+    'script_runner',
     'munger_builder',
 )
 

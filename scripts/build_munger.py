@@ -28,7 +28,7 @@ def main(munger_builder_id=1):
 
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
-    script_text = jinja_template.render(
+    script_string = jinja_template.render(
         input_path=mb.input_path,
         index_fields=mb.index_fields(),
         agg_field_names=mb.agg_fields().keys(),
@@ -37,9 +37,9 @@ def main(munger_builder_id=1):
     )
 
     with open('media/user_munger_scripts/{0}.py'.format(mb.munger_name), 'wb') as mf:
-        mf.write(script_text+'\n')
+        mf.write(script_string+'\n')
 
-    return script_text
+    return script_string
 
 if __name__ == '__main__':
     main(munger_builder_id=1)
