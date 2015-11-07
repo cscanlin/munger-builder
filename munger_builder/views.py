@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
@@ -26,10 +27,12 @@ def register(request):
         # If the two forms are valid...
         if user_form.is_valid():
 
-            user = user_form.save()
+            new_user = user_form.save()
 
-            user.set_password(user.password)
-            user.save()
+            messages.success(request, "Thanks for registering. You are now logged in.")
+            new_user = authenticate(username=request.POST['username'],
+                                    password=request.POST['password1'])
+            login(request, new_user)
 
             return HttpResponseRedirect('/script_builder/munger_builder_index/')
 

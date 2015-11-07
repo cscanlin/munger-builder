@@ -23,7 +23,8 @@ SECRET_KEY = os.getenv('MUNGER_BUILDER_SECRET')
 MESSAGE_TAGS = {
     messages.SUCCESS: 'alert-success success',
     messages.WARNING: 'alert-warning warning',
-    messages.ERROR: 'alert-danger error'
+    messages.INFO: 'alert-info info',
+    messages.ERROR: 'alert-danger error',
 }
 
 

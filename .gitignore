@@ -59,5 +59,4 @@ target/
 *.sqlite3
 *.pid
 
-**/media/image-files
-**/media/csv-files
+**/media

@@ -1,4 +1,3 @@
-from __future__ import print_function
 import pandas as pd
 import numpy as np
 
@@ -21,7 +20,7 @@ def main(munger_builder_id=1):
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
     # Read data from singups with orders CSV from Looker and load into pandas DataFrame
-    input_file = glob(mb.input_path)[0]
+    input_file = glob(os.path.abspath(mb.input_path))[0]
     print_run_status(run_start_time, 'Reading Data From:\n' + input_file.replace('\\', '/'))
 
     df = pd.read_csv(input_file)
@@ -40,7 +39,8 @@ def main(munger_builder_id=1):
     print(pivot_output)
     yield pivot_output.to_html()
 
-    pivot_output.to_csv(mb.get_output_path())
+    formatted_date = datetime.now().strftime('%Y-%m-%d')
+    pivot_output.to_csv('media/user_munger_output/{0}-output_{1}.csv'.format(mb.munger_name, formatted_date))
 
     print_run_status(run_start_time, 'Finished!')
     yield 'Finished!'
@@ -50,10 +50,6 @@ def main(munger_builder_id=1):
     #     yield sys.exc_info()[0]
     #     print(traceback.format_exc())
     #     yield traceback.format_exc()
-    #
-    # finally:
-    #     print("Press Enter to close window")
-    #     raw_input()
 
 if __name__ == '__main__':
     main(munger_builder_id=1)
