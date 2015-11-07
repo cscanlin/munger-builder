@@ -42,5 +42,5 @@ def build_munger_output(request, munger_builder_id):
 
 def content_generator(script_main):
     for line in script_main:
-        time.sleep(.5)
+        time.sleep(.1)
         yield '{0} <br />\n'.format(line)

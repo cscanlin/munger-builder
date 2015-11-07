@@ -28,10 +28,8 @@ class SetupForm(ModelForm):
         InlineField('munger_name'),
         Fieldset(
             'Input/Output',
-            InlineField('input_folder'),
-            InlineField('input_filename'),
-            InlineField('output_folder'),
-            InlineField('output_filename'),
+            InlineField('input_path'),
+            InlineField('output_path'),
             # css_class = 'collapse',
         ),
         Fieldset(

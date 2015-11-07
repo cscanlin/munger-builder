@@ -1,4 +1,5 @@
 import requests
+import os
 import json
 import datetime
 import numpy as np
@@ -12,11 +13,8 @@ class MungerBuilder(models.Model):
 
     munger_name = models.CharField(max_length=200)
 
-    input_folder = models.CharField(max_length=999, null=True, blank=True)
-    input_filename = models.CharField(max_length=200, null=True, blank=True)
-
-    output_folder = models.CharField(max_length=999, null=True, blank=True)
-    output_filename = models.CharField(max_length=200, null=True, blank=True)
+    input_path = models.CharField(max_length=999, null=True, blank=True)
+    output_path = models.CharField(max_length=999, null=True, blank=True)
 
     rows_to_delete_top = models.IntegerField(null=True, blank=True)
     rows_to_delete_bottom = models.IntegerField(null=True, blank=True)
@@ -26,6 +24,11 @@ class MungerBuilder(models.Model):
 
     def agg_fields(self):
         return {field.current_name: field.agg_types() for field in self.data_fields.all() if field.agg_types()}
+
+    def get_output_path(self):
+        if not self.output_path:
+            input_dir = os.path.dirname(self.input_path)
+            return os.path.join(input_dir, '{0}-output.csv'.format(self.munger_name))
 
     def __unicode__(self):
         return str(self.munger_name)

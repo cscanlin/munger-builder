@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+
+import os
+import sys
+import traceback
+from glob import glob
+from datetime import datetime
+
+def print_run_status(run_start_time,message):
+    print('\n{0} - {1}'.format(datetime.now()-run_start_time, message))
+
+run_start_time = datetime.now()
+
+# Read data from singups with orders CSV from Looker and load into pandas DataFrame
+{% if input_path %}
+input_file = glob(os.path.abspath(r'{{ input_path }}'))[0]
+{% else %}
+input_file = 'ADD INPUT FILE PATH HERE'
+{% endif %}
+
+print_run_status(run_start_time, 'Reading Data From:\n{0}'.format(input_file))
+
+df = pd.read_csv(input_file)
+
+print_run_status(run_start_time, 'Writing Output CSVs...')
+pivot_output = pd.pivot_table(
+    df,
+    index={{ index_fields }},
+    values={{ agg_field_names }},
+    aggfunc={
+      {% for key, value in aggfunc_dict.iteritems() %}
+            '{{ key }}': {{ value }},
+      {% endfor %}
+    },
+)
+
+print(pivot_output)
+
+pivot_output.to_csv(os.path.abspath(r'{{ output_path }}'))
+
+print_run_status(run_start_time, 'Finished!')
