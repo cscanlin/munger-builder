@@ -36,9 +36,10 @@ def main(munger_builder_id=1):
         output_path=mb.get_output_path(),
     )
 
-    yield script_text.replace('\n','</br>')
     with open('media/user_munger_scripts/{0}.py'.format(mb.munger_name), 'wb') as mf:
-        mf.write(script_text)
+        mf.write(script_text+'\n')
+
+    return script_text
 
 if __name__ == '__main__':
     main(munger_builder_id=1)

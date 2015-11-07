@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     url(r'^field_parser/(?P<munger_builder_id>[0-9]+)$', views.field_parser, name='field_parser'),
     url(r'^pivot_builder/(?P<munger_builder_id>[0-9]+)$', views.pivot_builder, name='pivot_builder'),
     url(r'^save_pivot_fields/(?P<munger_builder_id>[0-9]+)$', views.save_pivot_fields, name='save_pivot_fields'),
+    url(r'^download_munger/(?P<munger_builder_id>[0-9]+)$', views.download_munger, name='download_munger'),
     url(r'^', views.munger_builder_index, name='default'),
 )

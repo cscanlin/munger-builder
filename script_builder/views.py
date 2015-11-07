@@ -1,7 +1,8 @@
-import csv
+import os
 import re
-import json
+import csv
 import sys
+import json
 import traceback
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -12,11 +13,16 @@ from django.contrib.auth.decorators import login_required
 from django.forms.models import model_to_dict
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.utils.encoding import smart_str
+from django.conf import settings
+
 
 from guardian.shortcuts import assign_perm, get_perms, get_objects_for_user
 
 from .models import DataField, FieldType, CSVDocument, MungerBuilder
 from .forms import SetupForm, FieldParser, UploadFileForm
+
+import scripts.build_munger
 
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
@@ -91,7 +97,6 @@ def field_parser(request, munger_builder_id):
             upload_form = FieldParser(request.POST, request.FILES)
             fields = validate_and_save_fields(request, munger_builder_id, upload_form, 'text')
 
-        # munger_builder_id =
         return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder_id))
 
     else:
@@ -111,6 +116,15 @@ def pivot_builder(request, munger_builder_id):
     field_types = [ft.type_name for ft in FieldType.objects.all()]
     context = {'mb': mb, 'fields': fields, 'field_types': field_types}
     return render(request, 'script_builder/pivot_builder.html', context)
+
+def download_munger(request, munger_builder_id):
+    mb = MungerBuilder.objects.get(pk=munger_builder_id)
+    script_text = scripts.build_munger.main(munger_builder_id)
+    file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}.py'.format(mb.munger_name))
+    with open(file_path, 'r') as mf:
+        response = HttpResponse(mf, content_type='application/octet-stream')
+        response['Content-Disposition'] = 'filename={0}.py'.format(mb.munger_name)
+        return response
 
 # Helper Functions
 

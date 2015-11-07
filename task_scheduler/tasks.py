@@ -18,4 +18,4 @@ def run_munger(munger_builder_id=1):
 
 @shared_task
 def build_munger(munger_builder_id=1):
-    return [log_entry for log_entry in scripts.build_munger.main(munger_builder_id)]
+    return scripts.build_munger.main(munger_builder_id)
