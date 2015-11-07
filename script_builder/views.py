@@ -5,7 +5,7 @@ import sys
 import json
 import traceback
 
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
 from django.forms.formsets import formset_factory
@@ -119,15 +119,25 @@ def pivot_builder(request, munger_builder_id):
     return render(request, 'script_builder/pivot_builder.html', context)
 
 def download_munger(request, munger_builder_id):
-    mb = MungerBuilder.objects.get(pk=munger_builder_id)
-    # script_string = scripts.build_munger.main(munger_builder_id)
-    tasks.download_munger_async.delay(munger_builder_id)
-    return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(mb.id))
-    # file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}.py'.format(mb.munger_name))
-    # with open(file_path, 'r') as mf:
-    #     response = HttpResponse(mf, content_type='application/octet-stream')
-    #     response['Content-Disposition'] = 'filename={0}.py'.format(mb.munger_name)
-    #     return response
+    task = tasks.download_munger_async.delay(munger_builder_id)
+    return render_to_response('script_builder/poll_for_download.html',
+                              {'task_id': task.id })
+
+def poll_for_download(request):
+    task_id = request.GET.get("task_id")
+    filename = request.GET.get("filename")
+
+    if request.is_ajax():
+        result = tasks.download_munger_async.AsyncResult(task_id)
+        if result.ready():
+            return HttpResponse(json.dumps({"filename": result.get()}))
+        return HttpResponse(json.dumps({"filename": None}))
+
+    file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}'.format(filename))
+    with open(file_path, 'r') as mf:
+        response = HttpResponse(mf, content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
+        return response
 
 # Helper Functions
 

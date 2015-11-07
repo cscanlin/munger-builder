@@ -1,11 +1,17 @@
 from __future__ import absolute_import
 
+import os
+
+from django.http import HttpResponse
+from django.conf import settings
+
 from celery import task, shared_task
 from celery.utils.log import get_task_logger
-from django.conf import settings
 
 import scripts.run_munger
 import scripts.build_munger
+
+from .models import MungerBuilder
 
 logger = get_task_logger(__name__)
 
@@ -16,12 +22,7 @@ def run_munger(munger_builder_id=1):
 @shared_task
 def download_munger_async(munger_builder_id=1):
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
-    print mb
     script_string = scripts.build_munger.main(munger_builder_id)
-    file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}.py'.format(mb.munger_name))
-
-    with open(file_path, 'r') as mf:
-        response = HttpResponse(mf, content_type='application/octet-stream')
-        response['Content-Disposition'] = 'filename={0}.py'.format(mb.munger_name)
-        print response
-        return response
+    print '!!!!!!!!!!!!!!!!!!!!!!'
+    print '{0}.py'.format(mb.munger_name)
+    return '{0}.py'.format(mb.munger_name)

@@ -125,9 +125,10 @@ MEDIA_URL = '/media/'
 # CELERY_RESULT_BACKEND = 'amqp://guest:guest@localhost:5672//'
 BROKER_URL = 'django://'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database.DatabaseBackend'
-CELERY_IMPORTS = ('configurations.management')
+# CELERY_IMPORTS = ('configurations.management')
 # task result life time until they will be deleted
 CELERY_TASK_RESULT_EXPIRES = 7*86400  # 7 days
+CELERY_IGNORE_RESULT = False
 # needed for worker monitoring
 CELERY_SEND_EVENTS = True
 # where to store periodic tasks (needed for scheduler)
