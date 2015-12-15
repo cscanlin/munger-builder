@@ -43,12 +43,16 @@ interact('.draggable')
 
       // create a clone of the currentTarget element
       var clone = event.currentTarget.cloneNode(true);
-      $(clone).attr('data-x', original.position().left - 10)
-      // var top_offset = original.position().top - 156
       var top_offset = original.position().top - $('#active-fields').position().top
+      $(clone).attr('data-x', original.position().left - 10)
       $(clone).attr('data-y', top_offset)
       $(clone).removeAttr('id');
       $(clone).find('.field-text').find('input').remove()
+
+      var clone_text = $(clone).find('.field-text').find('.name-text')
+      clone_text.removeClass('source-text');
+      clone_text.addClass('clone-text');
+      clone_text.removeAttr('id');
 
       // Remove CSS class using JS only (not jQuery or jQLite) - http://stackoverflow.com/a/2155786/4972844
       clone.className = clone.className.replace(/\bdraggable-source\b/,'');
@@ -99,6 +103,7 @@ interact('.dropzone').dropzone({
   ondragenter: function (event) {
     var dropzone = $(event.target);
     var draggable = $(event.relatedTarget);
+    var field_text = $(draggable.find("span.agg-text"))
     var sep = ' of '
 
     // feedback the possibility of a drop
@@ -108,7 +113,7 @@ interact('.dropzone').dropzone({
       sep = ': '
     };
 
-    $(draggable.find("span.agg-text")).text(draggable.attr('type')+sep);
+    field_text.text(draggable.attr('type')+sep);
 
     dropzone.addClass('drop-target');
     draggable.addClass('can-drop');
@@ -146,43 +151,6 @@ interact('.dropzone').dropzone({
     target.removeClass('drop-target');
   }
 });
-
-// interact('.tap-target')
-//   .on('doubletap', function (event) {
-//       var target = $(event.currentTarget)
-//       switch (target.attr('agg'))
-//        {
-//           case 'median':
-//             target.attr('agg','sum');
-//             target.addClass('tap-sum').removeClass('tap-median');
-//           break;
-//
-//           case 'sum':
-//             target.attr('agg','count');
-//             target.addClass('tap-count').removeClass('tap-sum');
-//           break;
-//
-//           case 'count':
-//             target.attr('agg','mean');
-//             target.addClass('tap-mean').removeClass('tap-count');
-//           break;
-//
-//           case 'mean':
-//             target.attr('agg','median');
-//             target.addClass('tap-median').removeClass('tap-mean');
-//           break;
-//
-//           default:
-//             target.attr('agg','sum');
-//             target.addClass('tap-sum');
-//        }
-//     event.preventDefault();
-//   })
-//
-//   .on('hold', function (event) {
-//     event.currentTarget.classList.toggle('rotate');
-//     event.currentTarget.classList.remove('large');
-//   });
 
 var csrftoken = $.cookie('csrftoken');
 
@@ -228,10 +196,18 @@ function add_edit_buttons() {
   $('.draggable').each(function() {
     id_number = this.id.split('-')[1]
     var option = {trigger : $("input.btn-"+id_number), action : "click"};
-    $('.editable-'+id_number).editable(option, function(e){
-        console.log(option);
-        console.log(e);
+    $('#source-text-'+id_number).editable(option, function(s){
+      field_id = s.target.attr('field-id')
+      new_text = s.value
+      updateClones(field_id,new_text);
     });
+  });
+}
+
+function updateClones(field_id,new_text) {
+  console.log(field_id);
+  $('.clone-text.editable-'+field_id).each(function() {
+    $(this).text(new_text)
   });
 }
 
