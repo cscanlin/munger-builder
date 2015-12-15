@@ -60,4 +60,4 @@ target/
 *.pid
 
 **/media
-!**/media**.keep
+!**/media*.keep
