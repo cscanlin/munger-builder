@@ -229,6 +229,8 @@ function add_edit_buttons() {
     id_number = this.id.split('-')[1]
     var option = {trigger : $("input.btn-"+id_number), action : "click"};
     $('.editable-'+id_number).editable(option, function(e){
+        console.log(option);
+        console.log(e);
     });
   });
 }

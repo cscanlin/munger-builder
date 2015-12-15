@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>Register with Rango</h1>
+  <h1>Register</h1>
+</br>
     <form id="user_form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ user_form.as_p }}
-        <input type="submit" name="submit" value="Register" />
+        <input type="submit" name="submit" value="Register" class="btn btn-primary" />
     </form>
 {% endblock content %}
