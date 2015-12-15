@@ -59,4 +59,5 @@ target/
 *.sqlite3
 *.pid
 
+!**/media**.keep
 **/media/*/**
