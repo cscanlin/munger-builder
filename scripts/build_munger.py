@@ -36,7 +36,7 @@ def main(munger_builder_id=1):
         output_path=mb.get_output_path(),
     )
 
-    with open('media/user_munger_scripts/{0}.py'.format(mb.munger_name), 'wb') as mf:
+    with open('media/user_munger_scripts/{0}.py'.format(mb.munger_name), 'wb+') as mf:
         mf.write(script_string+'\n')
 
     return script_string
