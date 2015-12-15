@@ -83,4 +83,4 @@ class DataField(models.Model):
     # get agg func
 
 class CSVDocument(models.Model):
-    csv_file = models.FileField(upload_to='csv-files/%Y-%m')
+    csv_file = models.FileField(upload_to='csv-files')
