@@ -8,7 +8,7 @@ from django.contrib import messages
 from .forms import UserForm
 
 def home_page(request):
-    return HttpResponseRedirect('/app_index/')
+    return HttpResponseRedirect('/script_builder/munger_builder_index/')
 
 @login_required
 def app_index(request):
