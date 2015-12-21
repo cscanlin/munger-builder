@@ -5,9 +5,12 @@
   <!-- Main jumbotron for a primary marketing message or call to action -->
   <div class="jumbotron bootstap-main-modify">
     <div class="container">
-      <h1>Munger Builder</h1>
-      <p>Generate custom scripts for data manipulation with Python + Pandas, using a drag and drop GUI.</p>
-      <p><a class="btn btn-primary btn-lg" href="/script_builder" role="button">Get Started &raquo;</a></p>
+      <div class="main-logo-container"><img class="main-logo" src="{{ STATIC_URL }}munger_builder_icon.jpg" width="150" height="150"></img></div>
+      <div class="main-jumbo-container">
+        <h1>Munger Builder</h1>
+        <p>Generate custom scripts for data manipulation with Python + Pandas, using a drag and drop GUI.</p>
+        <p><a class="btn btn-primary btn-lg" href="/script_builder" role="button">Get Started &raquo;</a></p>
+      </div>
     </div>
   </div>
 
@@ -33,6 +36,7 @@
     <footer>
       <div class="footer-element">&copy; 2015 Chris Scanlin</div>
       <div class="footer-element"><a href="https://github.com/cscanlin/munger-builder">View Source on GitHub<a></div>
+      <div class="footer-element"><a href="{% url 'contact_form' %}">Contact<a></div>
     </footer>
   </div>
 {% endblock content %}

@@ -24,7 +24,6 @@ import tasks
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
 def munger_builder_index(request):
-
     if request.user.id == None:
         random_id = randint(0,1000000)
         user = User.objects.create_user(username='anon_{0}'.format(random_id), password=random_id)
@@ -94,6 +93,9 @@ def field_parser(request, munger_builder_id):
 
     anon_check(request)
 
+    mb = MungerBuilder.objects.get(pk=munger_builder_id)
+    field_list = MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all()
+
     if not has_mb_permission(munger_builder_id, request):
         return INDEX_REDIRECT
 
@@ -106,14 +108,14 @@ def field_parser(request, munger_builder_id):
             upload_form = FieldParser(request.POST, request.FILES)
             fields = validate_and_save_fields(request, munger_builder_id, upload_form, 'text')
 
-        return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder_id))
+        return HttpResponseRedirect('/script_builder/field_parser/{0}'.format(munger_builder_id))
 
     else:
         messages.info(request, 'Paste in a list of comma or tab separated fields, or upload a csv with the desired columns')
         input_form = FieldParser()
         upload_form = UploadFileForm()
 
-    context = {'input_form': input_form, 'upload_form': upload_form}
+    context = {'field_list': field_list, 'input_form': input_form, 'upload_form': upload_form, 'mb': mb}
     return render(request, 'script_builder/field_parser.html', context)
 
 def pivot_builder(request, munger_builder_id):
@@ -213,6 +215,16 @@ def clear_field_data(munger_builder_id):
     for field in MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all():
         field.field_types.clear()
         field.save()
+
+def field_delete(request, field_id):
+    field = get_object_or_404(DataField, pk=field_id)
+    if not request.user.has_perm('script_builder.change_datafield', field):
+        return INDEX_REDIRECT
+
+    field.delete()
+    messages.success(request, '{0} Deleted Successfully'.format(field.current_name))
+    return HttpResponseRedirect('/script_builder/field_parser/{0}'.format(field.munger_builder.id))
+    # return HttpResponseRedirect('/script_builder/field_parser/')
 
 def anon_check(request):
     if 'anon_' in request.user.username:

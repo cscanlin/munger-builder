@@ -4,11 +4,29 @@
 {% load bootstrap3 %}
 
 {% block back_link %}
-    <p><a class=back-link href="{% url 'munger_builder_index' %}">< Mungers</a></p>
+    <p><a class=back-link href="{% url 'munger_tools' mb.id %}">< Munger Tools</a></p>
 {% endblock %}
 
 
 {% block content %}
+
+    {% if field_list %}
+      <table class="field-table">
+          <tr>
+            <th><div class="text">Field Name</div></th>
+          </tr>
+        {% for field in field_list %}
+          <tr>
+              <td class="field-cell old-name-holder">{{ field.current_name }}</td>
+              <td class="field-cell new-name-holder">{{ field.new_name }}</td>
+              <td class="field-cell"><div class="field-delete-holder"><a href="{% url 'field_delete' field.id %}" id='{{ audience.id }}' name="delete" type="submit" ><img src="{{ STATIC_URL }}delete-icon.png" width="16" height="16"></a></div></td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+        <p>No fields are available.</p>
+    {% endif %}
+
     {% crispy input_form %}
 
     <form class="field-upload-form" method="post" enctype="multipart/form-data">

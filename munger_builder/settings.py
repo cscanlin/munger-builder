@@ -18,6 +18,8 @@ import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+SITE_ID = 1
+
 SECRET_KEY = os.getenv('MUNGER_BUILDER_SECRET')
 
 MESSAGE_TAGS = {
@@ -44,6 +46,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sites',
     'constance.backends.database',
     'pipeline',
     'crispy_forms',
@@ -112,8 +115,6 @@ LOGIN_URL = 'django.contrib.auth.views.login'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
 
@@ -170,6 +171,21 @@ SMUGGLER_EXCLUDE_LIST = [
     'djcelery.taskmeta',
     'auth.permission',
     'kombu_transport_django.queue'
+]
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+SERVER_EMAIL = os.getenv('EMAIL_HOST_USER')
+
+DEFAULT_FROM_EMAIL = 'cscanlin@gmail.com'
+
+MANAGERS = [
+    ('Chris Scanlin', 'cscanlin@gmail.com'),
 ]
 
 ANONYMOUS_USER_ID = -1

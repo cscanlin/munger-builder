@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^app_index/$', views.app_index, name='app_index'),
     url(r'^admin/', include('smuggler.urls')),  # before admin url patterns!
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^contact/', include('contact_form.urls')),
     url(r'^script_builder/', include('script_builder.urls')),
     url(r'^script_runner_index/', include('script_runner.urls')),
     url(r'^register/$', views.register, name='register'),

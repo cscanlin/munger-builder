@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<h1>Register</h1>
+</br>
+  <form id="contact-form" method="post" enctype="multipart/form-data" class="contact-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" name="send-email" value="Send" class="btn btn-primary" />
+  </form>
+
+{% endblock content %}

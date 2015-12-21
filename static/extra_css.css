@@ -49,3 +49,89 @@ fieldset {
   padding-right: 20px;
   display: inline-block;
 }
+
+.contact-form {
+  display: block;
+}
+
+.logo-container {
+  display: inline-block;
+  float: left;
+  margin-top: 10px;
+  padding-right: 10px;
+}
+
+.main-logo-container {
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.main-logo {
+  vertical-align: baseline;
+}
+
+.main-jumbo-container {
+  display: inline-block;
+}
+
+/*FIELDS*/
+
+.field-table {
+  margin-bottom: 5px;
+  margin-left: 20px;
+  font-size: large;
+}
+
+.field-cell {
+  padding-right: 10px;
+  padding-left: 5px;
+}
+
+.field-heading-block {
+  margin-left: 45px;
+  min-width: 1120px;
+  margin-bottom: 2px;
+}
+.field-heading {
+  font-size: 20px;
+  display: inline-block;
+  text-align: center;
+  margin-right: 115px;
+  font-weight: bold
+}
+.field-entry {
+  font-size: 20px;
+}
+.field-name-holder {
+  width: 175px;
+  border: solid #000;
+  border-width: 1px 1px;
+}
+.field-type-holder {
+  width: 300px;
+  /*border: solid #000;
+  border-width: 1px 1px 1px 0px;*/
+}
+.field-name-input {
+  display: inline-block;
+  width: 175px;
+}
+.field-type-input {
+  display: inline-block;
+  width: 300px;
+}
+.field-delete-holder {
+  display: inline-block;
+}
+
+.field-form {
+  margin-left: 20px;
+}
+.field-upload-form {
+  margin-top: 10px;
+  margin-left: 20px;
+}
+.form-actions {
+  display: inline-block;
+  margin-left: 5px;
+}
