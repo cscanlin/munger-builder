@@ -24,3 +24,7 @@ def download_munger_async(munger_builder_id=1):
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
     script_string = scripts.build_munger.main(munger_builder_id)
     return '{0}.py'.format(mb.munger_name)
+
+@shared_task
+def download_test_data_async(munger_builder_id=1):
+    return 'test_data.csv'

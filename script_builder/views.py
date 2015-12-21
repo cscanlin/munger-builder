@@ -170,20 +170,31 @@ def download_munger(request, munger_builder_id):
     return render_to_response('script_builder/poll_for_download.html',
                               {'task_id': task.id, 'mb_id': munger_builder_id})
 
+def download_test_data(request, munger_builder_id):
+    task = tasks.download_test_data_async.delay()
+    return render_to_response('script_builder/poll_for_download.html',
+                              {'task_id': task.id, 'mb_id': munger_builder_id})
+
 def poll_for_download(request):
 
     task_id = request.GET.get("task_id")
     filename = request.GET.get("filename")
 
+    if filename == 'test_data.csv':
+        async_func = tasks.download_test_data_async
+        file_path = os.path.join(settings.STATIC_ROOT, filename)
+    else:
+        async_func = tasks.download_munger_async
+        file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}'.format(filename))
+
     if request.is_ajax():
-        result = tasks.download_munger_async.AsyncResult(task_id)
+        result = async_func.AsyncResult(task_id)
         if result.ready():
             return HttpResponse(json.dumps({"filename": result.get()}))
         return HttpResponse(json.dumps({"filename": None}))
 
-    file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}'.format(filename))
-    with open(file_path, 'r') as mf:
-        response = HttpResponse(mf, content_type='application/octet-stream')
+    with open(file_path, 'r') as f:
+        response = HttpResponse(f, content_type='application/octet-stream')
         response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
         return response
 
