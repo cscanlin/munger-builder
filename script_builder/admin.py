@@ -2,10 +2,12 @@ from django.contrib import admin
 
 from .models import MungerBuilder, DataField, FieldType
 
+from guardian.admin import GuardedModelAdmin
+
 class DataFieldInline(admin.TabularInline):
     model = DataField
 
-class MungerBuilderAdmin(admin.ModelAdmin):
+class MungerBuilderAdmin(GuardedModelAdmin):
     inlines = [
         DataFieldInline,
     ]

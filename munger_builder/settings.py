@@ -173,6 +173,8 @@ SMUGGLER_EXCLUDE_LIST = [
 ]
 
 ANONYMOUS_USER_ID = -1
+#
+# GUARDIAN_GET_INIT_ANONYMOUS_USER = 'script_builder.models.get_anonymous_user_instance'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', # default

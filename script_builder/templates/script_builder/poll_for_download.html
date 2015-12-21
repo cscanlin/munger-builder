@@ -1,16 +1,48 @@
-{% load staticfiles %}
 <!-- TODO: Figure out why extending this from base.html breaks it -->
+{% load staticfiles %}
+{% load i18n %}
 <!DOCTYPE html>
-<html>
-<head>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ STATIC_URL }}home-icon.png">
     <title>Munger Builder</title>
-</head>
-<body>
-<div id="task-id" name="task-id" class="hidden" value="{{ task_id }}"></div>
-<div id="download">Please wait. <span id="loading"></span></div>
 
-<script type="text/javascript" src="/static/jquery-2.1.4.min.js"></script>
-<script type="text/javascript" src="/static/poll_for_download.js"></script>
+    <link href="/static/bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/static/extra_css.css" rel="stylesheet" media="screen">
+    <link href="/static/pivot_table.css" rel="stylesheet" media="screen">
 
-</body>
+  </head>
+  <body>
+
+    {% include "nav_bar.html" %}
+
+    <div id="content" class='main-content'>
+
+        {% if messages %}
+          </br>
+          <ul class="messages">
+              {% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+              {% endfor %}
+          </ul>
+        {% else %}
+          </br>
+        {% endif %}
+
+        <p><a class=back-link href="{% url 'munger_tools' mb_id %}">< Munger Tools</a></p>
+
+        <div id="task-id" name="task-id" class="hidden" value="{{ task_id }}"></div>
+        <div id="download">Please wait. <span id="loading"></span></div>
+
+    </div>
+    <script src="/static/jquery-2.1.4.min.js"></script>
+    <script src="/static/interact.min.js"></script>
+    <script src="/static/jquery.cookie.js"></script>
+    <script src="/static/jquery.editable.min.js"></script>
+    <script src="/static/poll_for_download.js"></script>
+    {% block extra_js %}{% endblock %}
+  </body>
 </html>

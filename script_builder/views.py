@@ -8,7 +8,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 from django.conf import settings
+from random import randint
 
 
 from guardian.shortcuts import assign_perm, get_perms, get_objects_for_user
@@ -23,12 +25,23 @@ INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
 def munger_builder_index(request):
 
+    if request.user.id == None:
+        random_id = randint(0,1000000)
+        user = User.objects.create_user(username='anon_{0}'.format(random_id), password=random_id)
+        user.save()
+        anon_user = authenticate(username='anon_{0}'.format(random_id), password=random_id)
+        login(request, anon_user)
+
+    anon_check(request)
+
     munger_builder_list = get_objects_for_user(request.user, 'script_builder.change_mungerbuilder')
 
     context = {'munger_builder_list': munger_builder_list}
     return render(request, 'script_builder/munger_builder_index.html', context)
 
 def munger_tools(request, munger_builder_id):
+
+    anon_check(request)
 
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
@@ -43,10 +56,9 @@ def munger_tools(request, munger_builder_id):
 
 def munger_builder_setup(request, munger_builder_id=None):
 
-    if request.user.id:
-        max_munger_builders = 10
-    else:
-        max_munger_builders = 2
+    anon_check(request)
+
+    max_munger_builders = 5
 
     if munger_builder_id:
         mb = MungerBuilder.objects.get(pk=munger_builder_id)
@@ -80,6 +92,8 @@ def munger_builder_setup(request, munger_builder_id=None):
 
 def field_parser(request, munger_builder_id):
 
+    anon_check(request)
+
     if not has_mb_permission(munger_builder_id, request):
         return INDEX_REDIRECT
 
@@ -95,6 +109,7 @@ def field_parser(request, munger_builder_id):
         return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder_id))
 
     else:
+        messages.info(request, 'Paste in a list of comma or tab separated fields, or upload a csv with the desired columns')
         input_form = FieldParser()
         upload_form = UploadFileForm()
 
@@ -102,6 +117,9 @@ def field_parser(request, munger_builder_id):
     return render(request, 'script_builder/field_parser.html', context)
 
 def pivot_builder(request, munger_builder_id):
+
+    anon_check(request)
+
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
     if not has_mb_permission(mb, request):
@@ -115,9 +133,10 @@ def pivot_builder(request, munger_builder_id):
 def download_munger(request, munger_builder_id):
     task = tasks.download_munger_async.delay(munger_builder_id)
     return render_to_response('script_builder/poll_for_download.html',
-                              {'task_id': task.id })
+                              {'task_id': task.id, 'mb_id': munger_builder_id})
 
 def poll_for_download(request):
+
     task_id = request.GET.get("task_id")
     filename = request.GET.get("filename")
 
@@ -194,3 +213,7 @@ def clear_field_data(munger_builder_id):
     for field in MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all():
         field.field_types.clear()
         field.save()
+
+def anon_check(request):
+    if 'anon_' in request.user.username:
+        messages.warning(request, 'You are logged in as an anymous user. You may not be able to transfer any mungers to a permanent account in the future. Register to save mungers.')

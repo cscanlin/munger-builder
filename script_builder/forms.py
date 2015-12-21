@@ -28,12 +28,15 @@ class SetupForm(ModelForm):
         InlineField('munger_name'),
         Fieldset(
             'Input/Output',
+            HTML('<p>Input a full file path, or just the name of the file if you will run the script from the same directory as the source data</p>'),
             InlineField('input_path'),
+            HTML('<p>If no path is entered a default path will be chosen based off the input path</p>'),
             InlineField('output_path'),
             # css_class = 'collapse',
         ),
         Fieldset(
             'Pre-Processing',
+            HTML('<p>You can remove rows from the top and/or bottom of your data before pivoting in case of extra headers or summary rows</p>'),
             InlineField('rows_to_delete_top'),
             InlineField('rows_to_delete_bottom'),
             # css_class = 'collapse',

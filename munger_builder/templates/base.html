@@ -1,10 +1,13 @@
 {% load staticfiles %}
+{% load i18n %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ STATIC_URL }}home-icon.png">
     <title>Munger Builder</title>
-
-    <!-- Bootstrap -->
 
     <link href="{{ STATIC_URL }}bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="{{ STATIC_URL }}extra_css.css" rel="stylesheet" media="screen">
@@ -12,20 +15,14 @@
 
   </head>
   <body>
-    <!-- <div class="navbar-header navbar"></div> -->
-    <div class=user-session-info>
-      {{ user }}
-      {% if user.is_anonymous %}
-      <a href="{% url 'django.contrib.auth.views.login' %}">login</a>
-      {% else %}
-      <a href="{% url 'django.contrib.auth.views.logout' %}">logout</a>
-      {% endif %}
-    </div>
+
+    {% include "nav_bar.html" %}
+
 
     <div id="content" class='main-content'>
-        {% block back_link %}{% endblock %}
 
         {% if messages %}
+          </br>
           <ul class="messages">
               {% for message in messages %}
               <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
@@ -34,6 +31,8 @@
         {% else %}
           </br>
         {% endif %}
+
+        {% block back_link %}{% endblock %}
 
         {% block content %}{% endblock %}
     </div>

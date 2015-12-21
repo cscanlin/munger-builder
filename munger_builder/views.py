@@ -5,10 +5,11 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .forms import UserForm
+from .forms import UserRegistrationForm
 
 def home_page(request):
-    return HttpResponseRedirect('/script_builder/munger_builder_index/')
+    return render_to_response('home.html', RequestContext(request))
+    # return HttpResponseRedirect('/script_builder/munger_builder_index/')
 
 @login_required
 def app_index(request):
@@ -22,7 +23,7 @@ def register(request):
 
     if request.method == 'POST':
 
-        user_form = UserForm(data=request.POST)
+        user_form = UserRegistrationForm(data=request.POST)
 
         # If the two forms are valid...
         if user_form.is_valid():
@@ -46,7 +47,7 @@ def register(request):
     # Not a HTTP POST, so we render our form using two ModelForm instances.
     # These forms will be blank, ready for user input.
     else:
-        user_form = UserForm()
+        user_form = UserRegistrationForm()
 
     # Render the template depending on the context.
     return render_to_response(
