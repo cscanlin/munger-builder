@@ -152,6 +152,9 @@ def pivot_builder(request, munger_builder_id):
     return render(request, 'script_builder/pivot_builder.html', context)
 
 def download_munger(request, munger_builder_id):
+
+    print MungerBuilder.objects.get(pk=munger_builder_id).__dict__.items()
+
     task = tasks.download_munger_async.delay(munger_builder_id)
     return render_to_response('script_builder/poll_for_download.html',
                               {'task_id': task.id, 'mb_id': munger_builder_id})

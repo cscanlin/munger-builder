@@ -13,8 +13,8 @@ class MungerBuilder(models.Model):
 
     munger_name = models.CharField(max_length=200)
 
-    input_path = models.CharField(max_length=999, null=True, blank=True)
-    output_path = models.CharField(max_length=999, null=True, blank=True)
+    input_path = models.CharField(max_length=999, default='', blank=True)
+    output_path = models.CharField(max_length=999, default='', blank=True)
 
     rows_to_delete_top = models.IntegerField(null=True, blank=True)
     rows_to_delete_bottom = models.IntegerField(null=True, blank=True)
