@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+  <!-- Main jumbotron for a primary marketing message or call to action -->
+  <div class="jumbotron bootstap-main-modify">
+    <div class="container">
+      <h1>Munger Builder</h1>
+      <p>Generate custom scripts for data manipulation with Python + Pandas, using a drag and drop GUI.</p>
+      <p><a class="btn btn-primary btn-lg" href="/script_builder" role="button">Get Started &raquo;</a></p>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Fast & Easy</h2>
+        <p>Quickly build useful Python scripts for data manipulation with an easy to use, drag and drop GUI. No coding experience required!</p>
+      </div>
+      <div class="col-md-4">
+        <h2>Working Code</h2>
+        <p>Generate code that works as soon as it's downloaded, with only two common third party libraries required. (Pandas and Numpy, available out of the box with the <a href="https://www.continuum.io/downloads"> Anaconda </a>distribution)</p>
+     </div>
+      <div class="col-md-4">
+        <h2>Infinitely Extendable</h2>
+        <p>Using the Pandas library, you can easily extend your code to meet any of your needs. Also, it's Python so the possibilities are endless!</p>
+      </div>
+    </div>
+
+    <hr>
+
+    <footer>
+      <p>&copy; 2015 Company, Inc.</p>
+    </footer>
+  </div>
+{% endblock content %}
