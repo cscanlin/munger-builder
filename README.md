@@ -32,9 +32,10 @@ You run it! (And try to fix any errors that you may encounter with some creative
 #### What's Next?
 I plan on continuing to add functionality, but I'm not quite sure what direction to take next. Goals include:
 
- - Real Pivot Functionality (easy functionality, hard ui)
- - Filters and Sorting on Data (easy functionality, hard ui)
- - Custom Aggregate Functions (relatively easy)
+ - Real Pivot Functionality
+ - Filters and Sorting on Data
+ - Custom Aggregate Functions
+ - Wildcard File Matching
  - Support for the [Agate](https://agate.readthedocs.org/en/1.1.0/ "Agate") Data Analysis Library (Very cool and easy, but not as big of a knowledge-base)
  - A way to run Mungers directly in browser (already doable as an admin, but security concerns...)
  - Better options for more customizability (headers, summary, column order, etc.)

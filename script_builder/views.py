@@ -44,16 +44,30 @@ def munger_builder_index(request):
 
 def add_sample_munger(user):
 
-    mb = MungerBuilder.objects.create(munger_name='Sample for {0}'.format(user.username))
+    mb = MungerBuilder.objects.create(munger_name='Sample for {0}'.format(user.username), input_path='test_data.csv')
     mb.save()
 
     assign_perm('add_mungerbuilder', user, mb)
     assign_perm('change_mungerbuilder', user, mb)
     assign_perm('delete_mungerbuilder', user, mb)
 
-    for field_name in ['order_num','product','sales_name','region','revenue','shipping']:
-        field = DataField.objects.create(munger_builder=mb, current_name=field_name)
-        field.save()
+    sample_field_dict = {
+        'order_num': ['count'],
+        'product': [None],
+        'sales_name': ['index'],
+        'region': ['count'],
+        'revenue': ['mean', 'sum'],
+        'shipping': ['median'],
+    }
+
+    for field_name, field_types in sample_field_dict.items():
+        data_field = DataField.objects.create(munger_builder=mb, current_name=field_name)
+        data_field.save()
+        if field_types != [None]:
+            for type_name in field_types:
+                field_type = FieldType.objects.get(type_name=type_name)
+                data_field.field_types.add(field_type)
+            data_field.save()
 
     return get_objects_for_user(user, 'script_builder.change_mungerbuilder')
 
