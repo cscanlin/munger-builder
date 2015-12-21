@@ -197,13 +197,17 @@ AUTHENTICATION_BACKENDS = (
     'guardian.backends.ObjectPermissionBackend',
 )
 
+MIDDLEWARE_CLASSES = (
+    middleware_list
+)
+
 if os.getenv('DJANGO_CONFIGURATION') == 'Prod':
     DEBUG = False
     DATABASES = {'default': dj_database_url.config()}
-    MIDDLEWARE_CLASSES = (
-        ['sslify.middleware.SSLifyMiddleware'] + middleware_list
-    )
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    # MIDDLEWARE_CLASSES = (
+    #     ['sslify.middleware.SSLifyMiddleware'] + middleware_list
+    # )
+    # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 else:
     DEBUG = True
@@ -213,8 +217,8 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
-    MIDDLEWARE_CLASSES = (
-        middleware_list
-    )
+    # MIDDLEWARE_CLASSES = (
+    #     middleware_list
+    # )
 
     STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'

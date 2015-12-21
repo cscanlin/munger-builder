@@ -30,13 +30,32 @@ def munger_builder_index(request):
         user.save()
         anon_user = authenticate(username='anon_{0}'.format(random_id), password=random_id)
         login(request, anon_user)
+    else:
+        user = request.user
 
     anon_check(request)
 
-    munger_builder_list = get_objects_for_user(request.user, 'script_builder.change_mungerbuilder')
+    munger_builder_list = get_objects_for_user(user, 'script_builder.change_mungerbuilder')
+    if len(munger_builder_list) == 0:
+        munger_builder_list = add_sample_munger(user)
 
     context = {'munger_builder_list': munger_builder_list}
     return render(request, 'script_builder/munger_builder_index.html', context)
+
+def add_sample_munger(user):
+
+    mb = MungerBuilder.objects.create(munger_name='Sample for {0}'.format(user.username))
+    mb.save()
+
+    assign_perm('add_mungerbuilder', user, mb)
+    assign_perm('change_mungerbuilder', user, mb)
+    assign_perm('delete_mungerbuilder', user, mb)
+
+    for field_name in ['order_num','product','sales_name','region','revenue','shipping']:
+        field = DataField.objects.create(munger_builder=mb, current_name=field_name)
+        field.save()
+
+    return get_objects_for_user(user, 'script_builder.change_mungerbuilder')
 
 def munger_tools(request, munger_builder_id):
 
@@ -83,10 +102,10 @@ def munger_builder_setup(request, munger_builder_id=None):
 
         return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(mb.id))
 
-    form = SetupForm(instance=mb)
-
-    context = {'form': form, 'formset': form, 'mb': mb}
-    return render(request, 'script_builder/munger_builder_setup.html', context)
+    else:
+        form = SetupForm(instance=mb)
+        context = {'form': form, 'formset': form, 'mb': mb}
+        return render(request, 'script_builder/munger_builder_setup.html', context)
 
 
 def field_parser(request, munger_builder_id):
@@ -228,4 +247,4 @@ def field_delete(request, field_id):
 
 def anon_check(request):
     if 'anon_' in request.user.username:
-        messages.warning(request, 'You are logged in as an anymous user. You may not be able to transfer any mungers to a permanent account in the future. Register to save mungers.')
+        messages.warning(request, 'You are logged in as an anonymous user. You may not be able to transfer any mungers to a permanent account in the future. Register to save mungers.')

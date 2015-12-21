@@ -38,6 +38,6 @@ I plan on continuing to add functionality, but I'm not quite sure what direction
  - Better options for more customizability (headers, summary, column order, etc.)
  - More examples of extensibility (web scraping, more pandas stuff)
 
- There's also some other relatively simple python tasks I'm thinking of making similar tools for, like web scraping and maybe some sort of loop/conditional builder? Ideally they could all work together to make something really useful for people starting to learn Python.
+ There's also some other relatively simple python tasks I'm thinking of making similar tools for, like web scraping, xml parsing, and maybe some sort of loop/conditional builder? Ideally they could all work together to make something really useful for people starting to learn Python.
 
  If you have a feature request, or are interested in the other tools, feel free to let me know. Contributions are welcome as well (especially from any front end developers...)
