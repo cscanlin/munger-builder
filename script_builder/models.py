@@ -23,7 +23,7 @@ class MungerBuilder(models.Model):
         return [field.current_name for field in self.data_fields.all() if field.is_index()]
 
     def agg_fields(self):
-        return {field.current_name: field.agg_types() for field in self.data_fields.all() if field.agg_types()}
+        return {field.current_name: ', '.join(field.agg_types()) for field in self.data_fields.all() if field.agg_types()}
 
     def get_output_path(self):
         if not self.output_path:
@@ -35,16 +35,7 @@ class MungerBuilder(models.Model):
 
 class FieldType(models.Model):
     type_name = models.CharField(max_length=200)
-
-    def type_func(self):
-        func_dict = {
-            'index': 'index',
-            'count': len,
-            'sum': np.sum,
-            'mean': np.mean,
-            'median': np.median,
-        }
-        return func_dict[self.type_name]
+    type_function = models.CharField(max_length=200)
 
     def __unicode__(self):
         return str(self.type_name).capitalize()
@@ -76,7 +67,7 @@ class DataField(models.Model):
             return False
 
     def agg_types(self):
-        return [ft.type_name for ft in self.field_types.all() if ft.type_name != 'index']
+        return [ft.type_function for ft in self.field_types.all() if ft.type_name != 'index']
 
     #path to list
     # if not contains . then append csv

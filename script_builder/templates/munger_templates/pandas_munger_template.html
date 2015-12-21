@@ -27,7 +27,7 @@ pivot_output = pd.pivot_table(
     index={{ index_fields }},
     values={{ agg_field_names }},
     aggfunc={ {% for key, value in aggfunc_dict.iteritems() %}
-        '{{ key }}': {{ value }},{% endfor %}
+        '{{ key }}': [{{ value }}],{% endfor %}
     },
 )
 

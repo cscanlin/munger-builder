@@ -20,7 +20,6 @@ def run_munger(munger_builder_id=1):
 @shared_task
 def download_munger_async(munger_builder_id=1):
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
-    print mb
     script_string = scripts.build_munger.main(munger_builder_id)
     file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}.py'.format(mb.munger_name))
 

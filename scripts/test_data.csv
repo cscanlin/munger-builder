@@ -1,4 +1,3 @@
-extra_heaer
 order_num,product,sales_name,region,revenue,shipping
 a001,foo,chris,west,200,40
 a002,foo,laura,west,200,40
