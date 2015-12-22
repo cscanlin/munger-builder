@@ -24,17 +24,11 @@ def main(munger_builder_id=1):
 
     jinja_env = Environment(loader=PackageLoader('script_builder', 'templates/munger_templates'))
 
-    jinja_template = jinja_env.get_template('pandas_munger_template.html')
+    jinja_template = jinja_env.get_template('pandas_munger_template_basic.html')
 
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
-    script_string = jinja_template.render(
-        input_path=mb.input_path,
-        index_fields=mb.index_fields(),
-        agg_field_names=mb.agg_fields().keys(),
-        aggfunc_dict=mb.agg_fields(),
-        output_path=mb.get_output_path(),
-    )
+    script_string = jinja_template.render(mb=mb)
 
     with open('media/user_munger_scripts/{0}.py'.format(mb.munger_name), 'wb+') as mf:
         mf.write(script_string+'\n')

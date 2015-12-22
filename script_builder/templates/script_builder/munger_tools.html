@@ -12,8 +12,10 @@
     <h3><a href="{% url 'munger_builder_setup' mb.id %}" id='setup-{{ mb.id }}' name="run" type="submit" >Setup</a></h3>
     <h3><a href="{% url 'field_parser' mb.id %}" id='add-{{ mb.id }}' name="add" type="submit" >Add Fields</a></h3>
     <h3><a href="{% url 'pivot_builder' mb.id %}" id='pivot-{{ mb.id }}' name="pivot" type="submit" >Pivot Builder</a></h3>
-    <!-- <h3><a href="{% url 'build_munger_output' mb.id %}" id='build-{{ mb.id }}' name="build" type="submit" >Build Munger!</a></h3> -->
     <h3><a href="{% url 'download_munger' mb.id %}" id='build-{{ mb.id }}' name="build" type="submit" >Download Munger!</a></h3>
     <li><h4><a href="{% url 'download_test_data' mb.id %}" id='build-{{ mb.id }}' name="download_test" type="submit" >Download Test Data for Sample Munger</a></h4></li>
-
+    {% if request.user.is_superuser %}
+        <h3><a href="{% url 'build_munger_output' mb.id %}" id='build-{{ mb.id }}' name="build" type="submit" >Build Munger!</a></h3>
+        <h3><a href="{% url 'run_munger_output' mb.id %}" id='run-{{ mb.id }}' name="build" type="submit" >Run Munger!</a></h3>
+    {% endif %}
 {% endblock content %}

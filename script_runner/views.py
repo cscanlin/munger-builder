@@ -10,6 +10,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.http import StreamingHttpResponse
 
+from pygments import highlight
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
+
 import scripts.run_munger
 import scripts.build_munger
 
@@ -37,7 +41,8 @@ def run_munger_output(request, munger_builder_id):
 @user_passes_test(lambda u: u.is_superuser)
 def build_munger_output(request, munger_builder_id):
     script_string = scripts.build_munger.main(munger_builder_id)
-    context = {'script_string': script_string}
+    highlighted = highlight(script_string, PythonLexer(), HtmlFormatter(cssclass="highlight"))
+    context = {'script_string': highlighted}
     return render(request, 'script_runner/build_munger_output.html', context)
 
 def content_generator(script_main):

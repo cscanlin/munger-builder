@@ -8,5 +8,5 @@
 {% endblock %}
 
 {% block content %}
-<pre>{{ script_string }}</pre>
+{{ script_string|safe }}
 {% endblock content %}

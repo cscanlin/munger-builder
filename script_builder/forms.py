@@ -30,7 +30,7 @@ class SetupForm(ModelForm):
             'Input/Output',
             HTML('<p>Input a full file path, or just the name of the file if you will run the script from the same directory as the source data</p>'),
             InlineField('input_path'),
-            HTML('<p>If no path is entered a default path will be chosen based off the input path</p>'),
+            HTML('<p>If no path is entered, the output will be the same file as the script is located in.</p>'),
             InlineField('output_path'),
             # css_class = 'collapse',
         ),

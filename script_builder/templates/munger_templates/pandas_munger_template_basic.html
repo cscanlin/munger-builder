@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+
+import os
+
+{% if mb.input_path %}
+input_file = os.path.abspath(r'{{ mb.input_path }}')
+{% else %}
+input_file = 'ADD INPUT FILE PATH HERE'
+{% endif %}
+{% if mb.rows_to_delete_top and mb.rows_to_delete_top != 0 %}
+lines = open(input_file).readlines()
+lines_top_removed = lines[{{ mb.rows_to_delete_top }}:]
+df = pd.read_csv(StringIO(''.join(lines_top_removed)))
+{% else %}
+df = pd.read_csv(input_file)
+{% endif %}
+{% if mb.rows_to_delete_bottom and mb.rows_to_delete_bottom != 0 %}
+df = df.drop(df.index[-{{ mb.rows_to_delete_bottom }}:])
+{% endif %}
+pivot_output = pd.pivot_table(
+    df,
+    index={{ mb.index_fields }},
+    values={{ mb.agg_fields.keys() }},
+    aggfunc={ {% for key, value in mb.agg_fields.iteritems() %}
+        '{{ key }}': [{{ value }}],{% endfor %}
+    },
+)
+
+pivot_output.to_csv(os.path.abspath(r'{{ mb.get_output_path }}'))

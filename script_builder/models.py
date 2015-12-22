@@ -19,12 +19,15 @@ class MungerBuilder(models.Model):
     rows_to_delete_top = models.IntegerField(null=True, blank=True)
     rows_to_delete_bottom = models.IntegerField(null=True, blank=True)
 
+    @property
     def index_fields(self):
         return [field.current_name for field in self.data_fields.all() if field.is_index()]
 
+    @property
     def agg_fields(self):
         return {field.current_name: ', '.join(field.agg_types()) for field in self.data_fields.all() if field.agg_types()}
 
+    @property
     def get_output_path(self):
         if not self.output_path:
             input_dir = os.path.dirname(self.input_path)
