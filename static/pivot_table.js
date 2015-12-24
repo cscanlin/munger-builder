@@ -168,29 +168,33 @@ $.ajaxSetup({
 });
 
 $('#save-pivot-fields').click(function() {
-    var active_fields = new Array();
-    $('.draggable').each(function() {
-      if ($(this).attr('type') != 'None') {
-        var field_text = $(this).find('span.name-text').text().trim()
-        active_fields.push({field_id: $(this).attr('field-id'), type: $(this).attr('type'), new_name: field_text});
-      }
-    });
-
-    var mb_id = $('#mb-id').attr('value');
-
-
-    $.ajax({
-        method: 'POST',
-        url: '/script_builder/save_pivot_fields/' + mb_id,
-        data: {'active_fields': JSON.stringify(active_fields)},
-        success: function (data) {
-            window.location='/script_builder/pivot_builder/' + mb_id
-        },
-        // error: function (data) {
-        //      alert("it didnt work");
-        // }
-    });
+  savePivotFields()
 });
+
+function savePivotFields() {
+  var active_fields = new Array();
+  $('.draggable').each(function() {
+    if ($(this).attr('type') != 'None') {
+      var field_text = $(this).find('span.name-text').text().trim()
+      active_fields.push({field_id: $(this).attr('field-id'), type: $(this).attr('type'), new_name: field_text});
+    }
+  });
+
+  var mb_id = $('#mb-id').attr('value');
+
+
+  $.ajax({
+      method: 'POST',
+      url: '/script_builder/save_pivot_fields/' + mb_id,
+      data: {'active_fields': JSON.stringify(active_fields)},
+      success: function (data) {
+          window.location='/script_builder/pivot_builder/' + mb_id
+      },
+      // error: function (data) {
+      //      alert("it didnt work");
+      // }
+  });
+}
 
 $('#add-pivot-field').click(function() {
 
@@ -289,9 +293,14 @@ function toggleInteractClasses(draggable, dropzone) {
   draggable.toggleClass('tap-' + draggable.attr('type'));
 }
 
+function setColumnDropzoneSize() {
+  $('#column-dropzone').width(Math.floor((window.innerWidth/230)-1)*215)
+}
+
 $( document ).ready(function() {
   add_edit_buttons()
   setRowIndex()
+  setColumnDropzoneSize()
   var none_offset = -200
   $('.draggable').each(function() {
     var draggable = $(this)
@@ -325,4 +334,5 @@ $( document ).ready(function() {
 
 $( window ).resize(function() {
   setRowIndex();
+  setColumnDropzoneSize()
 });

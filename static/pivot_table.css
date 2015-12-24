@@ -14,6 +14,10 @@
 .main-pivot-wrapper {
   min-width: 700px;
 }
+.save-pivot-button {
+  margin-left: 10px;
+  margin-top: -10px;
+}
 
 .field-source-bank {
   display: inline;
@@ -30,16 +34,14 @@
   height: 105px;
 }
 .index-dropzone-container {
-  display: inline;
+  float: left;
 }
 
 .agg-dropzone-container {
-  display: inline;
   min-width: 460px;
 }
 
 .column-dropzone {
-  width: 91%;
   min-width: 442px;
   height: 100px;
 }
