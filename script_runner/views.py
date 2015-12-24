@@ -1,7 +1,5 @@
 from __future__ import absolute_import
 import time
-import subprocess
-PIPE = subprocess.PIPE
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -17,6 +15,7 @@ from pygments.formatters import HtmlFormatter
 import scripts.run_munger
 import scripts.build_munger
 
+from script_builder.views import has_mb_permission
 from script_builder.models import MungerBuilder
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -38,11 +37,14 @@ def run_munger_output(request, munger_builder_id):
         content_generator(scripts.run_munger.main(munger_builder_id))
     )
 
-@user_passes_test(lambda u: u.is_superuser)
 def build_munger_output(request, munger_builder_id):
+
+    if not has_mb_permission(munger_builder_id, request):
+        return INDEX_REDIRECT
+
     script_string = scripts.build_munger.main(munger_builder_id)
-    highlighted = highlight(script_string, PythonLexer(), HtmlFormatter(cssclass="highlight"))
-    context = {'script_string': highlighted}
+    highlighted = highlight(script_string, PythonLexer(), HtmlFormatter())
+    context = {'script_string': highlighted, 'mb_id': munger_builder_id,}
     return render(request, 'script_runner/build_munger_output.html', context)
 
 def content_generator(script_main):

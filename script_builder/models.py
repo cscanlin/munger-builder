@@ -21,7 +21,11 @@ class MungerBuilder(models.Model):
 
     @property
     def index_fields(self):
-        return [field.current_name for field in self.data_fields.all() if field.is_index()]
+        return [field.current_name for field in self.data_fields.all() if field.has_field_type('index')]
+
+    @property
+    def column_fields(self):
+        return [field.current_name for field in self.data_fields.all() if field.has_field_type('column')]
 
     @property
     def agg_fields(self):
@@ -62,15 +66,15 @@ class DataField(models.Model):
         else:
             return self.current_name
 
-    def is_index(self):
+    def has_field_type(self, field_type_name):
         for field_type in self.field_types.all():
-            if field_type.type_name == 'index':
+            if field_type.type_name == field_type_name:
                 return True
         else:
             return False
 
     def agg_types(self):
-        return [ft.type_function for ft in self.field_types.all() if ft.type_name != 'index']
+        return [ft.type_function for ft in self.field_types.all() if ft.type_name not in ['index','column']]
 
     #path to list
     # if not contains . then append csv

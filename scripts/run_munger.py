@@ -44,6 +44,7 @@ def main(munger_builder_id=1):
         pivot_output = pd.pivot_table(
             df,
             index=mb.index_fields,
+            columns=mb.column_fields,
             values=mb.agg_fields.keys(),
             aggfunc=eval_agg_field_dict,
         )

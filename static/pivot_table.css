@@ -16,6 +16,25 @@
   transition: background-color 0.3s;
 }
 
+.field-source-bank {
+  display: inline;
+}
+
+.add-field-button-container {
+  display: inline-block;
+}
+
+.column-dropzone-container {
+  margin-left: 225px;
+  height: 105px;
+}
+
+.column-dropzone {
+  width: 91%;
+  min-width: 218px;
+  height: 100px;
+}
+
 .drop-active {
   border-color: #aaa;
 }
@@ -91,11 +110,20 @@ span.agg-text:first-letter {
 
 .small-image-button {
   display: inline;
-  padding-top: 2px;
-  padding-right: 2px;
+  margin-top: 2px;
+  margin-right: 2px;
   width:15px;
   height:15px;
   float:right;
+}
+
+.delete-field-button {
+  display: inline;
+  margin-top: 6px;
+  margin-left: 2px;
+  width:15px;
+  height:15px;
+  float:left;
 }
 
 .editable {

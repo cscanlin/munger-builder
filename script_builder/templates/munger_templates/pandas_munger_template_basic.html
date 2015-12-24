@@ -21,6 +21,7 @@ df = df.drop(df.index[-{{ mb.rows_to_delete_bottom }}:])
 pivot_output = pd.pivot_table(
     df,
     index={{ mb.index_fields }},
+    columns={{ mb.column_fields }},
     values={{ mb.agg_fields.keys() }},
     aggfunc={ {% for key, value in mb.agg_fields.iteritems() %}
         '{{ key }}': [{{ value }}],{% endfor %}

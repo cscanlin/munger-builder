@@ -161,8 +161,8 @@ def pivot_builder(request, munger_builder_id):
         return INDEX_REDIRECT
 
     fields = mb.data_fields.all()
-    field_types = [ft.type_name for ft in FieldType.objects.all()]
-    context = {'mb': mb, 'fields': fields, 'field_types': field_types}
+    field_type_names = [ft.type_name for ft in FieldType.objects.all()]
+    context = {'mb': mb, 'fields': fields, 'field_type_names': field_type_names}
     return render(request, 'script_builder/pivot_builder.html', context)
 
 def download_munger(request, munger_builder_id):
@@ -171,7 +171,7 @@ def download_munger(request, munger_builder_id):
                               {'task_id': task.id, 'mb_id': munger_builder_id})
 
 def download_test_data(request, munger_builder_id):
-    task = tasks.download_test_data_async.delay()
+    task = tasks.download_test_data_async.delay(munger_builder_id)
     return render_to_response('script_builder/poll_for_download.html',
                               {'task_id': task.id, 'mb_id': munger_builder_id})
 
@@ -253,6 +253,24 @@ def save_pivot_fields(request, munger_builder_id):
             field_object.save()
 
     messages.success(request, 'Pivot Fields Saved Successfully')
+    return HttpResponse("OK")
+
+def add_pivot_field(request, munger_builder_id):
+    if request.is_ajax():
+
+        num_new_fields = len(DataField.objects.filter(current_name__startswith='New Field'))
+        if num_new_fields > 0:
+            new_field_name = 'New Field {0}'.format(num_new_fields+1)
+        else:
+            new_field_name = 'New Field'
+
+        field_object = DataField(
+            munger_builder = MungerBuilder.objects.get(pk=munger_builder_id),
+            current_name = new_field_name,
+        )
+        field_object.save()
+
+    messages.success(request, 'Field Added Successfully')
     return HttpResponse("OK")
 
 def clear_field_data(munger_builder_id):

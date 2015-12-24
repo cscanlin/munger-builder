@@ -192,10 +192,38 @@ $('#save-pivot-fields').click(function() {
     });
 });
 
+$('#add-pivot-field').click(function() {
+
+    var mb_id = $('#mb-id').attr('value');
+
+    $.ajax({
+        method: 'POST',
+        url: '/script_builder/add_pivot_field/' + mb_id,
+        success: function (data) {
+            window.location='/script_builder/pivot_builder/' + mb_id
+        },
+    });
+});
+
+$('.delete-field-button').click(function() {
+
+    var mb_id = $('#mb-id').attr('value');
+    var field_id = this.id.split('-')[2]
+    console.log(field_id);
+
+    $.ajax({
+        method: 'POST',
+        url: '/script_builder/field_parser/' + field_id + '/delete',
+        success: function () {
+            window.location='/script_builder/pivot_builder/' + mb_id
+        },
+    });
+});
+
 function add_edit_buttons() {
   $('.draggable').each(function() {
     id_number = this.id.split('-')[1]
-    var option = {trigger : $("input.btn-"+id_number), action : "click"};
+    var option = {trigger : $("input.edit-btn-"+id_number), action : "click"};
     $('#source-text-'+id_number).editable(option, function(s){
       field_id = s.target.attr('field-id')
       new_text = s.value
@@ -228,19 +256,29 @@ function setRowIndex() {
       if ($(this).attr('type') == field_type) {
         $(this).attr('row_index', count_array[field_type])
         count_array[field_types[i]] ++
-
-        moveDraggable($(this), dropzone)
+        var num_of_col_fields = Math.max(count_array['column'])
+        moveDraggable($(this), dropzone, num_of_col_fields)
 
       };
     }
   });
 }
 
-function moveDraggable(draggable, dropzone) {
+function moveDraggable(draggable, dropzone, num_of_col_fields) {
+  var x_offset = dropzone.position().left
   var y_offset = dropzone.position().top - $('#active-fields').position().top + 45
-  draggable.attr('data-x', dropzone.position().left);
-  console.log(dropzone.position().top);
-  draggable.attr('data-y', y_offset + (draggable.attr('row_index'))*40)
+  if (dropzone.attr('id') == 'column-dropzone') {
+  //   if (num_of_col_fields * 200 > dropzone.width()) {
+  //     dropzone.height(200)
+  //     $('#column-dropzone-container').height(200)
+  //     console.log(dropzone.width() / num_of_col_fields);
+  //   }
+    draggable.attr('data-x', x_offset + (draggable.attr('row_index'))*210);
+    draggable.attr('data-y', y_offset)
+  } else {
+    draggable.attr('data-x', dropzone.position().left);
+    draggable.attr('data-y', y_offset + (draggable.attr('row_index'))*40)
+  }
   var translate_string = 'translate(' + draggable.attr('data-x') + 'px, ' + draggable.attr('data-y') + 'px)'
   draggable.css('webkitTransform',"")
   draggable.css('transform', translate_string);
