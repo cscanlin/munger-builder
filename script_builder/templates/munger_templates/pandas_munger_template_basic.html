@@ -8,6 +8,7 @@ input_file = os.path.abspath(r'{{ mb.input_path }}')
 {% else %}
 input_file = 'ADD INPUT FILE PATH HERE'
 {% endif %}
+
 {% if mb.rows_to_delete_top and mb.rows_to_delete_top != 0 %}
 lines = open(input_file).readlines()
 lines_top_removed = lines[{{ mb.rows_to_delete_top }}:]
@@ -15,16 +16,24 @@ df = pd.read_csv(StringIO(''.join(lines_top_removed)))
 {% else %}
 df = pd.read_csv(input_file)
 {% endif %}
+
 {% if mb.rows_to_delete_bottom and mb.rows_to_delete_bottom != 0 %}
 df = df.drop(df.index[-{{ mb.rows_to_delete_bottom }}:])
 {% endif %}
+
+{% if mb.rename_field_dict %}
+df = df.rename(columns={{ mb.rename_field_dict }})
+{% endif %}
+
 pivot_output = pd.pivot_table(
     df,
     index={{ mb.index_fields }},
     columns={{ mb.column_fields }},
     values={{ mb.agg_fields.keys() }},
-    aggfunc={ {% for key, value in mb.agg_fields.iteritems() %}
-        '{{ key }}': [{{ value }}],{% endfor %}
+    aggfunc={
+      {% for key, value in mb.agg_fields.iteritems() %}
+        '{{ key }}': [{{ value }}],
+      {% endfor %}
     },
 )
 

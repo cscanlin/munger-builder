@@ -1,19 +1,18 @@
 /*interact*/
 
-#index-dropzone {
-  background-color: #b7b7b7;
-}
-
 .dropzone {
   background-color: #ccc;
   border: dashed 4px transparent;
   border-radius: 4px;
-  margin: 10px auto 30px;
+  margin: 5px auto 0px;
   padding: 10px;
   width: 220px;
   height: 200px;
   display: inline-block;
   transition: background-color 0.3s;
+}
+.main-pivot-wrapper {
+  min-width: 700px;
 }
 
 .field-source-bank {
@@ -26,13 +25,27 @@
 
 .column-dropzone-container {
   margin-left: 225px;
+  margin-top: 5px;
+  min-width: 442px;
   height: 105px;
+}
+.index-dropzone-container {
+  display: inline;
+}
+
+.agg-dropzone-container {
+  display: inline;
+  min-width: 460px;
 }
 
 .column-dropzone {
   width: 91%;
-  min-width: 218px;
+  min-width: 442px;
   height: 100px;
+}
+.index-dropzone {
+  height:405px;
+  background-color: #b7b7b7;
 }
 
 .drop-active {
@@ -79,7 +92,7 @@
   color: #000;
 }
 .tap-target.tap-index {
-  background-color: #4e4;
+  background-color: #00FF44;
 }
 .tap-target.tap-sum {
   background-color: #008000;
@@ -92,6 +105,9 @@
 }
 .tap-target.tap-median {
   background-color: #c06000;
+}
+.tap-target.tap-column {
+  background-color: #00CCFF;
 }
 
 /*Edit Button Transforms*/

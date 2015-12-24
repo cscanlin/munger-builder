@@ -42,6 +42,15 @@ def munger_builder_index(request):
     context = {'munger_builder_list': munger_builder_list}
     return render(request, 'script_builder/munger_builder_index.html', context)
 
+def delete_munger(request, munger_builder_id):
+    mb = get_object_or_404(MungerBuilder, pk=munger_builder_id)
+    if not request.user.has_perm('script_builder.change_mungerbuilder', mb):
+        return INDEX_REDIRECT
+
+    mb.delete()
+    messages.success(request, '{0} Deleted Successfully'.format(mb.munger_name))
+    return HttpResponseRedirect('/script_builder/munger_builder_index/')
+
 def add_sample_munger(user):
 
     mb = MungerBuilder.objects.create(munger_name='Sample for {0}'.format(user.username), input_path='test_data.csv')
@@ -55,7 +64,7 @@ def add_sample_munger(user):
         'order_num': ['count'],
         'product': [None],
         'sales_name': ['index'],
-        'region': ['count'],
+        'region': ['column'],
         'revenue': ['mean', 'sum'],
         'shipping': ['median'],
     }

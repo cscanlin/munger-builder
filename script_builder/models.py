@@ -21,15 +21,19 @@ class MungerBuilder(models.Model):
 
     @property
     def index_fields(self):
-        return [field.current_name for field in self.data_fields.all() if field.has_field_type('index')]
+        return [field.active_name for field in self.data_fields.all() if field.has_field_type('index')]
 
     @property
     def column_fields(self):
-        return [field.current_name for field in self.data_fields.all() if field.has_field_type('column')]
+        return [field.active_name for field in self.data_fields.all() if field.has_field_type('column')]
 
     @property
     def agg_fields(self):
-        return {field.current_name: ', '.join(field.agg_types()) for field in self.data_fields.all() if field.agg_types()}
+        return {field.active_name: ', '.join(field.agg_types) for field in self.data_fields.all() if field.agg_types}
+
+    @property
+    def rename_field_dict(self):
+        return {field.current_name: field.new_name for field in self.data_fields.all() if field.new_name and field.new_name != field.current_name}
 
     @property
     def get_output_path(self):
@@ -55,16 +59,18 @@ class DataField(models.Model):
     field_types = models.ManyToManyField(FieldType, blank=True, related_name='field_types', related_query_name='field_types')
 
     def __unicode__(self):
+        return self.active_name
+
+    @property
+    def active_name(self):
         if self.new_name:
             return str(self.new_name)
         else:
             return str(self.current_name)
 
-    def active_name(self):
-        if self.new_name:
-            return self.new_name
-        else:
-            return self.current_name
+    @property
+    def agg_types(self):
+        return [ft.type_function for ft in self.field_types.all() if ft.type_name not in ['index','column']]
 
     def has_field_type(self, field_type_name):
         for field_type in self.field_types.all():
@@ -73,8 +79,6 @@ class DataField(models.Model):
         else:
             return False
 
-    def agg_types(self):
-        return [ft.type_function for ft in self.field_types.all() if ft.type_name not in ['index','column']]
 
     #path to list
     # if not contains . then append csv

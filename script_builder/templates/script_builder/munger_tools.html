@@ -19,5 +19,7 @@
       {% endif %}
     {% if request.user.is_superuser %}
       <h3><a href="{% url 'run_munger_output' mb.id %}" id='run-{{ mb.id }}' name="build" type="submit" >Run Munger</a></h3>
+      <h3><a class="index-link" href="{% url 'admin:script_builder_mungerbuilder_change' mb.id %}">Munger Admin</a></h3>
+
     {% endif %}
 {% endblock content %}

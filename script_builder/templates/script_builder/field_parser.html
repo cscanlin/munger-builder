@@ -23,7 +23,7 @@
               {% else %}
                   <td class="field-cell old-name-holder">{{ field.current_name }}</td>
               {% endif %}
-              <td class="field-cell"><div class="field-delete-holder"><a href="{% url 'field_delete' field.id %}" id='{{ audience.id }}' name="delete" type="submit" ><img src="{{ STATIC_URL }}delete-icon.png" width="16" height="16"></a></div></td>
+              <td class="field-cell"><div class="field-delete-holder"><a href="{% url 'field_delete' field.id %}" id='delete-field-{{ field.id }}' name="delete" type="submit" ><img src="{{ STATIC_URL }}delete-icon.png" width="16" height="16"></a></div></td>
           </tr>
         {% endfor %}
       </table>

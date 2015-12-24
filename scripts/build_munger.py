@@ -22,7 +22,9 @@ def print_run_status(run_start_time,message):
 
 def main(munger_builder_id=1):
 
-    jinja_env = Environment(loader=PackageLoader('script_builder', 'templates/munger_templates'))
+    jinja_env = Environment(trim_blocks=True, lstrip_blocks=True,
+        loader=PackageLoader('script_builder', 'templates/munger_templates'),
+    )
 
     jinja_template = jinja_env.get_template('pandas_munger_template_basic.html')
 

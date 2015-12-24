@@ -8,58 +8,59 @@
 {% block content %}
     <h3>{{ mb.munger_name }}</h3>
 
-    {% if fields %}
-      <div id="field-source-container" class="field-source-container">
-        <div id="field-source-bank" class="field-source-bank">
+    <div id="main-pivot-wrapper" class="main-pivot-wrapper">
+      {% if fields %}
+        <div id="field-source-container" class="field-source-container">
+          <div id="field-source-bank" class="field-source-bank">
+            {% for field in fields %}
+                <div id="field-{{ field.id }}-source" field-id="{{ field.id }}" type="None" class="draggable draggable-source drag-drop">
+                  <div class="field-text">
+                    <span class="agg-text"></span>
+                    <span id="source-text-{{ field.id }}" field-id="{{ field.id }}" class="source-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
+                    <input id="edit-field-{{ field.id }}" type="image" src="{{ STATIC_URL }}edit-icon.png" value="edit" class="edit-btn-{{ field.id }} small-image-button">
+                  </div>
+                </div>
+            {% endfor %}
+          </div>
+          <div id="add-field-button-container" class="add-field-button-container">
+            <input id="add-pivot-field" name="add-pivot-field" class="btn btn-primary" type="submit" value="+" />
+          </div>
+        </div>
+        <div id="active-fields" class="active-fields">
           {% for field in fields %}
-              <div id="field-{{ field.id }}-source" field-id="{{ field.id }}" type="None" class="draggable draggable-source drag-drop">
-                <input id="delete-field-{{ field.id }}" type="image" src="{{ STATIC_URL }}delete-icon-transparent.png" value="delete" class="delete-btn-{{ field.id }} delete-field-button">
+            {% for field_type in field.field_types.all %}
+              <div field-id="{{ field.id }}" type="{{ field_type.type_name }}" class="draggable drag-drop">
                 <div class="field-text">
                   <span class="agg-text"></span>
-                  <span id="source-text-{{ field.id }}" field-id="{{ field.id }}" class="source-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
-                  <input id="edit-field-{{ field.id }}" type="image" src="{{ STATIC_URL }}edit-icon.png" value="edit" class="edit-btn-{{ field.id }} small-image-button">
+                  <span class="clone-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
                 </div>
               </div>
+            {% endfor %}
           {% endfor %}
         </div>
-        <div id="add-field-button-container" class="add-field-button-container">
-          <input id="add-pivot-field" name="add-pivot-field" class="btn btn-primary" type="submit" value="+" />
-        </div>
-      </div>
-      <div id="active-fields" class="active-fields">
-        {% for field in fields %}
-          {% for field_type in field.field_types.all %}
-            <div field-id="{{ field.id }}" type="{{ field_type.type_name }}" class="draggable drag-drop">
-              <div class="field-text">
-                <span class="agg-text"></span>
-                <span class="clone-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
-              </div>
-            </div>
-          {% endfor %}
-        {% endfor %}
-      </div>
-    {% else %}
-        <p>No fields are available.</p>
-    {% endif %}
+      {% else %}
+          <p>No fields are available.</p>
+      {% endif %}
 
     <!-- <div id="no-drop" class="draggable drag-drop"> #no-drop </div> -->
 
-    <div id="column-dropzone-container" class="column-dropzone-container">
       {% for field_type_name in field_type_names %}
-        {% if field_type_name == 'column' %}
-          <div id="{{ field_type_name }}-dropzone" type="{{ field_type_name }}" class="dropzone column-dropzone"> {{ field_type_name|capfirst }} Fields</div>
+        {% if field_type_name == 'column' or field_type_name == 'index' %}
+          <div id="{{ field_type_name }}-dropzone-container" class="{{ field_type_name }}-dropzone-container">
+            <div id="{{ field_type_name }}-dropzone" type="{{ field_type_name }}" class="dropzone {{ field_type_name }}-dropzone"> {{ field_type_name|capfirst }} Fields</div>
+          </div>
         {% endif %}
       {% endfor %}
+      <div id="agg-dropzone-container" class="agg-dropzone-container">
+        {% for field_type_name in field_type_names %}
+          {% if field_type_name != 'index' and field_type_name != 'column' %}
+            <div id="{{ field_type_name }}-dropzone" type="{{ field_type_name }}" class="dropzone agg-dropzone"> {{ field_type_name|capfirst }} Fields</div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      </br>
+      <input id="save-pivot-fields" name="save-pivot-fields" class="btn btn-primary" type="submit" value="Save" />
     </div>
-    <div id="dropzone-container" class="dropzone-container">
-      {% for field_type_name in field_type_names %}
-        {% if field_type_name != 'column' %}
-          <div id="{{ field_type_name }}-dropzone" type="{{ field_type_name }}" class="dropzone"> {{ field_type_name|capfirst }} Fields</div>
-        {% endif %}
-      {% endfor %}
-    </div>
-    </br>
-    <input id="save-pivot-fields" name="save-pivot-fields" class="btn btn-primary" type="submit" value="Save" />
     <div id="mb-id" name="mb-id" class="hidden" value="{{ mb.id }}"></div>
     <div id="field-types" name="field-types" class="hidden" value="{{ field_type_names }}"></div>
 

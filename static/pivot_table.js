@@ -209,7 +209,6 @@ $('.delete-field-button').click(function() {
 
     var mb_id = $('#mb-id').attr('value');
     var field_id = this.id.split('-')[2]
-    console.log(field_id);
 
     $.ajax({
         method: 'POST',
@@ -233,7 +232,6 @@ function add_edit_buttons() {
 }
 
 function updateClones(field_id,new_text) {
-  console.log(field_id);
   $('.clone-text.editable-'+field_id).each(function() {
     $(this).text(new_text)
   });

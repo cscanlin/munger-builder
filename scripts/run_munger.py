@@ -35,6 +35,9 @@ def main(munger_builder_id=1):
         if mb.rows_to_delete_bottom and mb.rows_to_delete_bottom != 0:
             df = df.drop(df.index[-mb.rows_to_delete_bottom:])
 
+        if mb.rename_field_dict:
+            df = df.rename(columns=mb.rename_field_dict)
+
         yield df.to_html()
 
         eval_agg_field_dict = {field_name: eval(field_type) for field_name, field_type in mb.agg_fields.items()}
@@ -48,8 +51,6 @@ def main(munger_builder_id=1):
             values=mb.agg_fields.keys(),
             aggfunc=eval_agg_field_dict,
         )
-        # if mb.fields_to_rename():
-        #     pivot_output = pivot_output.rename(columns=mb.fields_to_rename())
 
         print(pivot_output)
         yield pivot_output.to_html()
