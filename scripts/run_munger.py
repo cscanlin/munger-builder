@@ -52,6 +52,9 @@ def main(munger_builder_id=1):
             aggfunc=eval_agg_field_dict,
         )
 
+        # pivot_output.sort_values(inplace=True)
+        # pivot_output = pivot_output.sort_values(['sales_name'])
+        # pivot_output = pivot_output[pivot_output.revenue > 10]
         print(pivot_output)
         yield pivot_output.to_html()
 

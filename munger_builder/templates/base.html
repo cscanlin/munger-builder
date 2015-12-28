@@ -22,16 +22,16 @@
 
     <div id="content" class='main-content'>
 
-        {% if messages %}
           </br>
-          <ul class="messages">
-              {% for message in messages %}
-              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-              {% endfor %}
-          </ul>
-        {% else %}
-          </br>
-        {% endif %}
+          <div id="messages-container" class="messages-container">
+            {% if messages %}
+              <ul class="messages">
+                  {% for message in messages %}
+                  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                  {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
 
         {% block back_link %}{% endblock %}
 

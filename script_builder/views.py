@@ -279,23 +279,24 @@ def add_pivot_field(request, munger_builder_id):
         )
         field_object.save()
 
-    messages.success(request, 'Field Added Successfully')
-    return HttpResponse("OK")
+        messages.success(request, 'Field Added Successfully')
+        return HttpResponse("OK")
+
+def delete_pivot_field(request, field_id):
+    if request.is_ajax():
+
+        field = get_object_or_404(DataField, pk=field_id)
+        if not request.user.has_perm('script_builder.change_datafield', field):
+            return INDEX_REDIRECT
+
+        field.delete()
+        messages.success(request, '{0} Deleted Successfully'.format(field.current_name))
+        return HttpResponse("OK")
 
 def clear_field_data(munger_builder_id):
     for field in MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all():
         field.field_types.clear()
         field.save()
-
-def field_delete(request, field_id):
-    field = get_object_or_404(DataField, pk=field_id)
-    if not request.user.has_perm('script_builder.change_datafield', field):
-        return INDEX_REDIRECT
-
-    field.delete()
-    messages.success(request, '{0} Deleted Successfully'.format(field.current_name))
-    return HttpResponseRedirect('/script_builder/field_parser/{0}'.format(field.munger_builder.id))
-    # return HttpResponseRedirect('/script_builder/field_parser/')
 
 def anon_check(request):
     if 'anon_' in request.user.username:

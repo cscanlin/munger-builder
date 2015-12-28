@@ -47,6 +47,7 @@ interact('.draggable')
       $(clone).attr('data-x', original.position().left - 10)
       $(clone).attr('data-y', top_offset)
       $(clone).removeAttr('id');
+      $(clone).find('input').remove()
       $(clone).find('.field-text').find('input').remove()
 
       var clone_text = $(clone).find('.field-text').find('.name-text')
@@ -168,7 +169,9 @@ $.ajaxSetup({
 });
 
 $('#save-pivot-fields').click(function() {
-  savePivotFields()
+  savePivotFields().then(function(){
+    $("#messages-container").load(location.href+" #messages-container > *","");
+  });
 });
 
 function savePivotFields() {
@@ -182,14 +185,13 @@ function savePivotFields() {
 
   var mb_id = $('#mb-id').attr('value');
 
-
-  $.ajax({
+  return $.ajax({
       method: 'POST',
       url: '/script_builder/save_pivot_fields/' + mb_id,
       data: {'active_fields': JSON.stringify(active_fields)},
-      success: function (data) {
-          window.location='/script_builder/pivot_builder/' + mb_id
-      },
+      // success: function (data) {
+      //     $("#messages-container").load(location.href+" #messages-container > *","");
+      // },
       // error: function (data) {
       //      alert("it didnt work");
       // }
@@ -200,27 +202,39 @@ $('#add-pivot-field').click(function() {
 
     var mb_id = $('#mb-id').attr('value');
 
-    $.ajax({
-        method: 'POST',
-        url: '/script_builder/add_pivot_field/' + mb_id,
-        success: function (data) {
-            window.location='/script_builder/pivot_builder/' + mb_id
-        },
-    });
+    savePivotFields().then(function(){
+      $.ajax({
+          method: 'POST',
+          url: '/script_builder/add_pivot_field/' + mb_id,
+          success: function () {
+              $("#field-source-bank").load(location.href+" #field-source-bank > *","");
+              $("#messages-container").load(location.href+" #messages-container > *","");
+          },
+      });
+      setTimeout(function() {
+        setRowIndex()
+      }, 50);
+    })
 });
 
-$('.delete-field-button').click(function() {
+$('body').on('click', '.delete-field-button', function() {
 
     var mb_id = $('#mb-id').attr('value');
     var field_id = this.id.split('-')[2]
 
-    $.ajax({
-        method: 'POST',
-        url: '/script_builder/field_parser/' + field_id + '/delete',
-        success: function () {
-            window.location='/script_builder/pivot_builder/' + mb_id
-        },
-    });
+    savePivotFields().then(function(){
+      $.ajax({
+          method: 'POST',
+          url: '/script_builder/field_parser/' + field_id + '/delete',
+          success: function () {
+              $("#field-source-bank").load(location.href+" #field-source-bank > *","");
+              $("#messages-container").load(location.href+" #messages-container > *","");
+          },
+      });
+      setTimeout(function() {
+        setRowIndex()
+      }, 50);
+    })
 });
 
 function add_edit_buttons() {
@@ -242,7 +256,6 @@ function updateClones(field_id,new_text) {
 }
 
 function setRowIndex() {
-
   var count_array = new Array();
   var iter_count = field_types.length;
 
@@ -298,6 +311,10 @@ function setColumnDropzoneSize() {
 }
 
 $( document ).ready(function() {
+  refreshAll()
+});
+
+function refreshAll() {
   add_edit_buttons()
   setRowIndex()
   setColumnDropzoneSize()
@@ -319,7 +336,7 @@ $( document ).ready(function() {
       // draggable.css('transform', 'translate(' + none_offset + 'px)');
     } else {
       agg_span.text(draggable.attr('type')+sep);
-      dropzone.addClass('drop-target');
+      // dropzone.addClass('drop-target');
       draggable.addClass('can-drop');
       draggable.addClass('tap-target');
       draggable.addClass('tap-' + draggable.attr('type'));
@@ -327,10 +344,7 @@ $( document ).ready(function() {
 
     };
   });
-  setTimeout(function(){
-    $('.drag-drop').css("visibility", "visible");
-  }, 80);
-});
+};
 
 $( window ).resize(function() {
   setRowIndex();
