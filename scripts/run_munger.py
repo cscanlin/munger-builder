@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from collections import OrderedDict
 
 from datetime import datetime
 from glob import glob
@@ -44,6 +45,7 @@ def main(munger_builder_id=1):
 
         #Create Pivot Table on Key and Write Output CSV
         print_run_status(run_start_time, 'Writing Output CSVs...')
+        # new_field_dict = OrderedDict(reversed(list(eval_agg_field_dict.items())))#!!!!!!!!!!!!!!!!!!!!!
         pivot_output = pd.pivot_table(
             df,
             index=mb.index_fields,
@@ -52,8 +54,13 @@ def main(munger_builder_id=1):
             aggfunc=eval_agg_field_dict,
         )
 
-        # pivot_output.sort_values(inplace=True)
-        # pivot_output = pivot_output.sort_values(['sales_name'])
+        # yield pivot_output.columns.values
+
+        # pivot_output.reorder_levels([1, 0], axis=1).sort_index(axis=1)
+        # pivot_output = pivot_output.sort_index(axis=1, ascending=True)
+        # pivot_output = pivot_output.reorder_levels([1, 0], axis=1)
+        # pivot_output = pivot_output.reorder_levels([1, 0])
+        # pivot_output = pivot_output.sort_values([('shipping','median','east')])
         # pivot_output = pivot_output[pivot_output.revenue > 10]
         print(pivot_output)
         yield pivot_output.to_html()
