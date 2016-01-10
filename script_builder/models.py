@@ -9,6 +9,9 @@ from django.shortcuts import get_object_or_404
 from djcelery.models import CrontabSchedule, PeriodicTask
 from django.utils.translation import ugettext_lazy as _
 
+from ordered_model.models import OrderedModel
+from collections import OrderedDict
+
 class MungerBuilder(models.Model):
 
     munger_name = models.CharField(max_length=200)
@@ -27,13 +30,16 @@ class MungerBuilder(models.Model):
     def column_fields(self):
         return [field.active_name for field in self.data_fields.all() if field.has_field_type('column')]
 
-    @property
-    def agg_fields(self):
-        return {field.active_name: ', '.join(field.agg_types) for field in self.data_fields.all() if field.agg_types}
+    def agg_fields(self, evaled=False):
+        if evaled:
+            func = eval
+        else:
+            func = str
+        return OrderedDict([(field.active_name, func(', '.join(field.agg_types))) for field in self.data_fields.all() if field.agg_types])
 
     @property
     def rename_field_dict(self):
-        return {field.current_name: field.new_name for field in self.data_fields.all() if field.new_name and field.new_name != field.current_name}
+        return OrderedDict([(field.current_name, field.new_name) for field in self.data_fields.all() if field.new_name and field.new_name != field.current_name])
 
     @property
     def get_output_path(self):
@@ -51,12 +57,15 @@ class FieldType(models.Model):
     def __unicode__(self):
         return str(self.type_name).capitalize()
 
-class DataField(models.Model):
+class DataField(OrderedModel):
 
     munger_builder = models.ForeignKey(MungerBuilder, related_name='data_fields', related_query_name='data_fields')
     current_name = models.CharField(max_length=200)
     new_name = models.CharField(max_length=200, null=True, blank=True)
     field_types = models.ManyToManyField(FieldType, blank=True, related_name='field_types', related_query_name='field_types')
+
+    class Meta(OrderedModel.Meta):
+        pass
 
     def __unicode__(self):
         return self.active_name

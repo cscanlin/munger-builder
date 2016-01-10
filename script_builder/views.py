@@ -19,7 +19,7 @@ from .models import DataField, FieldType, CSVDocument, MungerBuilder
 from .forms import SetupForm, FieldParser, UploadFileForm
 
 import scripts.build_munger
-import tasks
+import script_builder.tasks
 
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
