@@ -1,2 +1,2 @@
 web: honcho -f ProcfileHoncho start
-nocelery: gunicorn munger_builder.wsgi
+nocelery: gunicorn munger_builder.wsgi --preload
