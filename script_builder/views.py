@@ -24,14 +24,8 @@ import script_builder.tasks
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
 def munger_builder_index(request):
-    if request.user.id == None:
-        random_id = randint(0,1000000)
-        user = User.objects.create_user(username='anon_{0}'.format(random_id), password=random_id)
-        user.save()
-        anon_user = authenticate(username='anon_{0}'.format(random_id), password=random_id)
-        login(request, anon_user)
-    else:
-        user = request.user
+
+    user = get_user_or_anon(request)
 
     anon_check(request)
 
@@ -41,6 +35,17 @@ def munger_builder_index(request):
 
     context = {'munger_builder_list': munger_builder_list}
     return render(request, 'script_builder/munger_builder_index.html', context)
+
+def get_user_or_anon(request):
+    if request.user.id == None:
+        random_id = randint(0,1000000)
+        user = User.objects.create_user(username='anon_{0}'.format(random_id), password=random_id)
+        user.save()
+        anon_user = authenticate(username='anon_{0}'.format(random_id), password=random_id)
+        login(request, anon_user)
+    else:
+        user = request.user
+    return user
 
 def delete_munger(request, munger_builder_id):
     mb = get_object_or_404(MungerBuilder, pk=munger_builder_id)

@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -155,4 +155,4 @@ if __name__ == '__main__':
 
     finally:
         print("Press Enter to close window")
-        raw_input()
+        input()

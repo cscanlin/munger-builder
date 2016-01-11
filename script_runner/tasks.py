@@ -1,6 +1,6 @@
-from __future__ import absolute_import
+
 import sys
-import StringIO
+import io
 import contextlib
 
 from celery import task, shared_task
@@ -26,5 +26,5 @@ def download_munger_async(munger_builder_id=1):
     with open(file_path, 'r') as mf:
         response = HttpResponse(mf, content_type='application/octet-stream')
         response['Content-Disposition'] = 'filename={0}.py'.format(mb.munger_name)
-        print response
+        print(response)
         return response

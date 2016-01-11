@@ -7,7 +7,7 @@ from glob import glob
 import os
 import sys
 import traceback
-from StringIO import StringIO
+from io import StringIO
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from script_builder.models import MungerBuilder
@@ -41,32 +41,31 @@ def main(munger_builder_id=1):
 
     yield df.to_html()
 
-    yield mb.agg_fields()
-
     #Create Pivot Table on Key and Write Output CSV
     print_run_status(run_start_time, 'Writing Output CSVs...')
     pivot_output = pd.pivot_table(
         df,
         index=mb.index_fields,
         columns=mb.column_fields,
-        values=mb.agg_fields().keys(),
+        values=list(mb.agg_fields().keys()),
         aggfunc=mb.agg_fields(evaled=True),
         fill_value=0,
     )
 
-    rev = pivot_output[('revenue','sum','west')]
-    pivot_output = pivot_output.query("@rev > 100")
-    print rev
-    yield pivot_output.to_html()
+    # rev = pivot_output[('revenue','sum','west')]
+    # pivot_output = pivot_output.query("@rev > 100")
+    # print(rev)
+    # yield pivot_output.to_html()
 
     # pivot_output = pivot_output.query('sales_name == ["ian","melanie"]')
     # pivot_output = pivot_output.sort_index()
-    pivot_output = pivot_output.sort_values([
-        ('revenue','mean','east'),
-    ], ascending=[1])
 
-    yield pivot_output.to_html()
-    pivot_output = pivot_output.reorder_levels([1, 0, 2], axis=1)
+    # pivot_output = pivot_output.sort_values([
+    #     ('revenue','mean','east'),
+    # ], ascending=[1])
+
+    # yield pivot_output.to_html()
+    # pivot_output = pivot_output.reorder_levels([1, 0, 2], axis=1)
 
     print(pivot_output)
     yield pivot_output.to_html()

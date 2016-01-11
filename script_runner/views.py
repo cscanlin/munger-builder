@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 import time
 
 from django.shortcuts import render
@@ -35,7 +35,7 @@ def munger_builder_index(request):
 def run_munger_output(request, munger_builder_id):
     pretext_url = reverse('munger_tools', args=[munger_builder_id])
     pretext = "<p><a class=back-link href=\"{0}\">< Munger Tools</a></p>".format(pretext_url)
-    print repr(pretext)
+    print(repr(pretext))
     return StreamingHttpResponse(
         content_generator(run_munger.main(munger_builder_id), pretext=pretext)
     )
@@ -54,6 +54,5 @@ def content_generator(script_main, pretext='', posttext=''):
     yield pretext
     for line in script_main:
         time.sleep(.1)
-        # print '{0} <br />\n'.format(line)
         yield '{0} <br />\n'.format(line)
     yield posttext
