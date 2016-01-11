@@ -1,2 +1,2 @@
-web: gunicorn munger_builder.wsgi --timeout=1200
+web: honcho -f ProcfileHoncho start
 nocelery: gunicorn munger_builder.wsgi --preload
