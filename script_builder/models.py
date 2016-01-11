@@ -5,7 +5,6 @@ import numpy as np
 from django.db import models
 
 from django.shortcuts import get_object_or_404
-from djcelery.models import CrontabSchedule, PeriodicTask
 from django.utils.translation import ugettext_lazy as _
 
 from ordered_model.models import OrderedModel
