@@ -1,3 +1,2 @@
 web: gunicorn munger_builder.wsgi --timeout=1200
 worker: python manage.py celery worker --concurrency=1
-beat: python manage.py celery beat
