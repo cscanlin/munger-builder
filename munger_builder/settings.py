@@ -37,6 +37,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = (
     # 'django.contrib.postgres',
+    'djcelery',
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
