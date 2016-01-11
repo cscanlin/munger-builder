@@ -196,7 +196,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 if os.getenv('DJANGO_CONFIGURATION') == 'Prod':
-    DEBUG = False
+    DEBUG = True
     DATABASES = {'default': dj_database_url.config()}
     # MIDDLEWARE_CLASSES = (
     #     ['sslify.middleware.SSLifyMiddleware'] + middleware_list
