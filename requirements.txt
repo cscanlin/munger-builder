@@ -13,7 +13,7 @@ Django==1.8.2
 Jinja2==2.7.3
 amqp==1.4.6
 celery==3.1.19
-django-celery==3.1.19
+django-celery==3.1.17
 django-admin-bootstrapped==2.5.1
 django-bootstrap3==5.4.0
 django-compressor==1.5
