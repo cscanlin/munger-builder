@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-import djcelery
 from django.contrib.messages import constants as messages
 import dj_database_url
 
@@ -50,7 +49,6 @@ INSTALLED_APPS = (
     'pipeline',
     'crispy_forms',
     'bootstrap3',
-    'djcelery',
     'kombu.transport.django',
     'smuggler',
     'guardian',
@@ -145,8 +143,6 @@ CELERYD_HIJACK_ROOT_LOGGER = False
 ADMINS = (
     ('Chris Scanlin', 'cscanlin@gmail.com'),
 )
-
-djcelery.setup_loader()
 
 middleware_list = [
     'django.contrib.sessions.middleware.SessionMiddleware',
