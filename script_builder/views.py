@@ -17,9 +17,9 @@ from guardian.shortcuts import assign_perm, get_perms, get_objects_for_user
 
 from .models import DataField, FieldType, CSVDocument, MungerBuilder
 from .forms import SetupForm, FieldParser, UploadFileForm
+from .tasks import run_munger, download_munger_async, download_test_data_async
 
 import scripts.build_munger
-import script_builder.tasks
 
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
@@ -180,12 +180,12 @@ def pivot_builder(request, munger_builder_id):
     return render(request, 'script_builder/pivot_builder.html', context)
 
 def download_munger(request, munger_builder_id):
-    task = tasks.download_munger_async.delay(munger_builder_id)
+    task = download_munger_async.delay(munger_builder_id)
     return render_to_response('script_builder/poll_for_download.html',
                               {'task_id': task.id, 'mb_id': munger_builder_id})
 
 def download_test_data(request, munger_builder_id):
-    task = tasks.download_test_data_async.delay(munger_builder_id)
+    task = download_test_data_async.delay(munger_builder_id)
     return render_to_response('script_builder/poll_for_download.html',
                               {'task_id': task.id, 'mb_id': munger_builder_id})
 
@@ -195,10 +195,10 @@ def poll_for_download(request):
     filename = request.GET.get("filename")
 
     if filename == 'test_data.csv':
-        async_func = tasks.download_test_data_async
+        async_func = download_test_data_async
         file_path = os.path.join(settings.STATIC_ROOT, filename)
     else:
-        async_func = tasks.download_munger_async
+        async_func = download_munger_async
         file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}'.format(filename))
 
     if request.is_ajax():
