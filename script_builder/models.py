@@ -14,6 +14,9 @@ class MungerBuilder(models.Model):
 
     munger_name = models.CharField(max_length=200)
 
+    munger_template = models.FilePathField(path='/script_builder/templates/munger_templates', max_length=200,
+                                            default='pandas_munger_template_basic.html')
+
     input_path = models.CharField(max_length=999, default='', blank=True)
     output_path = models.CharField(max_length=999, default='', blank=True)
 
@@ -90,10 +93,6 @@ class DataField(OrderedModel):
     def __str__(self):
         return self.active_name
 
-
-    #path to list
-    # if not contains . then append csv
-    # get agg func
 
 class CSVDocument(models.Model):
     csv_file = models.FileField(upload_to='csv-files')
