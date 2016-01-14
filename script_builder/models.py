@@ -45,15 +45,15 @@ class MungerBuilder(models.Model):
             input_dir = os.path.dirname(self.input_path)
             return os.path.join(input_dir, '{0}-output.csv'.format(self.munger_name))
 
-    def __unicode__(self):
-        return str(self.munger_name)
+    def __str__(self):
+        return self.munger_name
 
 class FieldType(models.Model):
     type_name = models.CharField(max_length=200)
     type_function = models.CharField(max_length=200)
 
-    def __unicode__(self):
-        return str(self.type_name).capitalize()
+    def __str__(self):
+        return self.type_name.capitalize()
 
 class DataField(OrderedModel):
 
@@ -65,15 +65,15 @@ class DataField(OrderedModel):
     class Meta(OrderedModel.Meta):
         pass
 
-    def __unicode__(self):
+    def __str__(self):
         return self.active_name
 
     @property
     def active_name(self):
         if self.new_name:
-            return str(self.new_name)
+            return self.new_name
         else:
-            return str(self.current_name)
+            return self.current_name
 
     @property
     def agg_types(self):
