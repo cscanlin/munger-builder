@@ -43,7 +43,8 @@ class MungerBuilder(models.Model):
     def get_output_path(self):
         if not self.output_path:
             input_dir = os.path.dirname(self.input_path)
-            return os.path.join(input_dir, '{0}-output.csv'.format(self.munger_name))
+            final_name = self.munger_name.replace(' ','_').lower()
+            return os.path.join(input_dir, '{0}-output.csv'.format(final_name))
 
     def __str__(self):
         return self.munger_name

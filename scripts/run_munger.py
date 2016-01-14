@@ -23,7 +23,8 @@ def main(munger_builder_id=1):
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
     # Read data from singups with orders CSV from Looker and load into pandas DataFrame
-    input_file = glob(os.path.abspath(mb.input_path))[0]
+    # input_file = glob(os.path.abspath(mb.input_path))[0]
+    input_file = os.path.join(os.path.abspath(os.path.dirname(__name__)), 'static', mb.input_path)
     print_run_status(run_start_time, 'Reading Data From:\n' + input_file.replace('\\', '/'))
 
     if mb.rows_to_delete_top and mb.rows_to_delete_top != 0:
