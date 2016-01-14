@@ -58,7 +58,8 @@ def delete_munger(request, munger_builder_id):
 
 def add_sample_munger(user):
 
-    mb = MungerBuilder.objects.create(munger_name='Sample for {0}'.format(user.username), input_path='test_data.csv')
+    safe_user_name = user.username.replace(' ','').lower()
+    mb = MungerBuilder.objects.create(munger_name='sample_for_{0}'.format(safe_user_name), input_path='test_data.csv')
     mb.save()
 
     assign_perm('add_mungerbuilder', user, mb)
