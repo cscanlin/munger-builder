@@ -73,7 +73,7 @@ def main(munger_builder_id=1):
     yield pivot_output.to_html()
 
 
-    munger_output_path = 'media/user_munger_output/{0}-output.csv'.format(mb.script_file_name)
+    munger_output_path = 'media/user_munger_output/{0}-output.csv'.format(mb.safe_file_name)
     pivot_output.to_csv(os.path.join(settings.BASE_DIR, munger_output_path))
 
     print_run_status(run_start_time, 'Finished!')

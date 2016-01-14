@@ -40,15 +40,14 @@ class MungerBuilder(models.Model):
         return OrderedDict([(field.current_name, field.new_name) for field in self.data_fields.all() if field.new_name and field.new_name != field.current_name])
 
     @property
-    def script_file_name(self):
+    def safe_file_name(self):
         return self.munger_name.replace(' ','_').lower()
 
     @property
     def get_output_path(self):
         if not self.output_path:
             input_dir = os.path.dirname(self.input_path)
-            final_name = self.munger_name.replace(' ','_').lower()
-            return os.path.join(input_dir, '{0}-output.csv'.format(final_name))
+            return os.path.join(input_dir, '{0}-output.csv'.format(self.safe_file_name))
 
     def __str__(self):
         return self.munger_name
