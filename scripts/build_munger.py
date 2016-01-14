@@ -32,7 +32,7 @@ def main(munger_builder_id=1):
 
     script_string = jinja_template.render(mb=mb)
 
-    with open('media/user_munger_scripts/{0}.py'.format(mb.munger_name), 'w+') as mf:
+    with open('media/user_munger_scripts/{0}.py'.format(mb.script_file_name), 'w+') as mf:
         mf.write(script_string+'\n')
 
     return script_string

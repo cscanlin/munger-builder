@@ -40,6 +40,10 @@ class MungerBuilder(models.Model):
         return OrderedDict([(field.current_name, field.new_name) for field in self.data_fields.all() if field.new_name and field.new_name != field.current_name])
 
     @property
+    def script_file_name(self):
+        return self.munger_name.replace(' ','_').lower()
+
+    @property
     def get_output_path(self):
         if not self.output_path:
             input_dir = os.path.dirname(self.input_path)
@@ -58,16 +62,13 @@ class FieldType(models.Model):
 
 class DataField(OrderedModel):
 
+    class Meta(OrderedModel.Meta):
+        pass
+
     munger_builder = models.ForeignKey(MungerBuilder, related_name='data_fields', related_query_name='data_fields')
     current_name = models.CharField(max_length=200)
     new_name = models.CharField(max_length=200, null=True, blank=True)
     field_types = models.ManyToManyField(FieldType, blank=True, related_name='field_types', related_query_name='field_types')
-
-    class Meta(OrderedModel.Meta):
-        pass
-
-    def __str__(self):
-        return self.active_name
 
     @property
     def active_name(self):
@@ -86,6 +87,9 @@ class DataField(OrderedModel):
                 return True
         else:
             return False
+
+    def __str__(self):
+        return self.active_name
 
 
     #path to list
