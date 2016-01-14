@@ -36,6 +36,7 @@ pivot_output = pd.pivot_table(
         '{{ key }}': [{{ value }}],
       {% endfor %}
     },
+    fill_value=0,
 )
 print(pivot_output)
 
