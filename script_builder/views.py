@@ -113,8 +113,9 @@ def munger_builder_setup(request, munger_builder_id=None):
         else:
             pass
     else:
-        current_munger_builders = get_objects_for_user(request.user, 'script_builder.change_mungerbuilder')
-        if len(current_munger_builders) >= max_munger_builders:
+        user = request.user
+        current_munger_builders = get_objects_for_user(user, 'script_builder.change_mungerbuilder')
+        if len(current_munger_builders) >= max_munger_builders and not user.is_superuser:
             messages.warning(request, 'Cannot Create more Munger Builders - Delete some to make space')
             return INDEX_REDIRECT
         else:
