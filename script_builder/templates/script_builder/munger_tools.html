@@ -14,7 +14,7 @@
     <h3><a href="{% url 'pivot_builder' mb.id %}" id='pivot-{{ mb.id }}' name="pivot" type="submit" >Pivot Builder</a></h3>
     <h3><a href="{% url 'build_munger_output' mb.id %}" id='build-{{ mb.id }}' name="build" type="submit" >Show Munger</a></h3>
     <h3><a href="{% url 'download_munger' mb.id %}" id='build-{{ mb.id }}' name="build" type="submit" >Download Munger</a></h3>
-      {% if 'Sample for ' in mb.munger_name %}
+      {% if 'sample_for' in mb.munger_name %}
         <li><h4><a href="{% url 'download_test_data' mb.id %}" id='build-{{ mb.id }}' name="download_test" type="submit" >Download Test Data for Sample Munger</a></h4></li>
       {% endif %}
     {% if request.user.is_superuser %}
