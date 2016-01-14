@@ -4,7 +4,8 @@ Sortable.create(fieldBank, {
     name: 'fieldBank',
     pull: 'clone',
   },
-  filter: '.not-draggable',
+  // onStart:
+  // old js move goes here
 })
 
 Sortable.create(indexList, {
@@ -12,7 +13,6 @@ Sortable.create(indexList, {
     name: 'indexList',
     put: ['fieldBank', 'columnList', 'aggList'],
   },
-  filter: '.not-draggable',
 });
 
 Sortable.create(columnList, {
@@ -20,7 +20,6 @@ Sortable.create(columnList, {
     name: 'columnList',
     put: ['fieldBank', 'aggList', 'indexList'],
   },
-  filter: '.not-draggable',
 });
 
 Sortable.create(aggList, {
@@ -28,7 +27,6 @@ Sortable.create(aggList, {
     name: 'agg',
     put: ['fieldBank', 'indexList', 'columnList'],
   },
-  filter: '.not-draggable',
 });
 
 var csrftoken = $.cookie('csrftoken');
