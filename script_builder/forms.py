@@ -32,6 +32,7 @@ class SetupForm(ModelForm):
             InlineField('input_path'),
             HTML('<p>If no path is entered, the output will be the same file as the script is located in.</p>'),
             InlineField('output_path'),
+            InlineField('munger_template'),
             # css_class = 'collapse',
         ),
         Fieldset(
@@ -43,7 +44,7 @@ class SetupForm(ModelForm):
         )
     )
     # helper.layout = Layout(
-    #     InlineField('munger_name'),
+    #     Field('munger_name'),
     #     Accordion(
     #         AccordionGroup(
     #             'Input/Output',

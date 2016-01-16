@@ -2,38 +2,49 @@ import pandas as pd
 import numpy as np
 
 import os
-import traceback
-from glob import glob
 from datetime import datetime
 
 def print_run_status(run_start_time,message):
     print('\n{0} - {1}'.format(datetime.now()-run_start_time, message))
 
-run_start_time = datetime.now()
-
-{% if input_path %}
-input_file = glob(os.path.abspath(r'{{ input_path }}'))[0]
+{% if mb.input_path %}
+input_file = os.path.abspath(r'{{ mb.input_path }}')
 {% else %}
 input_file = 'ADD INPUT FILE PATH HERE'
 {% endif %}
 
 print_run_status(run_start_time, 'Reading Data From:\n{0}'.format(input_file))
-
+{% if mb.rows_to_delete_top and mb.rows_to_delete_top != 0 %}
+df = pd.read_csv(input_file, skiprows=mb.rows_to_delete_top)
+{% else %}
 df = pd.read_csv(input_file)
+{% endif %}
 
-print_run_status(run_start_time, 'Writing Output CSVs...')
+{% if mb.rows_to_delete_bottom and mb.rows_to_delete_bottom != 0 %}
+df = df.drop(df.index[-{{ mb.rows_to_delete_bottom }}:])
+{% endif %}
+
+{% if mb.rename_field_dict %}
+print_run_status(run_start_time, 'Renaming Fields...')
+df = df.rename(columns={{ mb.rename_field_dict }})
+{% endif %}
+
+print_run_status(run_start_time, 'Building Pivot Table...')
 pivot_output = pd.pivot_table(
     df,
-    index={{ index_fields }},
-    values={{ agg_field_names }},
-    aggfunc={ {% for key, value in aggfunc_dict.items() %}
-        '{{ key }}': [{{ value }}],{% endfor %}
+    index={{ mb.index_fields }},
+    columns={{ mb.column_fields }},
+    values=[{% for key in mb.agg_fields().keys() %}'{{ key }}',{% endfor %}],
+    aggfunc={
+      {% for key, value in mb.agg_fields().items() %}
+        '{{ key }}': [{{ value }}],
+      {% endfor %}
     },
     fill_value=0,
 )
-
 print(pivot_output)
 
-pivot_output.to_csv(os.path.abspath(r'{{ output_path }}'))
+print_run_status(run_start_time, 'Writing Output CSVs...')
+pivot_output.to_csv(os.path.abspath(r'{{ mb.get_output_path }}'))
 
 print_run_status(run_start_time, 'Finished!')

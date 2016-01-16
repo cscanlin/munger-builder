@@ -14,13 +14,15 @@
 
 {% block content %}
     <h3>Setup Munger</h3>
-    {% crispy form %}
-    {% if mb %}
-      <div class="delete-munger-holder">
-        <form action="{% url 'delete_munger' mb.id %}">
-          <input id="delete-munger-{{ mb.id }}" name="delete-munger-button" class="btn btn-danger delete-munger-button" type="submit" value="Delete"/>
-        </form>
-      </div>
-    {% endif %}
+    <div class=form-container>
+      {% crispy form %}
+      {% if mb %}
+        <div class="delete-munger-holder">
+          <form action="{% url 'delete_munger' mb.id %}">
+            <input id="delete-munger-{{ mb.id }}" name="delete-munger-button" class="btn btn-danger delete-munger-button" type="submit" value="Delete"/>
+          </form>
+        </div>
+      {% endif %}
+    </div>
 
 {% endblock content %}

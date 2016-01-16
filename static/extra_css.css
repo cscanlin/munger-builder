@@ -30,13 +30,13 @@
   margin-top: 5px;
 }
 
-fieldset {
-  min-width: 1400px;
-}
-
 .form-actions {
   display: inline-block;
   margin-left: 5px;
+}
+
+.form-container {
+  width: 50%;
 }
 
 .user-info {

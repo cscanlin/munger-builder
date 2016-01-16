@@ -9,10 +9,9 @@ input_file = os.path.abspath(r'{{ mb.input_path }}')
 input_file = 'ADD INPUT FILE PATH HERE'
 {% endif %}
 
+print('Reading Data From:\n{0}\n'.format(input_file))
 {% if mb.rows_to_delete_top and mb.rows_to_delete_top != 0 %}
-lines = open(input_file).readlines()
-lines_top_removed = lines[{{ mb.rows_to_delete_top }}:]
-df = pd.read_csv(StringIO(''.join(lines_top_removed)))
+df = pd.read_csv(input_file, skiprows=mb.rows_to_delete_top)
 {% else %}
 df = pd.read_csv(input_file)
 {% endif %}
@@ -22,14 +21,16 @@ df = df.drop(df.index[-{{ mb.rows_to_delete_bottom }}:])
 {% endif %}
 
 {% if mb.rename_field_dict %}
+print('\nRenaming Fields...')
 df = df.rename(columns={{ mb.rename_field_dict }})
 {% endif %}
 
+print('\nBuilding Pivot Table...')
 pivot_output = pd.pivot_table(
     df,
     index={{ mb.index_fields }},
     columns={{ mb.column_fields }},
-    values=[{% for key in mb.agg_fields().keys() %}'{{ key }}',{% endfor %}]
+    values=[{% for key in mb.agg_fields().keys() %}'{{ key }}',{% endfor %}],
     aggfunc={
       {% for key, value in mb.agg_fields().items() %}
         '{{ key }}': [{{ value }}],
@@ -37,5 +38,9 @@ pivot_output = pd.pivot_table(
     },
     fill_value=0,
 )
+print(pivot_output)
 
+print('\nWriting Output CSVs...')
 pivot_output.to_csv(os.path.abspath(r'{{ mb.get_output_path }}'))
+
+print('Finished!')
