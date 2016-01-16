@@ -44,6 +44,9 @@ def build_munger_output(request, munger_builder_id):
     if not has_mb_permission(munger_builder_id, request):
         return INDEX_REDIRECT
 
+    mb = MungerBuilder.objects.get(pk=munger_builder_id)
+    print(mb.munger_template)
+
     script_string = build_munger.main(munger_builder_id)
     highlighted = highlight(script_string, PythonLexer(), HtmlFormatter())
     context = {'script_string': highlighted, 'mb_id': munger_builder_id,}

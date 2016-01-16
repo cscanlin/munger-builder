@@ -22,13 +22,13 @@ def print_run_status(run_start_time,message):
 
 def main(munger_builder_id=1):
 
+    mb = MungerBuilder.objects.get(pk=munger_builder_id)
+
     jinja_env = Environment(trim_blocks=True, lstrip_blocks=True,
         loader=PackageLoader('script_builder', 'templates/munger_templates'),
     )
 
-    jinja_template = jinja_env.get_template('pandas_munger_template_basic.html')
-
-    mb = MungerBuilder.objects.get(pk=munger_builder_id)
+    jinja_template = jinja_env.get_template(os.path.basename(mb.munger_template))
 
     script_string = jinja_template.render(mb=mb)
 
