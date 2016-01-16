@@ -32,7 +32,6 @@ class SetupForm(ModelForm):
             InlineField('input_path'),
             HTML('<p>If no path is entered, the output will be the same file as the script is located in.</p>'),
             InlineField('output_path'),
-            InlineField('munger_template'),
             # css_class = 'collapse',
         ),
         Fieldset(
@@ -41,7 +40,11 @@ class SetupForm(ModelForm):
             InlineField('rows_to_delete_top'),
             InlineField('rows_to_delete_bottom'),
             # css_class = 'collapse',
-        )
+        ),
+        Fieldset(
+            'Script Output Template',
+            InlineField('munger_template'),
+        ),
     )
     # helper.layout = Layout(
     #     Field('munger_name'),

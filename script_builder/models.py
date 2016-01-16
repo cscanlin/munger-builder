@@ -59,6 +59,13 @@ class FieldType(models.Model):
     type_name = models.CharField(max_length=200)
     type_function = models.CharField(max_length=200)
 
+    @property
+    def is_agg(self):
+        if self.type_name not in ['index','column']:
+            return True
+        else:
+            return False
+
     def __str__(self):
         return self.type_name.capitalize()
 

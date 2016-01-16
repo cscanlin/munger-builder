@@ -4,6 +4,21 @@ Sortable.create(fieldBank, {
     name: 'fieldBank',
     pull: 'clone',
   },
+  onMove: function (evt) {
+    var drg = $(evt.dragged)
+    var fieldType = $(evt.to).attr('type')
+    if (fieldType == 'agg') {
+      fieldType = 'count'
+    }
+    drg.attr('type',fieldType)
+    console.log(evt.to);
+    drg.removeClass();
+    drg.addClass(drg.attr('type') + '-field');
+    drg.addClass('draggable-clone');
+    drg.addClass('list-group-item');
+    // drg.addClass('sortable-ghost');
+    updateType(drg)
+  },
   // onStart:
   // old js move goes here
 })
@@ -54,8 +69,8 @@ function savePivotFields() {
   var active_fields = new Array();
   $('.draggable').each(function() {
     if ($(this).attr('type') != 'None') {
-      var field_text = $(this).find('span.name-text').text().trim()
-      active_fields.push({field_id: $(this).attr('field-id'), type: $(this).attr('type'), new_name: field_text});
+      var fieldText = $(this).find('span.name-text').text().trim()
+      active_fields.push({field_id: $(this).attr('field-id'), type: $(this).attr('type'), new_name: fieldText});
     }
   });
 
@@ -77,7 +92,6 @@ function savePivotFields() {
 $('body').on('click', '#add-pivot-field', function() {
 
     var mb_id = $('#mb-id').attr('value');
-    console.log('aaaaaaaaaaa');
 
     savePivotFields().then(function(){
       $.ajax({
@@ -131,6 +145,21 @@ function updateClones(field_id,new_text) {
   });
 }
 
+function updateType(cloneField) {
+  var fieldText = $(cloneField.find("span.agg-text"))
+  var sep = ' of '
+  if (cloneField.attr('type') == 'index') {
+    sep = ': '
+  };
+  fieldText.text(cloneField.attr('type')+sep);
+}
+
+
+
+
 $( document ).ready(function() {
   add_edit_buttons()
+  $('.draggable-clone').each(function() {
+    updateType($(this));
+  });
 });
