@@ -2,7 +2,7 @@
 
 [www.mungerbuilder.com](http://www.mungerbuilder.com)
 
-A tool for generating Python + Pandas scripts to do data munging (for now mostly pivot tables), using a simple, drag-and-drop GUI built in Javascript.
+A tool for generating Python + Pandas scripts to do data munging (for now mostly pivot tables), using a simple, drag-and-drop GUI built with Django and Javascript.
 
 Still a work in progress, and there may be active issues, please report any bugs in the issue tracker.
 
@@ -32,7 +32,7 @@ You run it! (And try to fix any errors that you may encounter with some creative
 #### What's Next?
 I plan on continuing to add functionality, but I'm not quite sure what direction to take next. Goals include:
 
- - Real Pivot Functionality
+ - <del>Real Pivot Functionality</del> (added!)
  - Filters and Sorting on Data
  - Custom Aggregate Functions
  - Wildcard File Matching
