@@ -2,6 +2,7 @@ import os
 import re
 import csv
 import json
+import time
 
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
@@ -38,10 +39,10 @@ def munger_builder_index(request):
 
 def get_user_or_anon(request):
     if request.user.id == None:
-        random_id = randint(0,1000000)
-        user = User.objects.create_user(username='anon_{0}'.format(random_id), password=random_id)
+        timestamp = int(time.time())
+        user = User.objects.create_user(username='anon_{0}'.format(timestamp), password=timestamp)
         user.save()
-        anon_user = authenticate(username='anon_{0}'.format(random_id), password=random_id)
+        anon_user = authenticate(username='anon_{0}'.format(timestamp), password=timestamp)
         login(request, anon_user)
     else:
         user = request.user
