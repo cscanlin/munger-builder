@@ -12,14 +12,6 @@ from script_builder.models import MungerBuilder
 
 from jinja2 import Template, Environment, PackageLoader
 
-# class PandasScriptWriter(object):
-#
-#     def __init__(self, munger):
-#         self.munger = munger
-
-def print_run_status(run_start_time,message):
-    print('\n{0} - {1}'.format(datetime.now()-run_start_time, message))
-
 def main(munger_builder_id=1):
 
     mb = MungerBuilder.objects.get(pk=munger_builder_id)

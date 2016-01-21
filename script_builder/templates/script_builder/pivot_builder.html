@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load humanize %}
 
+{% block extra_css %}
+    <link href="{{ STATIC_URL }}pivot_table.css" rel="stylesheet" media="screen">
+{% endblock %}
+
 {% block back_link %}
     <p><a class=back-link href="{% url 'munger_tools' mb.id %}">< Munger Tools</a></p>
 {% endblock %}
@@ -97,7 +101,8 @@
 {% endblock content %}
 
 {% block extra_js %}
-<script src="http://rubaxa.github.io/Sortable/Sortable.js"></script>
+<!-- <script src="http://rubaxa.github.io/Sortable/Sortable.js"></script> -->
+<script src="https://cdn.rawgit.com/RubaXa/Sortable/dev/Sortable.js"></script>
 <script src="{{ STATIC_URL }}jquery.editable.min.js"></script>
 <script src="{{ STATIC_URL }}pivot_table.js"></script>
 {% endblock %}

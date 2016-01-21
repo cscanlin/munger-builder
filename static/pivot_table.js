@@ -4,19 +4,26 @@ Sortable.create(fieldBank, {
     name: 'fieldBank',
     pull: 'clone',
   },
+
   onMove: function (evt) {
     var drg = $(evt.dragged)
+    console.log(drg);
+    var fieldText = $(drg.find("span.name-text"))
     var fieldType = $(evt.to).attr('type')
     if (fieldType == 'agg') {
       fieldType = 'count'
     }
-    drg.attr('type',fieldType)
-    console.log(evt.to);
+    fieldText.removeAttr('id');
+    fieldText.removeClass('source-text');
+    fieldText.addClass('clone-text');
+
+    drg.removeAttr('id');
     drg.removeClass();
+    drg.attr('type',fieldType)
     drg.addClass(drg.attr('type') + '-field');
     drg.addClass('draggable-clone');
     drg.addClass('list-group-item');
-    // drg.addClass('sortable-ghost');
+    drg.addClass('sortable-ghost');
     updateType(drg)
   },
   // onStart:
@@ -146,12 +153,12 @@ function updateClones(field_id,new_text) {
 }
 
 function updateType(cloneField) {
-  var fieldText = $(cloneField.find("span.agg-text"))
+  var aggText = $(cloneField.find("span.agg-text"))
   var sep = ' of '
   if (cloneField.attr('type') == 'index') {
     sep = ': '
   };
-  fieldText.text(cloneField.attr('type')+sep);
+  aggText.text(cloneField.attr('type')+sep);
 }
 
 
