@@ -170,6 +170,7 @@ $.ajaxSetup({
 
 $('#save-pivot-fields').click(function() {
   savePivotFields().then(function(){
+    // location.reload();
     $("#messages-container").load(location.href+" #messages-container > *","");
   });
 });

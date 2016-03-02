@@ -1,14 +1,7 @@
 import os
-import json
-import datetime
-import numpy as np
 from django.db import models
 
-from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
-
 from ordered_model.models import OrderedModel
-from collections import OrderedDict
 
 class MungerBuilder(models.Model):
 
@@ -28,16 +21,19 @@ class MungerBuilder(models.Model):
     def column_fields(self):
         return [field.active_name for field in self.data_fields.all() if field.has_field_type('column')]
 
-    def agg_fields(self, evaled=False):
+    def agg_fields(self, evaled=False, aggs_as_set=False):
         if evaled:
             func = eval
         else:
             func = str
-        return OrderedDict([(field.active_name, func(', '.join(field.agg_types))) for field in self.data_fields.all() if field.agg_types])
+        if aggs_as_set:
+            return {field.active_name: set(func(field.agg_types)) for field in self.data_fields.all() if field.agg_types}
+        else:
+            return {field.active_name: func(', '.join(field.agg_types)) for field in self.data_fields.all() if field.agg_types}
 
     @property
     def rename_field_dict(self):
-        return OrderedDict([(field.current_name, field.new_name) for field in self.data_fields.all() if field.new_name and field.new_name != field.current_name])
+        return {field.current_name: field.new_name for field in self.data_fields.all() if field.new_name and field.new_name != field.current_name}
 
     @property
     def get_output_path(self):
@@ -61,7 +57,9 @@ class DataField(OrderedModel):
     munger_builder = models.ForeignKey(MungerBuilder, related_name='data_fields', related_query_name='data_fields')
     current_name = models.CharField(max_length=200)
     new_name = models.CharField(max_length=200, null=True, blank=True)
-    field_types = models.ManyToManyField(FieldType, blank=True, related_name='field_types', related_query_name='field_types')
+    field_types = models.ManyToManyField(
+        FieldType, blank=True, related_name='field_types', related_query_name='field_types'
+    )
 
     class Meta(OrderedModel.Meta):
         pass
@@ -78,7 +76,7 @@ class DataField(OrderedModel):
 
     @property
     def agg_types(self):
-        return [ft.type_function for ft in self.field_types.all() if ft.type_name not in ['index','column']]
+        return [ft.type_function for ft in self.field_types.all() if ft.type_name not in ['index', 'column']]
 
     def has_field_type(self, field_type_name):
         for field_type in self.field_types.all():
@@ -87,10 +85,6 @@ class DataField(OrderedModel):
         else:
             return False
 
-
-    #path to list
-    # if not contains . then append csv
-    # get agg func
 
 class CSVDocument(models.Model):
     csv_file = models.FileField(upload_to='csv-files')

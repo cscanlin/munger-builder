@@ -1,19 +1,15 @@
 import pandas as pd
-import numpy as np
-from collections import OrderedDict
 
 from datetime import datetime
-from glob import glob
 import os
 import sys
 import traceback
 from io import StringIO
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from django.conf import settings
 from script_builder.models import MungerBuilder
 
-def print_run_status(run_start_time,message):
+def print_run_status(run_start_time, message):
     print('\n{0} - {1}'.format(datetime.now()-run_start_time, message))
 
 def main(munger_builder_id=1):
@@ -43,7 +39,7 @@ def main(munger_builder_id=1):
 
     yield df.to_html()
 
-    #Create Pivot Table on Key and Write Output CSV
+    # Create Pivot Table on Key and Write Output CSV
     print_run_status(run_start_time, 'Writing Output CSVs...')
     pivot_output = pd.pivot_table(
         df,
