@@ -2,7 +2,7 @@
 
 [www.mungerbuilder.com](http://www.mungerbuilder.com)
 
-A tool for generating Python + Pandas scripts to do data munging (for now mostly pivot tables), using a simple, drag-and-drop GUI built in Javascript. Inspired by tools like [Looker]((http://www.looker.com)) and [Tableau]((http://www.tableau.com)).
+A tool for generating Python + Pandas scripts to do data munging (for now mostly pivot tables), using a simple, drag-and-drop GUI built in Javascript. Inspired by tools like [Looker](http://www.looker.com) and [Tableau](http://www.tableau.com).
 
 Still a work in progress, and there may be active issues, please report any bugs in the issue tracker.
 
