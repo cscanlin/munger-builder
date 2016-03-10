@@ -32,7 +32,7 @@ You run it! (And try to fix any errors that you may encounter with some creative
 #### What's Next?
 I plan on continuing to add functionality, but I'm not quite sure what direction to take next. Goals include:
 
- - Real Pivot Functionality
+ - <del>Real Pivot Functionality</del> (added!)
  - Filters and Sorting on Data
  - Custom Aggregate Functions
  - Wildcard File Matching
