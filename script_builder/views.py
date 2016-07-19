@@ -17,10 +17,26 @@ from guardian.shortcuts import assign_perm, get_objects_for_user
 from .models import DataField, FieldType, CSVDocument, MungerBuilder
 from .forms import SetupForm, FieldParser, UploadFileForm
 from .tasks import run_munger, download_munger_async, download_test_data_async
+from .serializers import MungerFieldSerializer
 
 import scripts.build_munger
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
+
+class MungerFieldList(APIView):
+    """
+    List all snippets, or create a new snippet.
+    """
+    def get(self, request, munger_builder_id, format=None):
+        # if not has_mb_permission(munger_builder_id, request):
+        #     return None
+        field_list = MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all()
+        print(field_list)
+        serializer = MungerFieldSerializer(field_list, many=True)
+        return Response(serializer.data)
 
 def munger_builder_index(request):
 
@@ -47,9 +63,9 @@ def get_user_or_anon(request):
     return user
 
 def delete_munger(request, munger_builder_id):
-    mb = get_object_or_404(MungerBuilder, pk=munger_builder_id)
-    if not request.user.has_perm('script_builder.change_mungerbuilder', mb):
+    if not has_mb_permission(munger_builder_id, request):
         return INDEX_REDIRECT
+    mb = get_object_or_404(MungerBuilder, pk=munger_builder_id)
 
     mb.delete()
     messages.success(request, '{0} Deleted Successfully'.format(mb.munger_name))
@@ -106,11 +122,9 @@ def munger_builder_setup(request, munger_builder_id=None):
     max_munger_builders = 5
 
     if munger_builder_id:
-        mb = MungerBuilder.objects.get(pk=munger_builder_id)
-        if not has_mb_permission(mb, request):
+        if not has_mb_permission(munger_builder_id, request):
             return INDEX_REDIRECT
-        else:
-            pass
+        mb = MungerBuilder.objects.get(pk=munger_builder_id)
     else:
         user = request.user
         current_munger_builders = get_objects_for_user(user, 'script_builder.change_mungerbuilder')
@@ -139,12 +153,11 @@ def munger_builder_setup(request, munger_builder_id=None):
 def field_parser(request, munger_builder_id):
 
     anon_check(request)
+    if not has_mb_permission(munger_builder_id, request):
+        return INDEX_REDIRECT
 
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
     field_list = MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all()
-
-    if not has_mb_permission(munger_builder_id, request):
-        return INDEX_REDIRECT
 
     if request.method == 'POST':
         if 'upload-fields-csv' in request.POST:
@@ -177,7 +190,8 @@ def pivot_builder(request, munger_builder_id):
     fields = mb.data_fields.all()
     field_type_names = [ft.type_name for ft in FieldType.objects.all()]
     context = {'mb': mb, 'fields': fields, 'field_type_names': field_type_names}
-    return render(request, 'script_builder/pivot_builder.html', context)
+    return render(request, 'script_builder/pivot_builder_react.html', context)
+    # return render(request, 'script_builder/pivot_builder.html', context)
 
 def download_munger(request, munger_builder_id):
     task = download_munger_async.delay(munger_builder_id)

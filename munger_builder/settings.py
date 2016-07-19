@@ -54,10 +54,17 @@ INSTALLED_APPS = (
     'smuggler',
     'guardian',
     'ordered_model',
+    'rest_framework',
+    'webpack_loader',
     'script_builder',
     'script_runner',
     'munger_builder',
 )
+
+REST_FRAMEWORK = {
+    # 'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser'),
+    'PAGE_SIZE': 50
+}
 
 ROOT_URLCONF = 'munger_builder.urls'
 
@@ -117,6 +124,19 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
+
+# We do this so that django's collectstatic copies or our bundles to the
+# STATIC_ROOT or syncs them to whatever storage we use.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'assets'),
+)
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+    }
+}
 
 # redis server address
 # BROKER_URL = 'amqp://guest:guest@localhost:5672//'

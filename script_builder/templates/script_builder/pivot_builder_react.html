@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% load render_bundle from webpack_loader %}
+{% load humanize %}
+
+{% block extra_css %}
+    <link href="{{ STATIC_URL }}pivot_table.css" rel="stylesheet" media="screen">
+{% endblock %}
+
+{% block back_link %}
+    <p><a class=back-link href="{% url 'munger_tools' mb.id %}">< Munger Tools</a></p>
+{% endblock %}
+
+{% block content %}
+    <div id="react-app"></div>
+    {% render_bundle 'main' %}
+    <div class="header-container">
+      <h3 style="display:inline-block;">{{ mb.munger_name }}</h3>
+      <input id="save-pivot-fields" name="save-pivot-fields" class="btn btn-primary save-pivot-button" type="submit" value="Save" />
+    </div>
+    <div id="main-pivot-wrapper" class="main-pivot-wrapper">
+      <div id="field-source-container" class="field-source-container">
+        <div id="fieldBank" class="field-source-bank">
+          {% for field in fields %}
+              <div id="field-{{ field.id }}-source" field-id="{{ field.id }}" type="None" class="list-group-item draggable-source">
+                <input id="delete-field-{{ field.id }}" type="image" src="{{ STATIC_URL }}delete-icon-transparent.png" value="delete" class="delete-btn-{{ field.id }} delete-field-button">
+                <div class="field-text">
+                  <span class="agg-text"></span>
+                  <span id="source-text-{{ field.id }}" field-id="{{ field.id }}" class="source-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
+                  <input id="edit-field-{{ field.id }}" type="image" src="{{ STATIC_URL }}edit-icon.png" value="edit" class="edit-btn-{{ field.id }} small-image-button">
+                </div>
+              </div>
+          {% endfor %}
+        </div>
+        <div id="add-field-button-container" class="add-field-button-container">
+          <input id="add-pivot-field" name="add-pivot-field" class="btn btn-primary" type="submit" value="+" />
+        </div>
+      </div>
+      <div id="active-fields" class="active-fields">
+      </div>
+
+    <!-- <div id="no-drop" class="list-group-item"> #no-drop </div> -->
+      <div id="main-dropzone-container" class="main-dropzone-container clear">
+          <div id="left-dropzone-container" class="left-dropzone-container">
+            <div id="index-dropzone" class="dropzone index-dropzone">
+              <span>Index Fields</span>
+              <div id="indexList" type="index" class="index-dropzone">
+                {% for field in fields %}
+                  {% for field_type in field.field_types.all %}
+                    {% if field_type.type_name == 'index' %}
+                      <div field-id="{{ field.id }}" type="{{ field_type.type_name }}" class="draggable-clone {{ field_type.type_name }}-field list-group-item">
+                        <div class="field-text">
+                          <span class="agg-text"></span>
+                          <span class="clone-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          <div id="right-dropzone-container" class="right-dropzone-container">
+            <div id="column-dropzone" class="dropzone column-dropzone">
+              <span>Column Fields</span>
+              <div id="columnList" type="column" class="column-dropzone">
+                {% for field in fields %}
+                  {% for field_type in field.field_types.all %}
+                    {% if field_type.type_name == 'column' %}
+                      <div field-id="{{ field.id }}" type="{{ field_type.type_name }}" class="draggable-clone {{ field_type.type_name }}-field list-group-item">
+                        <div class="field-text">
+                          <span class="agg-text"></span>
+                          <span class="clone-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            </div>
+            <div id="agg-dropzone" class="dropzone agg-dropzone">
+              <span>Aggregate Fields</span>
+              <div id="aggList" type="agg" class="agg-dropzone">
+                {% for field in fields %}
+                  {% for field_type in field.field_types.all %}
+                    {% if field_type.is_agg %}
+                      <div field-id="{{ field.id }}" type="{{ field_type.type_name }}" class="draggable-clone {{ field_type.type_name }}-field list-group-item">
+                        <div class="field-text">
+                          <span class="agg-text"></span>
+                          <span class="clone-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+      </div>
+      </br>
+    </div>
+    <div id="mb-id" name="mb-id" class="hidden" value="{{ mb.id }}"></div>
+    <div id="field-types" name="field-types" class="hidden" value="{{ field_type_namess }}"></div>
+{% endblock content %}
+
+{% block extra_js %}
+<!-- <script src="http://rubaxa.github.io/Sortable/Sortable.js"></script> -->
+<script src="https://cdn.rawgit.com/RubaXa/Sortable/dev/Sortable.js"></script>
+<script src="{{ STATIC_URL }}jquery.editable.min.js"></script>
+<script src="{{ STATIC_URL }}pivot_table.js"></script>
+{% endblock %}

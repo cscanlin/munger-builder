@@ -1,0 +1,29 @@
+{
+  "name": "munger_builder",
+  "version": "0.5.0",
+  "description": "A tool for generating python scripts to do data munging, using a javascript GUI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cscanlin/munger-builder.git"
+  },
+  "author": "cscanlin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cscanlin/munger-builder/issues"
+  },
+  "homepage": "https://github.com/cscanlin/munger-builder#readme",
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.11.1",
+    "react": "^15.2.1",
+    "react-dom": "^15.2.1",
+    "webpack": "^1.13.1",
+    "webpack-bundle-tracker": "0.0.93"
+  }
+}
