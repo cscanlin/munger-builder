@@ -61,3 +61,5 @@ target/
 
 **/media/*/*.*
 !**/media/*/*.keep
+
+*.DS_Store

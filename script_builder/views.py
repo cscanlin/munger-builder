@@ -4,17 +4,15 @@ import csv
 import json
 import time
 
-from django.shortcuts import render, get_object_or_404, redirect, render_to_response
+from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template import RequestContext, loader
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.conf import settings
-from random import randint
 
 
-from guardian.shortcuts import assign_perm, get_perms, get_objects_for_user
+from guardian.shortcuts import assign_perm, get_objects_for_user
 
 from .models import DataField, FieldType, CSVDocument, MungerBuilder
 from .forms import SetupForm, FieldParser, UploadFileForm
@@ -38,7 +36,7 @@ def munger_builder_index(request):
     return render(request, 'script_builder/munger_builder_index.html', context)
 
 def get_user_or_anon(request):
-    if request.user.id == None:
+    if not request.user.id:
         timestamp = int(time.time())
         user = User.objects.create_user(username='anon_{0}'.format(timestamp), password=timestamp)
         user.save()
@@ -281,8 +279,8 @@ def add_pivot_field(request, munger_builder_id):
             new_field_name = 'New Field'
 
         field_object = DataField(
-            munger_builder = MungerBuilder.objects.get(pk=munger_builder_id),
-            current_name = new_field_name,
+            munger_builder=MungerBuilder.objects.get(pk=munger_builder_id),
+            current_name=new_field_name,
         )
         field_object.save()
 

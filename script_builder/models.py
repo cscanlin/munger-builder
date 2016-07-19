@@ -44,7 +44,7 @@ class MungerBuilder(models.Model):
 
     @property
     def safe_file_name(self):
-        return self.munger_name.replace(' ','_').lower()
+        return self.munger_name.replace(' ', '_').lower()
 
     @property
     def get_output_path(self):
@@ -61,7 +61,7 @@ class FieldType(models.Model):
 
     @property
     def is_agg(self):
-        if self.type_name not in ['index','column']:
+        if self.type_name not in ['index', 'column']:
             return True
         else:
             return False
@@ -88,7 +88,7 @@ class DataField(OrderedModel):
 
     @property
     def agg_types(self):
-        return [ft.type_function for ft in self.field_types.all() if ft.type_name not in ['index','column']]
+        return [ft.type_function for ft in self.field_types.all() if ft.type_name not in ['index', 'column']]
 
     def has_field_type(self, field_type_name):
         for field_type in self.field_types.all():
