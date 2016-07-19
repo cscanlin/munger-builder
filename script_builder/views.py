@@ -11,15 +11,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.conf import settings
 
-
 from guardian.shortcuts import assign_perm, get_objects_for_user
 
 from .models import DataField, FieldType, CSVDocument, MungerBuilder
 from .forms import SetupForm, FieldParser, UploadFileForm
-from .tasks import run_munger, download_munger_async, download_test_data_async
+from .tasks import download_munger_async, download_test_data_async
 from .serializers import MungerFieldSerializer
-
-import scripts.build_munger
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -27,14 +24,10 @@ from rest_framework.response import Response
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
 class MungerFieldList(APIView):
-    """
-    List all snippets, or create a new snippet.
-    """
     def get(self, request, munger_builder_id, format=None):
-        # if not has_mb_permission(munger_builder_id, request):
-        #     return None
+        if not has_mb_permission(munger_builder_id, request):
+            return None
         field_list = MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all()
-        print(field_list)
         serializer = MungerFieldSerializer(field_list, many=True)
         return Response(serializer.data)
 

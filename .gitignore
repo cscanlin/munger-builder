@@ -59,6 +59,9 @@ target/
 *.sqlite3
 *.pid
 
+# Node
+node_modules/
+
 **/media/*/*.*
 !**/media/*/*.keep
 
