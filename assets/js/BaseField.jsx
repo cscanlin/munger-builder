@@ -20,6 +20,7 @@ var BaseField = React.createClass({
     // console.log(this);
     return (
       <div
+        id={'source-field-' + this.state.id}
         key={this.state.id}
         type="None"
         className="list-group-item">
@@ -52,7 +53,14 @@ var BaseField = React.createClass({
   },
 
   delete: function() {
-    console.log('delete');
+    $.ajax({
+      beforeSend : function(jqXHR, settings) {
+        jqXHR.setRequestHeader("x-csrftoken", Cookie.get('csrftoken'));
+      },
+      type: 'DELETE',
+      url: '/script_builder/field/' + this.state.id,
+    })
+    // ReactDOM.unmountComponentAtNode(ReactDOM.findDOMNode(this).parentNode);
   },
 
   onChange: function(e){
