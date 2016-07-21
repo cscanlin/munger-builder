@@ -20,6 +20,7 @@ from .serializers import MungerFieldSerializer
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
@@ -30,6 +31,16 @@ class MungerFieldList(APIView):
         field_list = MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all()
         serializer = MungerFieldSerializer(field_list, many=True)
         return Response(serializer.data)
+
+class MungerField(APIView):
+    def post(self, request, field_id, format=None):
+        field = DataField.objects.get(pk=field_id)
+        serializer = MungerFieldSerializer(field, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def munger_builder_index(request):
 

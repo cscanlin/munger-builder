@@ -1,5 +1,5 @@
 var React = require('react')
 var ReactDOM = require('react-dom');
-var App = require('./app')
+var PivotApp = require('./PivotApp')
 
-ReactDOM.render(<App source="http://127.0.0.1:8000/script_builder/munger_fields/1?format=json"/>, document.getElementById('react-app'));
+ReactDOM.render(<PivotApp source="/script_builder/munger/1/fields?format=json"/>, document.getElementById('pivot-app'));

@@ -17,7 +17,8 @@ urlpatterns = patterns('',
     url(r'^download_munger/(?P<munger_builder_id>[0-9]+)$', views.download_munger, name='download_munger'),
     url(r'^download_test_data/(?P<munger_builder_id>[0-9]+)$', views.download_test_data, name='download_test_data'),
     url(r'^poll_for_download/', views.poll_for_download, name='poll_for_download'),
-    url(r'^munger_fields/(?P<munger_builder_id>[0-9]+)$', views.MungerFieldList.as_view()),
+    url(r'^munger/(?P<munger_builder_id>[0-9]+)/fields$', views.MungerFieldList.as_view()),
+    url(r'^field/(?P<field_id>[0-9]+)$', views.MungerField.as_view()),
     url(r'^', views.munger_builder_index, name='default'),
 )
 

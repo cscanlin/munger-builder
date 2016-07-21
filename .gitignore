@@ -61,6 +61,7 @@ target/
 
 # Node
 node_modules/
+assets/bundles/
 
 **/media/*/*.*
 !**/media/*/*.keep
