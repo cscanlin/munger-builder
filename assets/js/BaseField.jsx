@@ -1,12 +1,13 @@
-var React = require('react')
-var ReactDOM = require('react-dom');
-var $ = require ('jquery')
-var Cookie = require ('js-cookie')
-var Button = require('./Button');
+const React = require('react');
+const $ = require('jquery');
+const Cookie = require('js-cookie');
+const Button = require('./Button');
 
-var BaseField = React.createClass({
-  getInitialState: function() {
-    return {
+class BaseField extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
       id: this.props.field.id,
       munger_builder: this.props.field.munger_builder,
       current_name: this.props.field.current_name,
@@ -15,84 +16,90 @@ var BaseField = React.createClass({
       active_name: this.props.field.active_name,
       editing: false,
     };
-  },
+    this.delete = this.delete.bind(this);
+  }
 
-  render: function() {
-    // console.log(this);
+  onChange(e) {
+    this.setState({ active_name: e.target.value });
+  }
+
+  elementID() { return `field-name-input-${this.state.id}`; }
+
+  delete() {
+    console.log(this);
+    this.props.deleteField(this.state.id);
+  }
+
+  enableEditing() {
+    // set your contenteditable field into editing mode.
+    console.log('editing');
+    this.setState({ editing: true });
+    document.body.addEventListener('keypress', this.disableEditing);
+    document.body.addEventListener('click', this.disableEditing);
+  }
+
+  disableEditing(e) {
+    if (e.target.id !== this.elementID() || e.key === 'Enter') {
+      console.log('not editing');
+      this.setState({ editing: false });
+      document.body.removeEventListener('click', this.disableEditing);
+      document.body.removeEventListener('keypress', this.disableEditing);
+      if (this.state.active_name !== this.state.new_name) {
+        this.state.new_name = this.state.active_name;
+        $.ajax({
+          beforeSend(jqXHR) {
+            jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
+          },
+          type: 'POST',
+          url: `/script_builder/field/${this.state.id}`,
+          data: this.state,
+        });
+      }
+      e.preventDefault();
+    }
+  }
+
+  render() {
     return (
       <div
         id={this.elementID()}
         key={this.state.id}
         type="None"
-        className="list-group-item">
+        className="list-group-item"
+      >
         <Button
           type="image"
           src="/static/delete-icon-transparent.png"
           value="delete"
           className="delete-field-button"
-          callback={this.delete}>
-        </Button>
+          callback={this.delete}
+        />
         <div
-          className="field-text">
+          className="field-text"
+        >
           <input
-            id={"field-name-input-"+this.state.id}
+            id={`field-name-input-${this.state.id}`}
             type="text"
             disabled={!this.state.editing}
             value={this.state.active_name}
             className="field-name-input"
-            onChange={this.onChange}/>
+            onChange={this.onChange}
+          />
           <Button
             type="image"
             src="/static/edit-icon.png"
             value="edit"
             className="small-image-button"
-            callback={this.enableEditing}>
-          </Button>
+            callback={this.enableEditing}
+          />
         </div>
       </div>
     );
-  },
+  }
+}
 
-  elementID: function() { return "field-name-input-" + this.state.id },
-
-  delete: function() {
-    console.log(this);
-    this.props.deleteField(this.state.id)
-  },
-
-  onChange: function(e){
-    this.setState({active_name: e.target.value});
-  },
-
-  enableEditing: function(){
-    // set your contenteditable field into editing mode.
-    console.log('editing');
-    this.setState({ editing: true })
-    document.body.addEventListener('keypress', this.disableEditing)
-    document.body.addEventListener('click', this.disableEditing)
-  },
-
-  disableEditing: function(e) {
-    if (e.target.id != this.elementID() || e.key === 'Enter') {
-      console.log('not editing');
-      this.setState({ editing: false })
-      document.body.removeEventListener('click', this.disableEditing);
-      document.body.removeEventListener('keypress', this.disableEditing);
-      if (this.state.active_name != this.state.new_name) {
-        this.state.new_name = this.state.active_name
-        $.ajax({
-          beforeSend : function(jqXHR, settings) {
-            jqXHR.setRequestHeader("x-csrftoken", Cookie.get('csrftoken'));
-          },
-          type: 'POST',
-          url: '/script_builder/field/' + this.state.id,
-          data: this.state
-        })
-      }
-      e.preventDefault()
-    }
-  },
-
-});
-
+BaseField.propTypes = {
+  field: React.PropTypes.object.isRequired,
+  deleteField: React.PropTypes.func.isRequired,
+};
 module.exports = BaseField;
