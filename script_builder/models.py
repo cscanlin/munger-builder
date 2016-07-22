@@ -15,7 +15,7 @@ class MungerBuilder(models.Model):
     munger_name = models.CharField(max_length=200)
 
     munger_template = models.FilePathField(path='script_builder/templates/munger_templates', max_length=200,
-                                            default='pandas_munger_template_basic.html')
+                                           default='pandas_munger_template_basic.html')
 
     input_path = models.CharField(max_length=999, default='', blank=True)
     output_path = models.CharField(max_length=999, default='', blank=True)

@@ -25,6 +25,7 @@
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
     "webpack": "^1.13.1",
-    "webpack-bundle-tracker": "0.0.93"
+    "webpack-bundle-tracker": "0.0.93",
+    "js-cookie": "^2.1.2"
   }
 }
