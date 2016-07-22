@@ -1,18 +1,22 @@
-var React = require('react')
+const React = require('react');
 
-var Button = React.createClass({
+function Button(props) {
+  return (
+    <input
+      type={props.type}
+      src={props.src}
+      value={props.value}
+      className={props.className}
+      onClick={props.callback}
+    />
+  );
+}
 
-  render: function() {
-    return (
-      <input
-        type={this.props.type}
-        src={this.props.src}
-        value={this.props.value}
-        className={this.props.className}
-        onClick={this.props.callback}>
-      </input>
-    );
-  }
-});
-
+Button.propTypes = {
+  type: React.PropTypes.string.isRequired,
+  src: React.PropTypes.string.isRequired,
+  value: React.PropTypes.string.isRequired,
+  className: React.PropTypes.string.isRequired,
+  callback: React.PropTypes.func.isRequired,
+};
 module.exports = Button;
