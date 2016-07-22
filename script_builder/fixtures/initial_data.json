@@ -1,0 +1,50 @@
+[
+  {
+    "model": "script_builder.fieldtype",
+    "pk": 1,
+    "fields": {
+      "type_name": "column",
+      "type_function": "column"
+    }
+  },
+  {
+    "model": "script_builder.fieldtype",
+    "pk": 2,
+    "fields": {
+      "type_name": "index",
+      "type_function": "index"
+    }
+  },
+  {
+    "model": "script_builder.fieldtype",
+    "pk": 3,
+    "fields": {
+      "type_name": "count",
+      "type_function": "len"
+    }
+  },
+  {
+    "model": "script_builder.fieldtype",
+    "pk": 4,
+    "fields": {
+      "type_name": "sum",
+      "type_function": "np.sum"
+    }
+  },
+  {
+    "model": "script_builder.fieldtype",
+    "pk": 5,
+    "fields": {
+      "type_name": "mean",
+      "type_function": "np.mean"
+    }
+  },
+  {
+    "model": "script_builder.fieldtype",
+    "pk": 6,
+    "fields": {
+      "type_name": "median",
+      "type_function": "np.median"
+    }
+  }
+]
