@@ -71,13 +71,16 @@ var BaseField = React.createClass({
     // set your contenteditable field into editing mode.
     console.log('editing');
     this.setState({ editing: true })
+    document.body.addEventListener('keypress', this.disableEditing)
     document.body.addEventListener('click', this.disableEditing)
   },
 
   disableEditing: function(e) {
-    if (e.target.id != "field-name-input-"+this.state.id) {
+    if (e.target.id != "field-name-input-"+this.state.id || e.key === 'Enter') {
       console.log('not editing');
       this.setState({ editing: false })
+      document.body.removeEventListener('click', this.disableEditing);
+      document.body.removeEventListener('keypress', this.disableEditing);
       if (this.state.active_name != this.state.new_name) {
         this.state.new_name = this.state.active_name
         $.ajax({
@@ -89,6 +92,7 @@ var BaseField = React.createClass({
           data: this.state
         })
       }
+      e.preventDefault()
     }
   },
 
