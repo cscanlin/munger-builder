@@ -12,35 +12,12 @@
 {% endblock %}
 
 {% block content %}
-    <div id="pivot-app"></div>
-    {% render_bundle 'main' %}
-
     <div class="header-container">
       <h3 style="display:inline-block;">{{ mb.munger_name }}</h3>
-      <input id="save-pivot-fields" name="save-pivot-fields" class="btn btn-primary save-pivot-button" type="submit" value="Save" />
     </div>
     <div id="main-pivot-wrapper" class="main-pivot-wrapper">
-      <div id="field-source-container" class="field-source-container">
-        <div id="fieldBank" class="field-source-bank">
-          {% for field in fields %}
-              <div id="field-{{ field.id }}-source" field-id="{{ field.id }}" type="None" class="list-group-item draggable-source">
-                <input id="delete-field-{{ field.id }}" type="image" src="{{ STATIC_URL }}delete-icon-transparent.png" value="delete" class="delete-btn-{{ field.id }} delete-field-button">
-                <div class="field-text">
-                  <span class="agg-text"></span>
-                  <span id="source-text-{{ field.id }}" field-id="{{ field.id }}" class="source-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
-                  <input id="edit-field-{{ field.id }}" type="image" src="{{ STATIC_URL }}edit-icon.png" value="edit" class="edit-btn-{{ field.id }} small-image-button">
-                </div>
-              </div>
-          {% endfor %}
-        </div>
-        <!-- <div id="add-field-button-container" class="add-field-button-container">
-          <input id="add-pivot-field" name="add-pivot-field" class="btn btn-primary" type="submit" value="+" />
-        </div>
-      </div> -->
-      <div id="active-fields" class="active-fields">
-      </div>
-
-    <!-- <div id="no-drop" class="list-group-item"> #no-drop </div> -->
+      <div id="pivot-app"></div>
+      {% render_bundle 'main' %}
       <div id="main-dropzone-container" class="main-dropzone-container clear">
           <div id="left-dropzone-container" class="left-dropzone-container">
             <div id="index-dropzone" class="dropzone index-dropzone">
@@ -105,8 +82,8 @@
 {% endblock content %}
 
 {% block extra_js %}
-<!-- <script src="http://rubaxa.github.io/Sortable/Sortable.js"></script> -->
+<!-- <script src="http://rubaxa.github.io/Sortable/Sortable.js"></script>
 <script src="https://cdn.rawgit.com/RubaXa/Sortable/dev/Sortable.js"></script>
 <script src="{{ STATIC_URL }}jquery.editable.min.js"></script>
-<script src="{{ STATIC_URL }}pivot_table.js"></script>
+<script src="{{ STATIC_URL }}pivot_table.js"></script> -->
 {% endblock %}
