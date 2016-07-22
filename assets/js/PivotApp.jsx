@@ -5,7 +5,7 @@ var PivotApp = React.createClass({
 
   render: function() {
     return (
-      <FieldBank source={this.props.source}></FieldBank>
+      <FieldBank mungerId={this.props.mungerId}></FieldBank>
     );
   }
 });

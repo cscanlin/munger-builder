@@ -1,4 +1,5 @@
 var React = require('react')
+var ReactDOM = require('react-dom');
 var $ = require ('jquery')
 var Cookie = require ('js-cookie')
 var Button = require('./Button');
@@ -20,7 +21,7 @@ var BaseField = React.createClass({
     // console.log(this);
     return (
       <div
-        id={'source-field-' + this.state.id}
+        id={this.elementID()}
         key={this.state.id}
         type="None"
         className="list-group-item">
@@ -52,15 +53,11 @@ var BaseField = React.createClass({
     );
   },
 
+  elementID: function() { return "field-name-input-" + this.state.id },
+
   delete: function() {
-    $.ajax({
-      beforeSend : function(jqXHR, settings) {
-        jqXHR.setRequestHeader("x-csrftoken", Cookie.get('csrftoken'));
-      },
-      type: 'DELETE',
-      url: '/script_builder/field/' + this.state.id,
-    })
-    // ReactDOM.unmountComponentAtNode(ReactDOM.findDOMNode(this).parentNode);
+    console.log(this);
+    this.props.deleteField(this.state.id)
   },
 
   onChange: function(e){
@@ -76,7 +73,7 @@ var BaseField = React.createClass({
   },
 
   disableEditing: function(e) {
-    if (e.target.id != "field-name-input-"+this.state.id || e.key === 'Enter') {
+    if (e.target.id != this.elementID() || e.key === 'Enter') {
       console.log('not editing');
       this.setState({ editing: false })
       document.body.removeEventListener('click', this.disableEditing);

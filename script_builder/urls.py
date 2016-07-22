@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     url(r'^poll_for_download/', views.poll_for_download, name='poll_for_download'),
     url(r'^munger/(?P<munger_builder_id>[0-9]+)/fields$', views.MungerFieldList.as_view()),
     url(r'^field/(?P<pk>[0-9]+)$', views.MungerField.as_view()),
+    url(r'^field/create$', views.MungerField.as_view()),
     url(r'^', views.munger_builder_index, name='default'),
 )
 

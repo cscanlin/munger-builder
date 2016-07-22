@@ -34,7 +34,8 @@ class MungerFieldList(APIView):
         serializer = MungerFieldSerializer(field_list, many=True)
         return Response(serializer.data)
 
-class MungerField(mixins.RetrieveModelMixin,
+class MungerField(mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
                   mixins.UpdateModelMixin,
                   mixins.DestroyModelMixin,
                   generics.GenericAPIView):
@@ -45,7 +46,10 @@ class MungerField(mixins.RetrieveModelMixin,
         return self.retrieve(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+        if 'pk' in kwargs:
+            return self.update(request, *args, **kwargs)
+        else:
+            return self.create(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
