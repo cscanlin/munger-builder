@@ -1,102 +1,109 @@
-var React = require('react')
-var ReactDOM = require('react-dom');
-var $ = require ('jquery')
-var Cookie = require ('js-cookie')
-var BaseField = require('./BaseField');
-var Button = require('./Button');
+const React = require('react');
+const $ = require('jquery');
+const Cookie = require('js-cookie');
+const BaseField = require('./BaseField');
+const Button = require('./Button');
 
-var FieldBank = React.createClass({
-  getInitialState: function() {
-    return {fields: []};
-  },
+class FieldBank extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      fields: [],
+      editing: false,
+    };
+  }
 
-  componentDidMount: function() {
-    var source = '/script_builder/munger/' + this.props.mungerId + '/fields?format=json'
-    this.serverRequest = $.get(source, function (result) {
-      this.setState({fields: result});
-    }.bind(this));
-  },
+  componentDidMount() {
+    const source = `/script_builder/munger/${this.props.mungerId}/fields?format=json`;
+    this.serverRequest = $.get(source, result =>
+      this.setState({ fields: result }).bind(this)
+    );
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     this.serverRequest.abort();
-  },
+  }
 
-  addField: function() {
-    var field = {
+  addField() {
+    const field = {
       munger_builder: this.props.mungerId,
       current_name: this.newFieldName(),
-    }
-    var fields = this.state.fields
+    };
+    const fields = this.state.fields;
     $.ajax({
-      beforeSend : function(jqXHR, settings) {
-        jqXHR.setRequestHeader("x-csrftoken", Cookie.get('csrftoken'));
+      beforeSend(jqXHR) {
+        jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'POST',
       url: '/script_builder/field/create',
       data: field,
-      success: function(data) {
-        fields.push(data)
-        this.setState({fields: fields});
-      }.bind(this),
-    })
-  },
+      success: data => {
+        fields.push(data);
+        this.setState({ fields: fields }).bind(this);
+      },
+    });
+  }
 
-  newFieldName: function() {
+  newFieldName() {
     // TODO Will not update if fields have changed without reloading
-    var numNewFields = this.state.fields.filter(function(item) {
-      return item.active_name.startsWith('New Field')
-    }).length
+    let numNewFields = this.state.fields.filter(item =>
+      item.active_name.startsWith('New Field')
+    ).length;
     if (numNewFields > 0) {
-      numNewFields += 1
-      return "New Field " + numNewFields
-    } else {
-      return "New Field"
+      numNewFields += 1;
+      return `New Field ${numNewFields}`;
     }
-  },
+    return 'New Field';
+  }
 
-  deleteField: function(fieldID) {
-    var fields = this.state.fields
-    for (var i = 0; i < fields.length; i++)
+  deleteField(fieldID) {
+    const fields = this.state.fields;
+    // fields.forEach(function(entry) {
+    for (var i = 0; i < fields.length; i++) {
       if (fields[i].id === fieldID) {
-          fields.splice(i, 1);
-          break;
+        fields.splice(i, 1);
+        break;
       }
+    }
 
     console.log('delete');
     $.ajax({
-      beforeSend : function(jqXHR, settings) {
-        jqXHR.setRequestHeader("x-csrftoken", Cookie.get('csrftoken'));
+      beforeSend(jqXHR) {
+        jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'DELETE',
-      url: '/script_builder/field/' + fieldID
+      url: `/script_builder/field/${fieldID}`
     })
-    this.setState({fields: fields});
-  },
+    this.setState({ fields: fields });
+  }
 
-  render: function() {
-    var deleteField = this.deleteField
+  render() {
+    const deleteField = this.deleteField;
     return (
       <div>
         <div>
-          {this.state.fields.map(function(field) {
-            return (
-              <BaseField deleteField={deleteField} key={field.id} field={field}></BaseField>
-            )
-          })}
+          {this.state.fields.map(field =>
+            <BaseField deleteField={deleteField} key={field.id} field={field} />
+          )}
         </div>
         <div
-          className="add-field-button-container">
+          className="add-field-button-container"
+        >
           <Button
             type="submit"
             src=""
             value="+"
             className="btn btn-primary"
-            callback={this.addField}>
-          </Button>
+            callback={this.addField}
+          />
         </div>
       </div>
     );
   }
-});
+}
 
+FieldBank.propTypes = {
+  fields: React.PropTypes.array,
+  mungerId: React.PropTypes.number.isRequired,
+};
 module.exports = FieldBank;
