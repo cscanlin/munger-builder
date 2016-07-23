@@ -74,7 +74,7 @@ class BaseField extends React.Component {
           src="/static/delete-icon-transparent.png"
           value="delete"
           className="delete-field-button"
-          callback={this.delete}
+          onClick={this.delete}
         />
         <div
           className="field-text"
@@ -92,7 +92,7 @@ class BaseField extends React.Component {
             src="/static/edit-icon.png"
             value="edit"
             className="small-image-button"
-            callback={this.enableEditing}
+            onClick={this.enableEditing}
           />
         </div>
       </div>

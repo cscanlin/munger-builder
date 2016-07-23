@@ -17,9 +17,9 @@ class FieldBank extends React.Component {
   }
 
   componentDidMount() {
-    const source = `/script_builder/munger/${this.props.mungerId}/fields?format=json`;
+    const source = `/script_builder/munger/${this.props.mungerId}?format=json`;
     this.serverRequest = $.get(source, result =>
-      this.setState({ fields: result })
+      this.setState({ fields: result.data_fields })
     );
   }
 
@@ -46,20 +46,6 @@ class FieldBank extends React.Component {
         this.setState(fields);
       },
     });
-
-    // working
-    // $.ajax({
-    //   beforeSend(jqXHR) {
-    //     jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
-    //   },
-    //   type: 'POST',
-    //   url: '/script_builder/field/create',
-    //   data: field,
-    //   success: function(data) {
-    //     fields.push(data);
-    //     this.setState({ fields: fields });
-    //   }.bind(this),
-    // })
   }
 
   newFieldName() {
@@ -108,7 +94,7 @@ class FieldBank extends React.Component {
             src=""
             value="+"
             className="btn btn-primary"
-            callback={this.addField}
+            onClick={this.addField}
           />
         </div>
       </div>

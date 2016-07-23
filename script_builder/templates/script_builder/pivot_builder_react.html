@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block content %}
+    <div id="mb-id" name="mb-id" class="hidden" value="{{ mb.id }}"></div>
     <div class="header-container">
       <h3 style="display:inline-block;">{{ mb.munger_name }}</h3>
     </div>
@@ -23,18 +24,6 @@
             <div id="index-dropzone" class="dropzone index-dropzone">
               <span>Index Fields</span>
               <div id="indexList" type="index" class="index-dropzone">
-                {% for field in fields %}
-                  {% for field_type in field.field_types.all %}
-                    {% if field_type.type_name == 'index' %}
-                      <div field-id="{{ field.id }}" type="{{ field_type.type_name }}" class="draggable-clone {{ field_type.type_name }}-field list-group-item">
-                        <div class="field-text">
-                          <span class="agg-text"></span>
-                          <span class="clone-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
-                        </div>
-                      </div>
-                    {% endif %}
-                  {% endfor %}
-                {% endfor %}
               </div>
             </div>
           </div>
@@ -42,43 +31,17 @@
             <div id="column-dropzone" class="dropzone column-dropzone">
               <span>Column Fields</span>
               <div id="columnList" type="column" class="column-dropzone">
-                {% for field in fields %}
-                  {% for field_type in field.field_types.all %}
-                    {% if field_type.type_name == 'column' %}
-                      <div field-id="{{ field.id }}" type="{{ field_type.type_name }}" class="draggable-clone {{ field_type.type_name }}-field list-group-item">
-                        <div class="field-text">
-                          <span class="agg-text"></span>
-                          <span class="clone-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
-                        </div>
-                      </div>
-                    {% endif %}
-                  {% endfor %}
-                {% endfor %}
               </div>
             </div>
             <div id="agg-dropzone" class="dropzone agg-dropzone">
               <span>Aggregate Fields</span>
               <div id="aggList" type="agg" class="agg-dropzone">
-                {% for field in fields %}
-                  {% for field_type in field.field_types.all %}
-                    {% if field_type.is_agg %}
-                      <div field-id="{{ field.id }}" type="{{ field_type.type_name }}" class="draggable-clone {{ field_type.type_name }}-field list-group-item">
-                        <div class="field-text">
-                          <span class="agg-text"></span>
-                          <span class="clone-text editable-{{ field.id }} name-text">{{ field.active_name }}</span>
-                        </div>
-                      </div>
-                    {% endif %}
-                  {% endfor %}
-                {% endfor %}
               </div>
             </div>
           </div>
       </div>
       </br>
     </div>
-    <div id="mb-id" name="mb-id" class="hidden" value="{{ mb.id }}"></div>
-    <div id="field-types" name="field-types" class="hidden" value="{{ field_type_namess }}"></div>
 {% endblock content %}
 
 {% block extra_js %}

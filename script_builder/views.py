@@ -16,9 +16,8 @@ from guardian.shortcuts import assign_perm, get_objects_for_user
 from .models import DataField, FieldType, CSVDocument, MungerBuilder
 from .forms import SetupForm, FieldParser, UploadFileForm
 from .tasks import download_munger_async, download_test_data_async
-from .serializers import MungerFieldSerializer
+from .serializers import MungerSerializer, DataFieldSerializer
 
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import mixins
@@ -26,21 +25,33 @@ from rest_framework import generics
 
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
-class MungerFieldList(APIView):
-    def get(self, request, munger_builder_id, format=None):
-        if not has_mb_permission(munger_builder_id, request):
-            return None
-        field_list = MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all()
-        serializer = MungerFieldSerializer(field_list, many=True)
-        return Response(serializer.data)
+class Mungers(mixins.CreateModelMixin,
+              mixins.RetrieveModelMixin,
+              mixins.UpdateModelMixin,
+              mixins.DestroyModelMixin,
+              generics.GenericAPIView):
+    queryset = MungerBuilder.objects.all()
+    serializer_class = MungerSerializer
 
-class MungerField(mixins.CreateModelMixin,
-                  mixins.RetrieveModelMixin,
-                  mixins.UpdateModelMixin,
-                  mixins.DestroyModelMixin,
-                  generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if 'pk' in kwargs:
+            return self.update(request, *args, **kwargs)
+        else:
+            return self.create(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+class DataFields(mixins.CreateModelMixin,
+                 mixins.RetrieveModelMixin,
+                 mixins.UpdateModelMixin,
+                 mixins.DestroyModelMixin,
+                 generics.GenericAPIView):
     queryset = DataField.objects.all()
-    serializer_class = MungerFieldSerializer
+    serializer_class = DataFieldSerializer
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -122,8 +133,8 @@ def munger_tools(request, munger_builder_id):
 
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
-    # if request.method == 'POST':
-    #     return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder.id))
+    if request.method == 'POST':
+        return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder_id))
 
     if not has_mb_permission(mb, request):
         return INDEX_REDIRECT
@@ -165,35 +176,6 @@ def munger_builder_setup(request, munger_builder_id=None):
         context = {'form': form, 'formset': form, 'mb': mb}
         return render(request, 'script_builder/munger_builder_setup.html', context)
 
-
-def field_parser(request, munger_builder_id):
-
-    anon_check(request)
-    if not has_mb_permission(munger_builder_id, request):
-        return INDEX_REDIRECT
-
-    mb = MungerBuilder.objects.get(pk=munger_builder_id)
-    field_list = MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all()
-
-    if request.method == 'POST':
-        if 'upload-fields-csv' in request.POST:
-            input_form = UploadFileForm(request.POST, request.FILES)
-            fields = validate_and_save_fields(request, munger_builder_id, input_form, 'csv')
-
-        else:
-            upload_form = FieldParser(request.POST, request.FILES)
-            fields = validate_and_save_fields(request, munger_builder_id, upload_form, 'text')
-
-        return HttpResponseRedirect('/script_builder/field_parser/{0}'.format(munger_builder_id))
-
-    else:
-        messages.info(request, 'Paste in a list of comma or tab separated fields, or upload a csv with the desired columns')
-        input_form = FieldParser()
-        upload_form = UploadFileForm()
-
-    context = {'field_list': field_list, 'input_form': input_form, 'upload_form': upload_form, 'mb': mb}
-    return render(request, 'script_builder/field_parser.html', context)
-
 def pivot_builder(request, munger_builder_id):
 
     anon_check(request)
@@ -203,11 +185,7 @@ def pivot_builder(request, munger_builder_id):
     if not has_mb_permission(mb, request):
         return INDEX_REDIRECT
 
-    fields = mb.data_fields.all()
-    field_type_names = [ft.type_name for ft in FieldType.objects.all()]
-    context = {'mb': mb, 'fields': fields, 'field_type_names': field_type_names}
-    return render(request, 'script_builder/pivot_builder_react.html', context)
-    # return render(request, 'script_builder/pivot_builder.html', context)
+    return render(request, 'script_builder/pivot_builder_react.html', context={'mb': mb})
 
 def download_munger(request, munger_builder_id):
     task = download_munger_async.delay(munger_builder_id)
@@ -249,28 +227,6 @@ def has_mb_permission(mb, request):
         mb = MungerBuilder.objects.get(pk=mb)
     return request.user.has_perm('script_builder.change_mungerbuilder', mb)
 
-def validate_and_save_fields(request, munger_builder_id, form, input_type):
-    if form.is_valid():
-
-        fields_list = parse_text_fields(form, request, input_type)
-
-        mb = MungerBuilder.objects.get(pk=munger_builder_id)
-
-        field_objects = []
-        for field_name in fields_list:
-            field, created = DataField.objects.get_or_create(
-                munger_builder=mb,
-                current_name=field_name,
-            )
-            field.save()
-            field_objects.append(field)
-
-        return field_objects
-
-    else:
-        messages.error(request, 'Field Creation Failed Unexpectedly')
-        return None
-
 def parse_text_fields(form, request, input_type):
     if input_type == 'text':
         return re.split('[,\t\n]', form.cleaned_data['fields_paste'])
@@ -280,58 +236,6 @@ def parse_text_fields(form, request, input_type):
         new_csv.save()
         reader = csv.DictReader(request.FILES['csv_file'])
         return reader.fieldnames
-
-def save_pivot_fields(request, munger_builder_id):
-    if request.is_ajax():
-        active_fields_data = json.loads(request.POST['active_fields'])
-
-        clear_field_data(munger_builder_id)
-
-        for field_data in active_fields_data:
-            field_object = DataField.objects.get(pk=field_data['field_id'])
-            field_object.new_name = field_data['new_name']
-
-            field_type = FieldType.objects.get(type_name=field_data['type'])
-            field_object.field_types.add(field_type)
-
-            field_object.save()
-
-    messages.success(request, 'Pivot Fields Saved Successfully')
-    return HttpResponse("OK")
-
-def add_pivot_field(request, munger_builder_id):
-    if request.is_ajax():
-
-        num_new_fields = len(DataField.objects.filter(current_name__startswith='New Field'))
-        if num_new_fields > 0:
-            new_field_name = 'New Field {0}'.format(num_new_fields+1)
-        else:
-            new_field_name = 'New Field'
-
-        field_object = DataField(
-            munger_builder=MungerBuilder.objects.get(pk=munger_builder_id),
-            current_name=new_field_name,
-        )
-        field_object.save()
-
-        messages.success(request, 'Field Added Successfully')
-        return HttpResponse("OK")
-
-def delete_pivot_field(request, field_id):
-    if request.is_ajax():
-
-        field = get_object_or_404(DataField, pk=field_id)
-        if not request.user.has_perm('script_builder.change_datafield', field):
-            return INDEX_REDIRECT
-
-        field.delete()
-        messages.success(request, '{0} Deleted Successfully'.format(field.current_name))
-        return HttpResponse("OK")
-
-def clear_field_data(munger_builder_id):
-    for field in MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all():
-        field.field_types.clear()
-        field.save()
 
 def anon_check(request):
     if 'anon_' in request.user.username:

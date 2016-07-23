@@ -18,11 +18,27 @@
       {% crispy form %}
       {% if mb %}
         <div class="delete-munger-holder">
-          <form action="{% url 'delete_munger' mb.id %}">
-            <input id="delete-munger-{{ mb.id }}" name="delete-munger-button" class="btn btn-danger delete-munger-button" type="submit" value="Delete"/>
-          </form>
+            <input class="btn btn-danger" type="submit" value="Delete" onclick="deleteMunger({{ mb.id }})"/>
         </div>
       {% endif %}
     </div>
 
 {% endblock content %}
+
+{% block extra_js %}
+<script src="/static/jquery.cookie.js"></script>
+<script>
+  function deleteMunger(mungerID) {
+    $.ajax({
+      beforeSend(jqXHR) {
+        jqXHR.setRequestHeader('x-csrftoken', $.cookie('csrftoken'));
+      },
+      type: 'DELETE',
+      url: `/script_builder/munger/${mungerID}`,
+      success: function(response) {
+        window.location.href = '/script_builder';
+      },
+    });
+  }
+</script>
+{% endblock extra_js %}

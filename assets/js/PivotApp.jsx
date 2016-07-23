@@ -1,13 +1,13 @@
-var React = require('react')
-var FieldBank = require('./FieldBank')
+const React = require('react');
+const FieldBank = require('./FieldBank');
 
-var PivotApp = React.createClass({
-
-  render: function() {
-    return (
-      <FieldBank mungerId={this.props.mungerId}></FieldBank>
-    );
+class PivotApp extends React.Component {
+  render() {
+    return <FieldBank mungerId={this.props.mungerId} />;
   }
-});
+}
 
+PivotApp.propTypes = {
+  mungerId: React.PropTypes.number.isRequired,
+};
 module.exports = PivotApp;
