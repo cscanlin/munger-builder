@@ -16,7 +16,10 @@ class BaseField extends React.Component {
       active_name: this.props.field.active_name,
       editing: false,
     };
+    this.onChange = this.onChange.bind(this);
     this.delete = this.delete.bind(this);
+    this.enableEditing = this.enableEditing.bind(this);
+    this.disableEditing = this.disableEditing.bind(this);
   }
 
   onChange(e) {
