@@ -11,12 +11,15 @@ class FieldBank extends React.Component {
       fields: [],
       editing: false,
     };
+    this.addField = this.addField.bind(this);
+    this.newFieldName = this.newFieldName.bind(this);
+    this.deleteField = this.deleteField.bind(this);
   }
 
   componentDidMount() {
     const source = `/script_builder/munger/${this.props.mungerId}/fields?format=json`;
     this.serverRequest = $.get(source, result =>
-      this.setState({ fields: result }).bind(this)
+      this.setState({ fields: result })
     );
   }
 
@@ -25,6 +28,7 @@ class FieldBank extends React.Component {
   }
 
   addField() {
+    console.log('add field');
     const field = {
       munger_builder: this.props.mungerId,
       current_name: this.newFieldName(),
@@ -39,9 +43,23 @@ class FieldBank extends React.Component {
       data: field,
       success: data => {
         fields.push(data);
-        this.setState({ fields: fields }).bind(this);
+        this.setState(fields);
       },
     });
+
+    // working
+    // $.ajax({
+    //   beforeSend(jqXHR) {
+    //     jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
+    //   },
+    //   type: 'POST',
+    //   url: '/script_builder/field/create',
+    //   data: field,
+    //   success: function(data) {
+    //     fields.push(data);
+    //     this.setState({ fields: fields });
+    //   }.bind(this),
+    // })
   }
 
   newFieldName() {
@@ -58,13 +76,9 @@ class FieldBank extends React.Component {
 
   deleteField(fieldID) {
     const fields = this.state.fields;
-    // fields.forEach(function(entry) {
-    for (var i = 0; i < fields.length; i++) {
-      if (fields[i].id === fieldID) {
-        fields.splice(i, 1);
-        break;
-      }
-    }
+
+    const deleteIndex = fields.findIndex(f => f.id === fieldID);
+    fields.splice(deleteIndex, 1);
 
     console.log('delete');
     $.ajax({
@@ -72,9 +86,9 @@ class FieldBank extends React.Component {
         jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'DELETE',
-      url: `/script_builder/field/${fieldID}`
-    })
-    this.setState({ fields: fields });
+      url: `/script_builder/field/${fieldID}`,
+      success: this.setState(fields),
+    });
   }
 
   render() {

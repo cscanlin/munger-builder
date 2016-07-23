@@ -26,7 +26,6 @@ class BaseField extends React.Component {
   elementID() { return `field-name-input-${this.state.id}`; }
 
   delete() {
-    console.log(this);
     this.props.deleteField(this.state.id);
   }
 
