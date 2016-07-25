@@ -19,42 +19,78 @@ from .tasks import download_munger_async, download_test_data_async
 from .serializers import MungerSerializer, DataFieldSerializer
 
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import mixins
-from rest_framework import generics
+from rest_framework import status, filters, mixins, generics, permissions
 
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
-class Mungers(mixins.CreateModelMixin,
+class MungerPermissions(permissions.DjangoObjectPermissions):
+    perms_map = {
+        'GET': ['%(app_label)s.change_%(model_name)s'],
+        'POST': ['%(app_label)s.add_%(model_name)s'],
+        'DELETE': ['%(app_label)s.delete_%(model_name)s'],
+        'OPTIONS': ['%(app_label)s.change_%(model_name)s'],
+        'HEAD': ['%(app_label)s.change_%(model_name)s'],
+    }
+
+class Mungers(MungerPermissions,
+              mixins.CreateModelMixin,
               mixins.RetrieveModelMixin,
               mixins.UpdateModelMixin,
               mixins.DestroyModelMixin,
+              mixins.ListModelMixin,
               generics.GenericAPIView):
-    queryset = MungerBuilder.objects.all()
+
     serializer_class = MungerSerializer
+    filter_backends = (filters.DjangoObjectPermissionsFilter,)
+
+    def get_queryset(self):
+        return MungerBuilder.objects
 
     def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        if 'pk' in kwargs:
+            return self.retrieve(request, *args, **kwargs)
+        else:
+            return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        user = request.user
         if 'pk' in kwargs:
             return self.update(request, *args, **kwargs)
         else:
-            return self.create(request, *args, **kwargs)
+            if not self.over_munger_limit(user):
+                return self.create(request, *args, **kwargs)
+            else:
+                return Response('Cannot Create more Munger Builders - Delete some to make space',
+                                status=status.HTTP_201_CREATED)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
-class DataFields(mixins.CreateModelMixin,
+    def over_munger_limit(self, user, max_munger_builders=5):
+        current_munger_builders = get_objects_for_user(user, 'script_builder.change_mungerbuilder')
+        if len(current_munger_builders) >= max_munger_builders and not user.is_superuser:
+            return True
+        else:
+            return False
+
+class DataFields(MungerPermissions,
+                 mixins.CreateModelMixin,
                  mixins.RetrieveModelMixin,
                  mixins.UpdateModelMixin,
                  mixins.DestroyModelMixin,
+                 mixins.ListModelMixin,
                  generics.GenericAPIView):
-    queryset = DataField.objects.all()
+
     serializer_class = DataFieldSerializer
 
+    def get_queryset(self):
+        return DataField.objects
+
     def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        if 'pk' in kwargs:
+            return self.retrieve(request, *args, **kwargs)
+        else:
+            return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         if 'pk' in kwargs:
@@ -72,8 +108,8 @@ def munger_builder_index(request):
     anon_check(request)
 
     munger_builder_list = get_objects_for_user(user, 'script_builder.change_mungerbuilder')
-    if len(munger_builder_list) == 0:
-        munger_builder_list = add_sample_munger(user)
+    # if len(munger_builder_list) == 0:
+    #     munger_builder_list = add_sample_munger(user)
 
     context = {'munger_builder_list': munger_builder_list}
     return render(request, 'script_builder/munger_builder_index.html', context)
@@ -89,15 +125,6 @@ def get_user_or_anon(request):
         user = request.user
     return user
 
-def delete_munger(request, munger_builder_id):
-    if not has_mb_permission(munger_builder_id, request):
-        return INDEX_REDIRECT
-    mb = get_object_or_404(MungerBuilder, pk=munger_builder_id)
-
-    mb.delete()
-    messages.success(request, '{0} Deleted Successfully'.format(mb.munger_name))
-    return HttpResponseRedirect('/script_builder/munger_builder_index/')
-
 def add_sample_munger(user):
 
     mb = MungerBuilder.objects.create(munger_name='Sample for {0}'.format(user.username), input_path='test_data.csv')
@@ -106,6 +133,7 @@ def add_sample_munger(user):
     assign_perm('add_mungerbuilder', user, mb)
     assign_perm('change_mungerbuilder', user, mb)
     assign_perm('delete_mungerbuilder', user, mb)
+    assign_perm('view_mungerbuilder', user, mb)
 
     sample_field_dict = {
         'order_num': ['count'],
@@ -136,7 +164,7 @@ def munger_tools(request, munger_builder_id):
     if request.method == 'POST':
         return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder_id))
 
-    if not has_mb_permission(mb, request):
+    if not mb.user_is_authorized():
         return INDEX_REDIRECT
 
     context = {'mb': mb}
@@ -149,9 +177,9 @@ def munger_builder_setup(request, munger_builder_id=None):
     max_munger_builders = 5
 
     if munger_builder_id:
-        if not has_mb_permission(munger_builder_id, request):
-            return INDEX_REDIRECT
         mb = MungerBuilder.objects.get(pk=munger_builder_id)
+        if not mb.user_is_authorized():
+            return INDEX_REDIRECT
     else:
         user = request.user
         current_munger_builders = get_objects_for_user(user, 'script_builder.change_mungerbuilder')
@@ -168,6 +196,7 @@ def munger_builder_setup(request, munger_builder_id=None):
         assign_perm('add_mungerbuilder', request.user, mb)
         assign_perm('change_mungerbuilder', request.user, mb)
         assign_perm('delete_mungerbuilder', request.user, mb)
+        assign_perm('view_mungerbuilder', request.user, mb)
 
         return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(mb.id))
 
@@ -182,7 +211,7 @@ def pivot_builder(request, munger_builder_id):
 
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
-    if not has_mb_permission(mb, request):
+    if not mb.user_is_authorized():
         return INDEX_REDIRECT
 
     return render(request, 'script_builder/pivot_builder_react.html', context={'mb': mb})
@@ -221,11 +250,6 @@ def poll_for_download(request):
         return response
 
 # Helper Functions
-
-def has_mb_permission(mb, request):
-    if not isinstance(mb, MungerBuilder):
-        mb = MungerBuilder.objects.get(pk=mb)
-    return request.user.has_perm('script_builder.change_mungerbuilder', mb)
 
 def parse_text_fields(form, request, input_type):
     if input_type == 'text':

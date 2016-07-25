@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
+from guardian.shortcuts import assign_perm
+
 from .forms import UserRegistrationForm
 
 def home_page(request):
@@ -29,6 +31,8 @@ def register(request):
         if user_form.is_valid():
 
             new_user = user_form.save()
+            assign_perm('add_mungerbuilder', new_user)
+            assign_perm('add_datafield', new_user)
 
             messages.success(request, "Thanks for registering. You are now logged in.")
             new_user = authenticate(username=request.POST['username'],

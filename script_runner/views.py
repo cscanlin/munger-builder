@@ -14,7 +14,6 @@ from pygments.formatters import HtmlFormatter
 
 from scripts import run_munger, build_munger
 
-from script_builder.views import has_mb_permission
 from script_builder.models import MungerBuilder
 
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
@@ -41,10 +40,10 @@ def run_munger_output(request, munger_builder_id):
 
 def build_munger_output(request, munger_builder_id):
 
-    if not has_mb_permission(munger_builder_id, request):
+    mb = MungerBuilder.objects.get(pk=munger_builder_id)
+    if not mb.user_is_authorized():
         return INDEX_REDIRECT
 
-    mb = MungerBuilder.objects.get(pk=munger_builder_id)
     print(mb.munger_template)
 
     script_string = build_munger.main(munger_builder_id)

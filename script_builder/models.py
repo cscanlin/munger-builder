@@ -2,15 +2,34 @@ import os
 import json
 import datetime
 import numpy as np
-from django.db import models
 
+from django.core.exceptions import ValidationError
+from django.db import models
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
+from django.http import HttpResponse
+
+from guardian.shortcuts import assign_perm
 
 from ordered_model.models import OrderedModel
 from collections import OrderedDict
 
-class MungerBuilder(models.Model):
+from .current_user import current_user
+
+class PermissionedModel(models.Model):
+    
+    def assign_perms(self, user):
+        meta_name = self._meta.model_name
+        permissions = (perm_name + meta_name for perm_name in ('add_', 'change_', 'delete_', 'view_'))
+        for perm in permissions:
+            assign_perm(perm, user, self)
+
+class MungerBuilder(PermissionedModel):
+
+    class Meta:
+        permissions = (
+            ('view_mungerbuilder', 'View Munger'),
+        )
 
     munger_name = models.CharField(max_length=200)
 
@@ -22,6 +41,13 @@ class MungerBuilder(models.Model):
 
     rows_to_delete_top = models.IntegerField(null=True, blank=True)
     rows_to_delete_bottom = models.IntegerField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.assign_perms(current_user())
+
+    def user_is_authorized(self):
+        return current_user().has_perm('script_builder.change_mungerbuilder', self)
 
     @property
     def index_fields(self):
@@ -69,15 +95,31 @@ class FieldType(models.Model):
     def __str__(self):
         return self.type_name.capitalize()
 
-class DataField(OrderedModel):
+class DataField(PermissionedModel):
 
-    class Meta(OrderedModel.Meta):
-        pass
+    class Meta:
+        permissions = (
+            ('view_datafield', 'View Data Field'),
+        )
 
-    munger_builder = models.ForeignKey(MungerBuilder, related_name='data_fields', related_query_name='data_fields')
+    munger_builder = models.ForeignKey(MungerBuilder, related_name='data_fields',
+                                       related_query_name='data_fields')
     current_name = models.CharField(max_length=200)
     new_name = models.CharField(max_length=200, null=True, blank=True)
-    field_types = models.ManyToManyField(FieldType, blank=True, related_name='field_types', related_query_name='field_types')
+    field_types = models.ManyToManyField(FieldType, blank=True, related_name='field_types',
+                                         related_query_name='field_types')
+
+    def save(self, *args, **kwargs):
+        if not self.munger_builder.user_is_authorized():
+            raise ValidationError(
+                _('Not authorized to change munger: {}'.format(self.munger_builder.munger_name))
+            )
+        super().save(*args, **kwargs)
+        self.assign_perms(current_user())
+
+    def delete(self, *args, **kwargs):
+        import pudb; pudb.set_trace()
+        super().delete(*args, **kwargs)
 
     @property
     def active_name(self):

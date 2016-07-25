@@ -47,7 +47,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.sites',
-    'pipeline',
     'crispy_forms',
     'bootstrap3',
     'kombu.transport.django',
@@ -62,7 +61,9 @@ INSTALLED_APPS = (
 )
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser'),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.DjangoObjectPermissions',
+    ),
     'PAGE_SIZE': 50
 }
 
@@ -175,9 +176,8 @@ middleware_list = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'script_builder.current_user.RequestMiddleware'
 ]
-
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 SMUGGLER_EXCLUDE_LIST = [
     'contenttypes.contenttype',
