@@ -31,8 +31,8 @@ def register(request):
         if user_form.is_valid():
 
             new_user = user_form.save()
-            assign_perm('add_mungerbuilder', new_user)
-            assign_perm('add_datafield', new_user)
+            assign_perm('script_builder.add_mungerbuilder', new_user)
+            assign_perm('script_builder.add_datafield', new_user)
 
             messages.success(request, "Thanks for registering. You are now logged in.")
             new_user = authenticate(username=request.POST['username'],

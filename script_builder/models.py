@@ -16,15 +16,15 @@ from collections import OrderedDict
 
 from .current_user import current_user
 
-class PermissionedModel(models.Model):
-    
+class PermissionedModel(object):
+
     def assign_perms(self, user):
         meta_name = self._meta.model_name
         permissions = (perm_name + meta_name for perm_name in ('add_', 'change_', 'delete_', 'view_'))
         for perm in permissions:
             assign_perm(perm, user, self)
 
-class MungerBuilder(PermissionedModel):
+class MungerBuilder(models.Model, PermissionedModel):
 
     class Meta:
         permissions = (
@@ -95,15 +95,14 @@ class FieldType(models.Model):
     def __str__(self):
         return self.type_name.capitalize()
 
-class DataField(PermissionedModel):
+class DataField(models.Model, PermissionedModel):
 
     class Meta:
         permissions = (
             ('view_datafield', 'View Data Field'),
         )
 
-    munger_builder = models.ForeignKey(MungerBuilder, related_name='data_fields',
-                                       related_query_name='data_fields')
+    munger_builder = models.ForeignKey(MungerBuilder, related_name='data_fields', related_query_name='data_fields')
     current_name = models.CharField(max_length=200)
     new_name = models.CharField(max_length=200, null=True, blank=True)
     field_types = models.ManyToManyField(FieldType, blank=True, related_name='field_types',
@@ -118,7 +117,6 @@ class DataField(PermissionedModel):
         self.assign_perms(current_user())
 
     def delete(self, *args, **kwargs):
-        import pudb; pudb.set_trace()
         super().delete(*args, **kwargs)
 
     @property

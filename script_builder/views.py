@@ -61,7 +61,7 @@ class Mungers(MungerPermissions,
                 return self.create(request, *args, **kwargs)
             else:
                 return Response('Cannot Create more Munger Builders - Delete some to make space',
-                                status=status.HTTP_201_CREATED)
+                                status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
@@ -117,9 +117,15 @@ def munger_builder_index(request):
 def get_user_or_anon(request):
     if not request.user.id:
         timestamp = int(time.time())
-        user = User.objects.create_user(username='anon_{0}'.format(timestamp), password=timestamp)
+        credentials = {
+            'username': 'anon_{0}'.format(timestamp),
+            'password': timestamp,
+        }
+        user = User.objects.create_user(**credentials)
         user.save()
-        anon_user = authenticate(username='anon_{0}'.format(timestamp), password=timestamp)
+        assign_perm('script_builder.add_mungerbuilder', user)
+        assign_perm('script_builder.add_datafield', user)
+        anon_user = authenticate(**credentials)
         login(request, anon_user)
     else:
         user = request.user

@@ -17,7 +17,7 @@ django-celery==3.1.17
 django-admin-bootstrapped==2.5.1
 django-bootstrap3==5.4.0
 django-compressor==1.5
-django-crispy-forms==1.4.0
+django-crispy-forms==1.6.0
 django-picklefield==0.3.1
 kombu==3.0.30
 lxml==3.4.0
