@@ -9,7 +9,6 @@ class FieldBank extends React.Component {
     super(props);
     this.state = {
       fields: [],
-      editing: false,
     };
     this.addField = this.addField.bind(this);
     this.newFieldName = this.newFieldName.bind(this);
@@ -78,12 +77,11 @@ class FieldBank extends React.Component {
   }
 
   render() {
-    const deleteField = this.deleteField;
     return (
       <div>
         <div>
           {this.state.fields.map(field =>
-            <BaseField deleteField={deleteField} key={field.id} field={field} />
+            <BaseField deleteField={this.deleteField} key={field.id} field={field} />
           )}
         </div>
         <div
