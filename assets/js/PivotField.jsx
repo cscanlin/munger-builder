@@ -21,8 +21,8 @@ class PivotField extends React.Component {
   }
 
   fieldTypeName() {
-    const fieldTypeMap = { 3: 'count' }; // Redux
-    return fieldTypeMap[this.state.field_type];
+    // Redux fieldTypeMap
+    return this.props.fieldTypeMap[this.state.field_type];
   }
 
   render() {
@@ -38,5 +38,6 @@ PivotField.propTypes = {
   data_field: React.PropTypes.number.isRequired,
   field_type: React.PropTypes.number.isRequired,
   active_name: React.PropTypes.string.isRequired, // Redux
+  fieldTypeMap: React.PropTypes.object.isRequired, // Redux/remove here
 };
 module.exports = PivotField;

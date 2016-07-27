@@ -1,6 +1,5 @@
 from guardian.shortcuts import get_objects_for_user
 
-from .models import DataField, FieldType, MungerBuilder, PivotField
 from .serializers import MungerSerializer, DataFieldSerializer, PivotFieldSerializer, FieldTypeSerializer
 
 from rest_framework.response import Response
@@ -30,11 +29,11 @@ class MungerBuilderAPIView(MungerPermissions,
         else:
             return self.list(request, *args, **kwargs)
 
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):
-        if 'pk' in kwargs:
-            return self.update(request, *args, **kwargs)
-        else:
-            return self.create(request, *args, **kwargs)
+        return self.create(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
@@ -46,14 +45,11 @@ class Mungers(MungerBuilderAPIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        if 'pk' in kwargs:
-            return self.update(request, *args, **kwargs)
+        if not self.over_munger_limit(user):
+            return self.create(request, *args, **kwargs)
         else:
-            if not self.over_munger_limit(user):
-                return self.create(request, *args, **kwargs)
-            else:
-                return Response('Cannot Create more Munger Builders - Delete some to make space',
-                                status=status.HTTP_403_FORBIDDEN)
+            return Response('Cannot Create more Munger Builders - Delete some to make space',
+                            status=status.HTTP_403_FORBIDDEN)
 
     @staticmethod
     def over_munger_limit(user, max_munger_builders=5):

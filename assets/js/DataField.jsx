@@ -21,10 +21,10 @@ class DataField extends React.Component {
     this.onChange = this.onChange.bind(this);
     this.onClick = this.onClick.bind(this);
     this.placeField = this.placeField.bind(this);
-    this.delete = this.delete.bind(this);
     this.enableEditing = this.enableEditing.bind(this);
     this.disableEditing = this.disableEditing.bind(this);
     this.saveDataField = this.saveDataField.bind(this);
+    this.deleteDataField = this.props.deleteDataField.bind(this);
   }
 
   onChange(e) {
@@ -61,11 +61,6 @@ class DataField extends React.Component {
 
   inputID() { return `field-name-input-${this.props.id}`; }
 
-  delete() {
-    console.log(this.props.id);
-    this.props.deleteField(this.props.id);
-  }
-
   enableEditing() {
     // set your contenteditable field into editing mode.
     console.log('editing');
@@ -92,8 +87,8 @@ class DataField extends React.Component {
         beforeSend(jqXHR) {
           jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
         },
-        type: 'POST',
-        url: `/script_builder/data_field/${this.props.id}`,
+        type: 'PUT',
+        url: `/script_builder/data_fields/${this.props.id}`,
         data: this.state,
       });
     }
@@ -118,7 +113,7 @@ class DataField extends React.Component {
           src="/static/delete-icon-transparent.png"
           value="delete"
           className="delete-field-button"
-          onClick={this.delete}
+          onClick={() => this.deleteDataField(this.props.id)}
         />
         <div
           className="field-text"
@@ -150,6 +145,6 @@ DataField.propTypes = {
   current_name: React.PropTypes.string.isRequired,
   new_name: React.PropTypes.string,
   active_name: React.PropTypes.string.isRequired,
-  deleteField: React.PropTypes.func.isRequired,
+  deleteDataField: React.PropTypes.func.isRequired,
 };
 module.exports = DataField;

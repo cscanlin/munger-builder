@@ -5,6 +5,7 @@ class MainTable extends React.Component {
   render() {
     return (
       <div id="main-dropzone-container" className="main-dropzone-container clear">
+        {this.props.children}
         <div id="left-dropzone-container" className="left-dropzone-container">
           <div id="index-dropzone" className="dropzone index-dropzone">
             <span>Index Fields</span>
@@ -27,7 +28,10 @@ class MainTable extends React.Component {
       </div>
     );
   }
-
 }
+
+MainTable.propTypes = {
+  children: React.PropTypes.node,
+};
 
 module.exports = MainTable;

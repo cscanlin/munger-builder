@@ -4,6 +4,7 @@ const Cookie = require('js-cookie');
 const DataField = require('./DataField');
 const FieldBank = require('./FieldBank');
 const MainTable = require('./MainTable');
+const PivotField = require('./PivotField');
 
 class PivotApp extends React.Component {
   constructor(props) {
@@ -14,13 +15,14 @@ class PivotApp extends React.Component {
       fieldTypes: [],
     };
     this.setState = this.setState.bind(this);
-    this.addField = this.addField.bind(this);
+    this.addDataField = this.addDataField.bind(this);
     this.newFieldName = this.newFieldName.bind(this);
-    this.deleteField = this.deleteField.bind(this);
+    this.deleteDataField = this.deleteDataField.bind(this);
+    this.fieldTypeMap = this.fieldTypeMap.bind(this);
   }
 
   componentDidMount() {
-    const source = `/script_builder/munger/${this.props.mungerId}?format=json`;
+    const source = `/script_builder/mungers/${this.props.mungerId}?format=json`;
     this.serverRequest = $.get(source, result => this.onMount(result));
     console.log(this.state.dataFields);
   }
@@ -35,7 +37,7 @@ class PivotApp extends React.Component {
     this.setState({ fieldTypes: result.field_types });
   }
 
-  addField() {
+  addDataField() {
     console.log('add field');
     const newDataField = {
       munger_builder: this.props.mungerId,
@@ -46,12 +48,13 @@ class PivotApp extends React.Component {
         jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'POST',
-      url: '/script_builder/data_field/create',
+      url: '/script_builder/data_fields/',
       data: newDataField,
       success: data => {
         this.setState({ dataFields: this.state.dataFields.concat([data]) });
       },
     });
+    this.fieldTypeMap();
   }
 
   newFieldName() {
@@ -66,7 +69,7 @@ class PivotApp extends React.Component {
     return 'New Field';
   }
 
-  deleteField(fieldID) {
+  deleteDataField(fieldID) {
     console.log('delete');
     const dataFields = this.state.dataFields;
     const deleteIndex = dataFields.findIndex(f => f.id === fieldID);
@@ -76,24 +79,44 @@ class PivotApp extends React.Component {
         jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'DELETE',
-      url: `/script_builder/data_field/${fieldID}`,
+      url: `/script_builder/data_fields/${fieldID}`,
       success: this.setState({ dataFields }),
     });
+  }
+
+  fieldTypeMap() {
+    const fieldTypeMap = {};
+    this.state.fieldTypes.reduce(fieldType => {
+      fieldTypeMap[fieldType.id] = fieldType.type_name;
+      console.log(fieldTypeMap);
+      return fieldTypeMap;
+    });
+    console.log(fieldTypeMap);
   }
 
   render() {
     return (
       <div className="pivot-app">
-        <FieldBank addField={this.addField}>
+        <FieldBank addDataField={this.addDataField}>
           {this.state.dataFields.map(dataField =>
-            <DataField deleteField={this.deleteField} key={dataField.id} {...dataField} />
+            <DataField deleteDataField={this.deleteDataField} key={dataField.id} {...dataField} />
           )}
         </FieldBank>
-        <MainTable />
+        <MainTable>
+          {this.state.pivotFields.map(pivotField =>
+            <PivotField
+              key={pivotField.id}
+              fieldTypeMap={{ 3: 'count' }}
+              active_name="abc"
+              {...pivotField}
+            />
+          )}
+        </MainTable>
       </div>
     );
   }
 }
+
 
 PivotApp.propTypes = {
   fields: React.PropTypes.array,

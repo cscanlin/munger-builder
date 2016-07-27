@@ -13,7 +13,7 @@ from django.conf import settings
 
 from guardian.shortcuts import assign_perm, get_objects_for_user
 
-from .models import DataField, FieldType, CSVDocument, MungerBuilder
+from .models import DataField, FieldType, CSVDocument, MungerBuilder, PivotField
 from .forms import SetupForm, FieldParser, UploadFileForm
 from .tasks import download_munger_async, download_test_data_async
 
@@ -21,18 +21,18 @@ INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
 def munger_builder_index(request):
 
-    user = get_user_or_anon(request)
+    user = get_user_or_create_anon(request)
 
     anon_check(request)
 
     munger_builder_list = get_objects_for_user(user, 'script_builder.change_mungerbuilder')
-    # if len(munger_builder_list) == 0:
-    #     munger_builder_list = add_sample_munger(user)
+    if len(munger_builder_list) == 0:
+        munger_builder_list = add_sample_munger(user)
 
     context = {'munger_builder_list': munger_builder_list}
     return render(request, 'script_builder/munger_builder_index.html', context)
 
-def get_user_or_anon(request):
+def get_user_or_create_anon(request):
     if not request.user.id:
         timestamp = int(time.time())
         credentials = {
@@ -42,7 +42,9 @@ def get_user_or_anon(request):
         user = User.objects.create_user(**credentials)
         user.save()
         assign_perm('script_builder.add_mungerbuilder', user)
+        assign_perm('script_builder.add_fieldtype', user)
         assign_perm('script_builder.add_datafield', user)
+        assign_perm('script_builder.add_pivotfield', user)
         anon_user = authenticate(**credentials)
         login(request, anon_user)
     else:
@@ -53,15 +55,11 @@ def add_sample_munger(user):
 
     mb = MungerBuilder.objects.create(munger_name='Sample for {0}'.format(user.username), input_path='test_data.csv')
     mb.save()
-
-    assign_perm('add_mungerbuilder', user, mb)
-    assign_perm('change_mungerbuilder', user, mb)
-    assign_perm('delete_mungerbuilder', user, mb)
-    assign_perm('view_mungerbuilder', user, mb)
+    mb.assign_perms(user)
 
     sample_field_dict = {
         'order_num': ['count'],
-        'product': [None],
+        'product': None,
         'sales_name': ['index'],
         'region': ['column'],
         'revenue': ['mean', 'sum'],
@@ -71,11 +69,11 @@ def add_sample_munger(user):
     for field_name, field_types in sample_field_dict.items():
         data_field = DataField.objects.create(munger_builder=mb, current_name=field_name)
         data_field.save()
-        if field_types != [None]:
+        data_field.assign_perms(user)
+        if field_types:
             for type_name in field_types:
                 field_type = FieldType.objects.get(type_name=type_name)
-                data_field.field_types.add(field_type)
-            data_field.save()
+                PivotField.objects.create(data_field=data_field, field_type=field_type).save()
 
     return get_objects_for_user(user, 'script_builder.change_mungerbuilder')
 
@@ -85,11 +83,11 @@ def munger_tools(request, munger_builder_id):
 
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
-    if request.method == 'POST':
-        return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder_id))
-
     if not mb.user_is_authorized():
         return INDEX_REDIRECT
+
+    if request.method == 'POST':
+        return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder_id))
 
     context = {'mb': mb}
     return render(request, 'script_builder/munger_tools.html', context)

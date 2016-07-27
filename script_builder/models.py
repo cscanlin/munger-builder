@@ -18,6 +18,10 @@ from .current_user import current_user
 
 class PermissionedModel(object):
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.assign_perms(current_user())
+
     def assign_perms(self, user):
         meta_name = self._meta.model_name
         permissions = (perm_name + meta_name for perm_name in ('add_', 'change_', 'delete_', 'view_'))
@@ -41,10 +45,6 @@ class MungerBuilder(models.Model, PermissionedModel):
 
     rows_to_delete_top = models.IntegerField(null=True, blank=True)
     rows_to_delete_bottom = models.IntegerField(null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.assign_perms(current_user())
 
     def user_is_authorized(self):
         return current_user().has_perm('script_builder.change_mungerbuilder', self)
@@ -89,7 +89,7 @@ class MungerBuilder(models.Model, PermissionedModel):
     def __str__(self):
         return self.munger_name
 
-class FieldType(models.Model):
+class FieldType(models.Model, PermissionedModel):
     type_name = models.CharField(max_length=200)
     type_function = models.CharField(max_length=200)
 
@@ -132,10 +132,18 @@ class DataField(models.Model, PermissionedModel):
     def __str__(self):
         return self.active_name
 
-class PivotField(OrderedModel):
+class PivotField(OrderedModel, PermissionedModel):
     # should be ordered
     data_field = models.ForeignKey(DataField, related_name='pivot_fields', related_query_name='pivot_fields')
     field_type = models.ForeignKey(FieldType, related_name='pivot_fields', related_query_name='pivot_fields')
+
+    def save(self, *args, **kwargs):
+        if not self.munger_builder.user_is_authorized():
+            raise ValidationError(
+                _('Not authorized to change munger: {}'.format(self.munger_builder.munger_name))
+            )
+        super().save(*args, **kwargs)
+        self.assign_perms(current_user())
 
     @property
     def munger_builder(self):

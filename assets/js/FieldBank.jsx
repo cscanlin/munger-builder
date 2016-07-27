@@ -13,7 +13,7 @@ class FieldBank extends React.Component {
             src=""
             value="+"
             className="btn btn-primary"
-            onClick={this.props.addField}
+            onClick={this.props.addDataField}
           />
         </div>
       </div>
@@ -22,7 +22,7 @@ class FieldBank extends React.Component {
 }
 
 FieldBank.propTypes = {
-  addField: React.PropTypes.func.isRequired,
+  addDataField: React.PropTypes.func.isRequired,
   children: React.PropTypes.node,
 };
 
