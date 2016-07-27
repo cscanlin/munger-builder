@@ -1,22 +1,25 @@
 const React = require('react');
+const ReactDOM = require('react-dom');
 const $ = require('jquery');
 const Cookie = require('js-cookie');
 const Button = require('./Button');
 
-class BaseField extends React.Component {
+class DataField extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      id: this.props.field.id,
-      munger_builder: this.props.field.munger_builder,
-      current_name: this.props.field.current_name,
-      new_name: this.props.field.new_name,
-      field_types: this.props.field.field_types,
-      active_name: this.props.field.active_name,
+      id: this.props.id,
+      munger_builder: this.props.munger_builder,
+      current_name: this.props.current_name,
+      new_name: this.props.new_name,
+      active_name: this.props.active_name,
       editing: false,
+      active: false,
     };
     this.onChange = this.onChange.bind(this);
+    this.onClick = this.onClick.bind(this);
+    this.placeField = this.placeField.bind(this);
     this.delete = this.delete.bind(this);
     this.enableEditing = this.enableEditing.bind(this);
     this.disableEditing = this.disableEditing.bind(this);
@@ -26,10 +29,34 @@ class BaseField extends React.Component {
     this.setState({ active_name: e.target.value });
   }
 
-  elementID() { return `field-name-input-${this.state.id}`; }
+  onClick(e) {
+    const notButton = e.target.value !== 'edit' && e.target.value !== 'delete';
+    if (notButton && e.currentTarget.id === this.elementID() && !this.state.editing) {
+      this.state.active = true;
+      console.log('active');
+      document.body.addEventListener('click', this.placeField);
+    }
+    // if e.target.id !== this.elementID() && this.state.editing
+  }
+
+  placeField(e) {
+    document.body.removeEventListener('click', this.placeField);
+    this.state.active = false;
+    console.log('inactive');
+    if (e.target.parentNode.classList.contains('dropzone')) {
+      console.log('created');
+      const pivotField = React.createElement('div', null, this.state.active_name);
+      var targetID = `${e.target.id}`
+      ReactDOM.render(pivotField, document.getElementById(targetID));
+    }
+  }
+
+  elementID() { return `base-field-${this.state.id}`; }
+
+  inputID() { return `field-name-input-${this.state.id}`; }
 
   delete() {
-    this.props.deleteField(this.state.id);
+    this.props.deleteField(this.props.id);
   }
 
   enableEditing() {
@@ -41,7 +68,7 @@ class BaseField extends React.Component {
   }
 
   disableEditing(e) {
-    if (e.target.id !== this.elementID() || e.key === 'Enter') {
+    if (e.target.id !== this.inputID() || e.key === 'Enter') {
       console.log('not editing');
       this.setState({ editing: false });
       document.body.removeEventListener('click', this.disableEditing);
@@ -68,6 +95,7 @@ class BaseField extends React.Component {
         key={this.state.id}
         type="None"
         className="list-group-item"
+        onClick={this.onClick}
       >
         <Button
           type="image"
@@ -80,7 +108,7 @@ class BaseField extends React.Component {
           className="field-text"
         >
           <input
-            id={`field-name-input-${this.state.id}`}
+            id={this.inputID()}
             type="text"
             disabled={!this.state.editing}
             value={this.state.active_name}
@@ -100,8 +128,12 @@ class BaseField extends React.Component {
   }
 }
 
-BaseField.propTypes = {
-  field: React.PropTypes.object.isRequired,
+DataField.propTypes = {
+  id: React.PropTypes.number.isRequired,
+  munger_builder: React.PropTypes.number.isRequired,
+  current_name: React.PropTypes.string.isRequired,
+  new_name: React.PropTypes.string,
+  active_name: React.PropTypes.string.isRequired,
   deleteField: React.PropTypes.func.isRequired,
 };
-module.exports = BaseField;
+module.exports = DataField;
