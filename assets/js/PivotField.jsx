@@ -28,8 +28,8 @@ class PivotField extends React.Component {
 
   render() {
     return (
-      <div onClick={this.onClick}>
-        ({this.state.id}) {this.state.active_name} - {this.fieldTypeName()}
+      <div onClick={() => this.props.deletePivotField(this.props.id)}>
+        ({this.props.id}) {this.state.active_name} - {this.fieldTypeName()}
       </div>);
   }
 
@@ -39,6 +39,7 @@ PivotField.propTypes = {
   id: React.PropTypes.number.isRequired,
   data_field: React.PropTypes.number.isRequired,
   field_type: React.PropTypes.number.isRequired,
+  deletePivotField: React.PropTypes.func.isRequired,
   active_name: React.PropTypes.string.isRequired, // Redux
   fieldTypeMap: React.PropTypes.func.isRequired, // Redux/remove here
 };

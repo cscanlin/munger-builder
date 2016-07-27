@@ -1,9 +1,7 @@
 const React = require('react');
-const ReactDOM = require('react-dom');
 const $ = require('jquery');
 const Cookie = require('js-cookie');
 const Button = require('./Button');
-const PivotField = require('./PivotField');
 
 class DataField extends React.Component {
 

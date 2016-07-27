@@ -84,22 +84,18 @@ class MungerBuilder(models.Model, PermissionedModel):
 
     @property
     def index_fields(self):
-        return self.pivot_fields.filter(field_type__id=2)
+        return [pf.active_name for pf in self.pivot_fields.filter(field_type__id=1)]
 
     @property
     def column_fields(self):
-        return self.pivot_fields.filter(field_type__id=1)
-
-    @property
-    def aggregate_fields(self):
-        return self.pivot_fields.exclude(field_type__id=(1, 2))
+        return [pf.active_name for pf in self.pivot_fields.filter(field_type__id=2)]
 
     def aggregate_names_with_functions(self, evaled=False):
         # Needs to be ordered dicts
         func = eval if evaled else str
         aggregates_dict = defaultdict(list)
-        for agg_field in self.aggregate_fields:
-            aggregates_dict[agg_field.active_name].append(agg_field.type_function)
+        for pf in self.pivot_fields:
+            aggregates_dict[pf.active_name].append(pf.type_function)
         return {name: func(', '.join(type_functions)) for name, type_functions in aggregates_dict.items()}
 
     @property
@@ -173,6 +169,14 @@ class PivotField(OrderedModel, PermissionedModel):
             )
         super().save(*args, **kwargs)
         self.assign_perms(current_user())
+
+    @property
+    def active_name(self):
+        return self.data_field.active_name
+
+    @property
+    def type_function(self):
+        return self.field_type.type_function
 
     @property
     def munger_builder(self):
