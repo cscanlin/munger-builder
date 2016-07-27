@@ -13,12 +13,14 @@ class PivotApp extends React.Component {
       dataFields: [],
       pivotFields: [],
       fieldTypes: [],
+      default_aggregate_field_type: 0,
     };
     this.setState = this.setState.bind(this);
     this.addDataField = this.addDataField.bind(this);
     this.newFieldName = this.newFieldName.bind(this);
     this.deleteDataField = this.deleteDataField.bind(this);
     this.fieldTypeMap = this.fieldTypeMap.bind(this);
+    this.addPivotField = this.addPivotField.bind(this);
   }
 
   componentDidMount() {
@@ -35,10 +37,11 @@ class PivotApp extends React.Component {
     this.setState({ dataFields: result.data_fields });
     this.setState({ pivotFields: result.pivot_fields });
     this.setState({ fieldTypes: result.field_types });
+    this.setState({ default_aggregate_field_type: result.default_aggregate_field_type });
   }
 
   addDataField() {
-    console.log('add field');
+    console.log('add data field');
     const newDataField = {
       munger_builder: this.props.mungerId,
       current_name: this.newFieldName(),
@@ -54,11 +57,30 @@ class PivotApp extends React.Component {
         this.setState({ dataFields: this.state.dataFields.concat([data]) });
       },
     });
-    this.fieldTypeMap();
+  }
+
+  addPivotField(dataFieldId, fieldTypeId) {
+    console.log('add pivot field');
+    const newPivotField = {
+      data_field: dataFieldId,
+      field_type: fieldTypeId || this.state.default_aggregate_field_type,
+    };
+    $.ajax({
+      beforeSend(jqXHR) {
+        jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
+      },
+      type: 'POST',
+      url: '/script_builder/pivot_fields/',
+      data: newPivotField,
+      success: data => {
+        this.setState({ pivotFields: this.state.pivotFields.concat([data]) });
+        console.log(data);
+      },
+    });
   }
 
   newFieldName() {
-    // TODO Will not update if fields have changed without reloading
+    // TODO Redux - Will not update if fields have changed without reloading
     let numNewFields = this.state.dataFields.filter(item =>
       item.active_name.startsWith('New Field')
     ).length;
@@ -69,44 +91,49 @@ class PivotApp extends React.Component {
     return 'New Field';
   }
 
-  deleteDataField(fieldID) {
+  deleteDataField(dataFieldId) {
     console.log('delete');
     const dataFields = this.state.dataFields;
-    const deleteIndex = dataFields.findIndex(f => f.id === fieldID);
+    const deleteIndex = dataFields.findIndex(f => f.id === dataFieldId);
     dataFields.splice(deleteIndex, 1);
     $.ajax({
       beforeSend(jqXHR) {
         jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'DELETE',
-      url: `/script_builder/data_fields/${fieldID}`,
+      url: `/script_builder/data_fields/${dataFieldId}`,
       success: this.setState({ dataFields }),
     });
   }
 
   fieldTypeMap() {
     const fieldTypeMap = {};
-    this.state.fieldTypes.reduce(fieldType => {
+    this.state.fieldTypes.map(fieldType => {
       fieldTypeMap[fieldType.id] = fieldType.type_name;
-      console.log(fieldTypeMap);
       return fieldTypeMap;
     });
-    console.log(fieldTypeMap);
+    return fieldTypeMap;
   }
 
   render() {
+    console.log(this.fieldTypeMap());
     return (
       <div className="pivot-app">
         <FieldBank addDataField={this.addDataField}>
           {this.state.dataFields.map(dataField =>
-            <DataField deleteDataField={this.deleteDataField} key={dataField.id} {...dataField} />
+            <DataField
+              key={dataField.id}
+              deleteDataField={this.deleteDataField}
+              addPivotField={this.addPivotField}
+              {...dataField}
+            />
           )}
         </FieldBank>
         <MainTable>
           {this.state.pivotFields.map(pivotField =>
             <PivotField
               key={pivotField.id}
-              fieldTypeMap={{ 3: 'count' }}
+              fieldTypeMap={this.fieldTypeMap}
               active_name="abc"
               {...pivotField}
             />
@@ -119,7 +146,6 @@ class PivotApp extends React.Component {
 
 
 PivotApp.propTypes = {
-  fields: React.PropTypes.array,
   mungerId: React.PropTypes.number.isRequired,
 };
 module.exports = PivotApp;

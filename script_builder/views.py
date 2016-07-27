@@ -4,7 +4,7 @@ import csv
 import json
 import time
 
-from django.shortcuts import render, get_object_or_404, render_to_response
+from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth.models import User

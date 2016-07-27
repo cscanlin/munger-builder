@@ -24,7 +24,6 @@ class DataField extends React.Component {
     this.enableEditing = this.enableEditing.bind(this);
     this.disableEditing = this.disableEditing.bind(this);
     this.saveDataField = this.saveDataField.bind(this);
-    this.deleteDataField = this.props.deleteDataField.bind(this);
   }
 
   onChange(e) {
@@ -44,16 +43,10 @@ class DataField extends React.Component {
   placeField(e) {
     document.body.removeEventListener('click', this.placeField);
     this.setState({ active: false });
-    console.log('inactive');
+    console.log('data field inactive');
     if (e.target.parentNode.classList.contains('dropzone')) {
-      console.log('created');
-      const pivotField = (
-        <PivotField
-          data_field={this.props.id}
-          field_type={3}
-          active_name={this.state.active_name}
-        />);
-      ReactDOM.render(pivotField, document.getElementById(`${e.target.id}`));
+      this.props.addPivotField(this.props.id, null);
+      console.log('pivot field created');
     }
   }
 
@@ -113,7 +106,7 @@ class DataField extends React.Component {
           src="/static/delete-icon-transparent.png"
           value="delete"
           className="delete-field-button"
-          onClick={() => this.deleteDataField(this.props.id)}
+          onClick={() => this.props.deleteDataField(this.props.id)}
         />
         <div
           className="field-text"
@@ -146,5 +139,6 @@ DataField.propTypes = {
   new_name: React.PropTypes.string,
   active_name: React.PropTypes.string.isRequired,
   deleteDataField: React.PropTypes.func.isRequired,
+  addPivotField: React.PropTypes.func.isRequired,
 };
 module.exports = DataField;

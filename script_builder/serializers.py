@@ -19,8 +19,10 @@ class PivotFieldSerializer(serializers.ModelSerializer):
 class MungerSerializer(serializers.ModelSerializer):
     data_fields = DataFieldSerializer(many=True, read_only=True)
     pivot_fields = PivotFieldSerializer(many=True, read_only=True)
+    field_types = FieldTypeSerializer(many=True, read_only=True)
 
     class Meta:
         model = MungerBuilder
         fields = ('munger_name', 'munger_template', 'input_path', 'output_path', 'rows_to_delete_top',
-                  'rows_to_delete_bottom', 'data_fields', 'pivot_fields')
+                  'rows_to_delete_bottom', 'data_fields', 'pivot_fields', 'field_types',
+                  'default_aggregate_field_type')

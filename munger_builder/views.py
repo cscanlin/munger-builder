@@ -32,7 +32,9 @@ def register(request):
 
             new_user = user_form.save()
             assign_perm('script_builder.add_mungerbuilder', new_user)
+            assign_perm('script_builder.add_fieldtype', new_user)
             assign_perm('script_builder.add_datafield', new_user)
+            assign_perm('script_builder.add_pivotfield', new_user)
 
             messages.success(request, "Thanks for registering. You are now logged in.")
             new_user = authenticate(username=request.POST['username'],
