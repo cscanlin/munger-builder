@@ -49,20 +49,20 @@ class MungerBuilder(models.Model, PermissionedModel):
     def user_is_authorized(self):
         return current_user().has_perm('script_builder.change_mungerbuilder', self)
 
-    def all_pivot_fields(self):
+    def pivot_fields(self):
         return PivotField.objects.filter(data_field__munger_builder__id=self.id)
 
     @property
     def index_fields(self):
-        return self.all_pivot_fields.filter(field_type__id=2)
+        return self.pivot_fields.filter(field_type__id=2)
 
     @property
     def column_fields(self):
-        return self.all_pivot_fields.filter(field_type__id=1)
+        return self.pivot_fields.filter(field_type__id=1)
 
     @property
     def aggregate_fields(self):
-        return self.all_pivot_fields.exclude(field_type__id=(1, 2))
+        return self.pivot_fields.exclude(field_type__id=(1, 2))
 
     def aggregate_names_with_functions(self, evaled=False):
         # Needs to be ordered dicts

@@ -93,7 +93,7 @@ class DataField extends React.Component {
           jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
         },
         type: 'POST',
-        url: `/script_builder/field/${this.props.id}`,
+        url: `/script_builder/data_field/${this.props.id}`,
         data: this.state,
       });
     }

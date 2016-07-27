@@ -10,7 +10,10 @@ class PivotApp extends React.Component {
     super(props);
     this.state = {
       dataFields: [],
+      pivotFields: [],
+      fieldTypes: [],
     };
+    this.setState = this.setState.bind(this);
     this.addField = this.addField.bind(this);
     this.newFieldName = this.newFieldName.bind(this);
     this.deleteField = this.deleteField.bind(this);
@@ -18,14 +21,18 @@ class PivotApp extends React.Component {
 
   componentDidMount() {
     const source = `/script_builder/munger/${this.props.mungerId}?format=json`;
-    this.serverRequest = $.get(source, result =>
-      this.setState({ dataFields: result.data_fields })
-    );
+    this.serverRequest = $.get(source, result => this.onMount(result));
     console.log(this.state.dataFields);
   }
 
   componentWillUnmount() {
     this.serverRequest.abort();
+  }
+
+  onMount(result) {
+    this.setState({ dataFields: result.data_fields });
+    this.setState({ pivotFields: result.pivot_fields });
+    this.setState({ fieldTypes: result.field_types });
   }
 
   addField() {
@@ -39,7 +46,7 @@ class PivotApp extends React.Component {
         jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'POST',
-      url: '/script_builder/field/create',
+      url: '/script_builder/data_field/create',
       data: newDataField,
       success: data => {
         this.setState({ dataFields: this.state.dataFields.concat([data]) });
@@ -69,7 +76,7 @@ class PivotApp extends React.Component {
         jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'DELETE',
-      url: `/script_builder/field/${fieldID}`,
+      url: `/script_builder/data_field/${fieldID}`,
       success: this.setState({ dataFields }),
     });
   }
