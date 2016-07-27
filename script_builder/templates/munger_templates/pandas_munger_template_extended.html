@@ -34,9 +34,9 @@ pivot_output = pd.pivot_table(
     df,
     index={{ mb.index_fields }},
     columns={{ mb.column_fields }},
-    values=[{% for key in mb.agg_fields().keys() %}'{{ key }}',{% endfor %}],
+    values=[{% for key in mb.aggregate_names_with_functions().keys() %}'{{ key }}',{% endfor %}],
     aggfunc={
-      {% for key, value in mb.agg_fields().items() %}
+      {% for key, value in mb.aggregate_names_with_functions().items() %}
         '{{ key }}': [{{ value }}],
       {% endfor %}
     },

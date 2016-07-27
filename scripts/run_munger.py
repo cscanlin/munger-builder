@@ -49,8 +49,8 @@ def main(munger_builder_id=1):
         df,
         index=mb.index_fields,
         columns=mb.column_fields,
-        values=list(mb.agg_fields().keys()),
-        aggfunc=mb.agg_fields(evaled=True),
+        values=list(mb.aggregate_names_with_functions().keys()),
+        aggfunc=mb.aggregate_names_with_functions(evaled=True),
         fill_value=0,
     )
 

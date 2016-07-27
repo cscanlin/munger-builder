@@ -15,6 +15,7 @@ amqp==1.4.6
 celery==3.1.19
 django-celery==3.1.17
 django-admin-bootstrapped==2.5.1
+django-extensions==1.6.7
 django-bootstrap3==5.4.0
 django-compressor==1.5
 django-crispy-forms==1.6.0

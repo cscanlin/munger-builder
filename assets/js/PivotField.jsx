@@ -10,7 +10,6 @@ class PivotField extends React.Component {
       active_name: this.props.active_name, // Redux
     };
     this.fieldTypeName = this.fieldTypeName.bind(this);
-    this.onClick = this.onClick.bind(this);
   }
 
   componentDidMount() {

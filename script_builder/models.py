@@ -12,7 +12,7 @@ from django.http import HttpResponse
 from guardian.shortcuts import assign_perm
 
 from ordered_model.models import OrderedModel
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 from .current_user import current_user
 
@@ -49,24 +49,32 @@ class MungerBuilder(models.Model, PermissionedModel):
     def user_is_authorized(self):
         return current_user().has_perm('script_builder.change_mungerbuilder', self)
 
+    def all_pivot_fields(self):
+        return PivotField.objects.filter(data_field__munger_builder__id=self.id)
+
     @property
     def index_fields(self):
-        return [field.active_name for field in self.data_fields.all() if field.has_field_type('index')]
+        return self.all_pivot_fields.filter(field_type__id=2)
 
     @property
     def column_fields(self):
-        return [field.active_name for field in self.data_fields.all() if field.has_field_type('column')]
+        return self.all_pivot_fields.filter(field_type__id=1)
 
-    def agg_fields(self, evaled=False):
-        if evaled:
-            func = eval
-        else:
-            func = str
-        return OrderedDict([(field.active_name, func(', '.join(field.agg_types))) for field in self.data_fields.all() if field.agg_types])
+    @property
+    def aggregate_fields(self):
+        return self.all_pivot_fields.exclude(field_type__id=(1, 2))
+
+    def aggregate_names_with_functions(self, evaled=False):
+        # Needs to be ordered dicts
+        func = eval if evaled else str
+        aggregates_dict = defaultdict(list)
+        for agg_field in self.aggregate_fields:
+            aggregates_dict[agg_field.active_name].append(agg_field.type_function)
+        return {name: func(', '.join(type_functions)) for name, type_functions in aggregates_dict.items()}
 
     @property
     def rename_field_dict(self):
-        return OrderedDict([(field.current_name, field.new_name) for field in self.data_fields.all() if field.new_name and field.new_name != field.current_name])
+        return {field.current_name: field.new_name for field in self.data_fields.all() if field.needs_rename}
 
     @property
     def safe_file_name(self):
@@ -85,13 +93,6 @@ class FieldType(models.Model):
     type_name = models.CharField(max_length=200)
     type_function = models.CharField(max_length=200)
 
-    @property
-    def is_agg(self):
-        if self.type_name not in ['index', 'column']:
-            return True
-        else:
-            return False
-
     def __str__(self):
         return self.type_name.capitalize()
 
@@ -105,8 +106,6 @@ class DataField(models.Model, PermissionedModel):
     munger_builder = models.ForeignKey(MungerBuilder, related_name='data_fields', related_query_name='data_fields')
     current_name = models.CharField(max_length=200)
     new_name = models.CharField(max_length=200, null=True, blank=True)
-    field_types = models.ManyToManyField(FieldType, blank=True, related_name='field_types',
-                                         related_query_name='field_types')
 
     def save(self, *args, **kwargs):
         if not self.munger_builder.user_is_authorized():
@@ -120,25 +119,30 @@ class DataField(models.Model, PermissionedModel):
         super().delete(*args, **kwargs)
 
     @property
+    def needs_rename(self):
+        return self.new_name and self.new_name != self.current_name
+
+    @property
     def active_name(self):
         if self.new_name:
             return self.new_name
         else:
             return self.current_name
 
-    @property
-    def agg_types(self):
-        return [ft.type_function for ft in self.field_types.all() if ft.type_name not in ['index', 'column']]
-
-    def has_field_type(self, field_type_name):
-        for field_type in self.field_types.all():
-            if field_type.type_name == field_type_name:
-                return True
-        else:
-            return False
-
     def __str__(self):
         return self.active_name
+
+class PivotField(OrderedModel):
+    # should be ordered
+    data_field = models.ForeignKey(DataField, related_name='pivot_fields', related_query_name='pivot_fields')
+    field_type = models.ForeignKey(FieldType, related_name='pivot_fields', related_query_name='pivot_fields')
+
+    @property
+    def munger_builder(self):
+        return self.data_field.munger_builder
+
+    def __str__(self):
+        return '{0} of {1}'.format(self.field_type.type_name.capitalize(), self.data_field.active_name)
 
 
 class CSVDocument(models.Model):

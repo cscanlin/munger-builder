@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.sites',
+    'django_extensions',
     'crispy_forms',
     'bootstrap3',
     'kombu.transport.django',

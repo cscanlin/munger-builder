@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import MungerBuilder, DataField, FieldType
+from .models import MungerBuilder, DataField, FieldType, PivotField
 
 from guardian.admin import GuardedModelAdmin
 
@@ -20,3 +20,4 @@ class MungerBuilderAdmin(GuardedModelAdmin):
 admin.site.register(MungerBuilder, MungerBuilderAdmin)
 admin.site.register(DataField, OrderedDataField)
 admin.site.register(FieldType)
+admin.site.register(PivotField)
