@@ -70,9 +70,9 @@ class MungerBuilder(models.Model, PermissionedModel):
         return
 
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
         # Always add default field types unless set from admin
         self.field_types.add(*(field_type for field_type in FieldType.default_field_types()))
-        super().save(*args, **kwargs)
         self.assign_perms(current_user())
 
     def user_is_authorized(self):
