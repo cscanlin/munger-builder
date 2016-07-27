@@ -3,6 +3,7 @@ const ReactDOM = require('react-dom');
 const $ = require('jquery');
 const Cookie = require('js-cookie');
 const Button = require('./Button');
+const PivotField = require('./PivotField');
 
 class DataField extends React.Component {
 
@@ -23,6 +24,7 @@ class DataField extends React.Component {
     this.delete = this.delete.bind(this);
     this.enableEditing = this.enableEditing.bind(this);
     this.disableEditing = this.disableEditing.bind(this);
+    this.saveDataField = this.saveDataField.bind(this);
   }
 
   onChange(e) {
@@ -32,7 +34,7 @@ class DataField extends React.Component {
   onClick(e) {
     const notButton = e.target.value !== 'edit' && e.target.value !== 'delete';
     if (notButton && e.currentTarget.id === this.elementID() && !this.state.editing) {
-      this.state.active = true;
+      this.setState({ active: true });
       console.log('active');
       document.body.addEventListener('click', this.placeField);
     }
@@ -41,19 +43,23 @@ class DataField extends React.Component {
 
   placeField(e) {
     document.body.removeEventListener('click', this.placeField);
-    this.state.active = false;
+    this.setState({ active: false });
     console.log('inactive');
     if (e.target.parentNode.classList.contains('dropzone')) {
       console.log('created');
-      const pivotField = React.createElement('div', null, this.state.active_name);
-      var targetID = `${e.target.id}`
-      ReactDOM.render(pivotField, document.getElementById(targetID));
+      const pivotField = (
+        <PivotField
+          data_field={this.props.id}
+          field_type={3}
+          active_name={this.state.active_name}
+        />);
+      ReactDOM.render(pivotField, document.getElementById(`${e.target.id}`));
     }
   }
 
-  elementID() { return `base-field-${this.state.id}`; }
+  elementID() { return `base-field-${this.props.id}`; }
 
-  inputID() { return `field-name-input-${this.state.id}`; }
+  inputID() { return `field-name-input-${this.props.id}`; }
 
   delete() {
     this.props.deleteField(this.props.id);
@@ -73,26 +79,35 @@ class DataField extends React.Component {
       this.setState({ editing: false });
       document.body.removeEventListener('click', this.disableEditing);
       document.body.removeEventListener('keypress', this.disableEditing);
-      if (this.state.active_name !== this.state.new_name) {
-        this.state.new_name = this.state.active_name;
-        $.ajax({
-          beforeSend(jqXHR) {
-            jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
-          },
-          type: 'POST',
-          url: `/script_builder/field/${this.state.id}`,
-          data: this.state,
-        });
-      }
+      this.saveDataField();
       e.preventDefault();
     }
   }
 
+  saveDataField() {
+    if (this.state.active_name !== this.state.new_name) {
+      this.state.new_name = this.state.active_name;
+      $.ajax({
+        beforeSend(jqXHR) {
+          jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
+        },
+        type: 'POST',
+        url: `/script_builder/field/${this.props.id}`,
+        data: this.state,
+      });
+    }
+  }
+
   render() {
+    let fieldStyle = {
+      backgroundColor: this.state.active ? '#008000' : '#29e',
+    };
+
     return (
       <div
         id={this.elementID()}
-        key={this.state.id}
+        key={this.props.id}
+        style={fieldStyle}
         type="None"
         className="list-group-item"
         onClick={this.onClick}
