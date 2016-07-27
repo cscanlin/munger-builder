@@ -62,6 +62,7 @@ class DataField extends React.Component {
   inputID() { return `field-name-input-${this.props.id}`; }
 
   delete() {
+    console.log(this.props.id);
     this.props.deleteField(this.props.id);
   }
 

@@ -9,7 +9,7 @@ class PivotApp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      fields: [],
+      dataFields: [],
     };
     this.addField = this.addField.bind(this);
     this.newFieldName = this.newFieldName.bind(this);
@@ -19,8 +19,9 @@ class PivotApp extends React.Component {
   componentDidMount() {
     const source = `/script_builder/munger/${this.props.mungerId}?format=json`;
     this.serverRequest = $.get(source, result =>
-      this.setState({ fields: result.data_fields })
+      this.setState({ dataFields: result.data_fields })
     );
+    console.log(this.state.dataFields);
   }
 
   componentWillUnmount() {
@@ -29,28 +30,26 @@ class PivotApp extends React.Component {
 
   addField() {
     console.log('add field');
-    const field = {
+    const newDataField = {
       munger_builder: this.props.mungerId,
       current_name: this.newFieldName(),
     };
-    const fields = this.state.fields;
     $.ajax({
       beforeSend(jqXHR) {
         jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'POST',
       url: '/script_builder/field/create',
-      data: field,
+      data: newDataField,
       success: data => {
-        fields.push(data);
-        this.setState(fields);
+        this.setState({ dataFields: this.state.dataFields.concat([data]) });
       },
     });
   }
 
   newFieldName() {
     // TODO Will not update if fields have changed without reloading
-    let numNewFields = this.state.fields.filter(item =>
+    let numNewFields = this.state.dataFields.filter(item =>
       item.active_name.startsWith('New Field')
     ).length;
     if (numNewFields > 0) {
@@ -61,19 +60,17 @@ class PivotApp extends React.Component {
   }
 
   deleteField(fieldID) {
-    const fields = this.state.fields;
-
-    const deleteIndex = fields.findIndex(f => f.id === fieldID);
-    fields.splice(deleteIndex, 1);
-
     console.log('delete');
+    const dataFields = this.state.dataFields;
+    const deleteIndex = dataFields.findIndex(f => f.id === fieldID);
+    dataFields.splice(deleteIndex, 1);
     $.ajax({
       beforeSend(jqXHR) {
         jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'DELETE',
       url: `/script_builder/field/${fieldID}`,
-      success: this.setState(fields),
+      success: this.setState({ dataFields }),
     });
   }
 
@@ -81,8 +78,8 @@ class PivotApp extends React.Component {
     return (
       <div className="pivot-app">
         <FieldBank addField={this.addField}>
-          {this.state.fields.map(field =>
-            <DataField deleteField={this.deleteField} key={field.id} {...field} />
+          {this.state.dataFields.map(dataField =>
+            <DataField deleteField={this.deleteField} key={dataField.id} {...dataField} />
           )}
         </FieldBank>
         <MainTable />
