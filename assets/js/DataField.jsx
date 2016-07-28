@@ -2,6 +2,7 @@ const React = require('react');
 const $ = require('jquery');
 const Cookie = require('js-cookie');
 const Button = require('./Button');
+import { setActiveName } from './actions'
 
 class DataField extends React.Component {
 
@@ -26,6 +27,8 @@ class DataField extends React.Component {
 
   onChange(e) {
     this.setState({ active_name: e.target.value });
+    console.log(this);
+    this.context.dispatch(setActiveName(this.props.id, e.target.value));
   }
 
   onClick(e) {
@@ -130,7 +133,23 @@ class DataField extends React.Component {
   }
 }
 
+// const mapStateToProps = (state) => {
+//   return {
+//     dataFieldId: state.id,
+//     activeName: state.active_name,
+//   };
+// };
+// const mapDispatchToProps = (dispatch, ownProps) => {
+//   return {
+//     onClick: () => {
+//       dispatch(setVisibilityFilter(ownProps.filter))
+//     }
+//   }
+// }
+
+
 DataField.propTypes = {
+  store: React.PropTypes.object,
   id: React.PropTypes.number.isRequired,
   munger_builder: React.PropTypes.number.isRequired,
   current_name: React.PropTypes.string.isRequired,

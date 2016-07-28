@@ -21,7 +21,8 @@ class PivotApp extends React.Component {
     this.addPivotField = this.addPivotField.bind(this);
     this.deleteDataField = this.deleteDataField.bind(this);
     this.deletePivotField = this.deletePivotField.bind(this);
-    this.fieldTypeMap = this.fieldTypeMap.bind(this);
+    this.fieldTypeName = this.fieldTypeName.bind(this);
+    this.activeName = this.activeName.bind(this);
   }
 
   componentDidMount() {
@@ -39,6 +40,10 @@ class PivotApp extends React.Component {
     this.setState({ pivotFields: result.pivot_fields });
     this.setState({ fieldTypes: result.field_types });
     this.setState({ default_aggregate_field_type: result.default_aggregate_field_type });
+    // console.log(this.store);
+    // this.props.store.subscribe(() =>
+    //   console.log(this.store.getState())
+    // );
   }
 
   newFieldName() {
@@ -122,17 +127,25 @@ class PivotApp extends React.Component {
     });
   }
 
-  fieldTypeMap() {
+  fieldTypeName(fieldTypeId) {
     const fieldTypeMap = {};
     this.state.fieldTypes.map(fieldType => {
       fieldTypeMap[fieldType.id] = fieldType.type_name;
       return fieldTypeMap;
     });
-    return fieldTypeMap;
+    return fieldTypeMap[fieldTypeId];
+  }
+
+  activeName(dataFieldId) {
+    const activeNameMap = {};
+    this.state.dataFields.map(dataField => {
+      activeNameMap[dataField.id] = dataField.active_name;
+      return activeNameMap;
+    });
+    return activeNameMap[dataFieldId];
   }
 
   render() {
-    console.log(this.fieldTypeMap());
     return (
       <div className="pivot-app">
         <FieldBank addDataField={this.addDataField}>
@@ -150,8 +163,8 @@ class PivotApp extends React.Component {
             <PivotField
               key={pivotField.id}
               deletePivotField={this.deletePivotField}
-              fieldTypeMap={this.fieldTypeMap}
-              active_name="abc"
+              fieldTypeName={this.fieldTypeName}
+              activeName={this.activeName}
               {...pivotField}
             />
           )}
@@ -163,6 +176,7 @@ class PivotApp extends React.Component {
 
 
 PivotApp.propTypes = {
+  store: React.PropTypes.object,
   mungerId: React.PropTypes.number.isRequired,
 };
 module.exports = PivotApp;
