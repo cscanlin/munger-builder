@@ -21,7 +21,9 @@ class PivotApp extends React.Component {
     this.addPivotField = this.addPivotField.bind(this);
     this.deleteDataField = this.deleteDataField.bind(this);
     this.deletePivotField = this.deletePivotField.bind(this);
-    this.fieldTypeMap = this.fieldTypeMap.bind(this);
+    this.fieldTypeName = this.fieldTypeName.bind(this);
+    this.activeName = this.activeName.bind(this);
+    this.handleNameChange = this.handleNameChange.bind(this);
   }
 
   componentDidMount() {
@@ -39,6 +41,16 @@ class PivotApp extends React.Component {
     this.setState({ pivotFields: result.pivot_fields });
     this.setState({ fieldTypes: result.field_types });
     this.setState({ default_aggregate_field_type: result.default_aggregate_field_type });
+  }
+
+  handleNameChange(dataFieldId, activeName) {
+    this.state.dataFields.map(dataField => {
+      if (dataField.id === dataFieldId) {
+        dataField.active_name = activeName;
+      }
+      return dataField;
+    });
+    this.setState({ dataFields: this.state.dataFields });
   }
 
   newFieldName() {
@@ -122,17 +134,25 @@ class PivotApp extends React.Component {
     });
   }
 
-  fieldTypeMap() {
+  fieldTypeName(fieldTypeId) {
     const fieldTypeMap = {};
     this.state.fieldTypes.map(fieldType => {
       fieldTypeMap[fieldType.id] = fieldType.type_name;
       return fieldTypeMap;
     });
-    return fieldTypeMap;
+    return fieldTypeMap[fieldTypeId];
+  }
+
+  activeName(dataFieldId) {
+    const activeNameMap = {};
+    this.state.dataFields.map(dataField => {
+      activeNameMap[dataField.id] = dataField.active_name;
+      return activeNameMap;
+    });
+    return activeNameMap[dataFieldId];
   }
 
   render() {
-    console.log(this.fieldTypeMap());
     return (
       <div className="pivot-app">
         <FieldBank addDataField={this.addDataField}>
@@ -141,6 +161,7 @@ class PivotApp extends React.Component {
               key={dataField.id}
               deleteDataField={this.deleteDataField}
               addPivotField={this.addPivotField}
+              handleNameChange={this.handleNameChange}
               {...dataField}
             />
           )}
@@ -150,8 +171,8 @@ class PivotApp extends React.Component {
             <PivotField
               key={pivotField.id}
               deletePivotField={this.deletePivotField}
-              fieldTypeMap={this.fieldTypeMap}
-              active_name="abc"
+              fieldTypeName={this.fieldTypeName}
+              activeName={this.activeName}
               {...pivotField}
             />
           )}

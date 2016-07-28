@@ -8,9 +8,7 @@ class PivotField extends React.Component {
       id: this.props.id,
       data_field: this.props.data_field,
       field_type: this.props.field_type,
-      active_name: this.props.active_name, // Redux
     };
-    this.fieldTypeName = this.fieldTypeName.bind(this);
   }
 
   componentDidMount() {
@@ -21,15 +19,11 @@ class PivotField extends React.Component {
     console.log('removed pivot field');
   }
 
-  fieldTypeName() {
-    // Redux fieldTypeMap
-    return this.props.fieldTypeMap()[this.state.field_type];
-  }
-
   render() {
     return (
       <div onClick={() => this.props.deletePivotField(this.props.id)}>
-        ({this.props.id}) {this.state.active_name} - {this.fieldTypeName()}
+        ({this.props.id}) {this.props.activeName(this.props.data_field)} -
+         {this.props.fieldTypeName(this.state.field_type)}
       </div>);
   }
 
@@ -40,7 +34,7 @@ PivotField.propTypes = {
   data_field: React.PropTypes.number.isRequired,
   field_type: React.PropTypes.number.isRequired,
   deletePivotField: React.PropTypes.func.isRequired,
-  active_name: React.PropTypes.string.isRequired, // Redux
-  fieldTypeMap: React.PropTypes.func.isRequired, // Redux/remove here
+  fieldTypeName: React.PropTypes.func.isRequired, // Redux/remove here
+  activeName: React.PropTypes.func.isRequired, // Redux
 };
 module.exports = PivotField;

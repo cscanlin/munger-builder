@@ -26,6 +26,7 @@ class DataField extends React.Component {
 
   onChange(e) {
     this.setState({ active_name: e.target.value });
+    this.props.handleNameChange(this.props.id, e.target.value);
   }
 
   onClick(e) {
@@ -138,5 +139,6 @@ DataField.propTypes = {
   active_name: React.PropTypes.string.isRequired,
   deleteDataField: React.PropTypes.func.isRequired,
   addPivotField: React.PropTypes.func.isRequired,
+  handleNameChange: React.PropTypes.func.isRequired,
 };
 module.exports = DataField;
