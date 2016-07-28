@@ -20,14 +20,20 @@ class PivotField extends React.Component {
   }
 
   render() {
+    const fieldTypeName = this.props.fieldTypeName(this.state.field_type);
+    const pivotFieldClass = `${fieldTypeName}-field list-group-item`;
     return (
-      <div onClick={() => this.props.deletePivotField(this.props.id)}>
-        ({this.props.id}) {this.props.activeName(this.props.data_field)} -
-         {this.props.fieldTypeName(this.state.field_type)}
-      </div>);
+      <div className={pivotFieldClass}>
+        <div className="field-text">
+          <span className="agg-text">{fieldTypeName} of </span>
+          <span className="name-text">{this.props.activeName(this.props.data_field)}</span>
+        </div>
+      </div>
+    );
   }
 
 }
+// <div onClick={() => this.props.deletePivotField(this.props.id)}>
 
 PivotField.propTypes = {
   id: React.PropTypes.number.isRequired,

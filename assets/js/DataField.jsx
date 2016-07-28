@@ -40,11 +40,20 @@ class DataField extends React.Component {
   }
 
   placeField(e) {
+    let pivotType = 0;
     document.body.removeEventListener('click', this.placeField);
     this.setState({ active: false });
     console.log('data field inactive');
-    if (e.target.parentNode.classList.contains('dropzone')) {
-      this.props.addPivotField(this.props.id, null);
+    const targetClasses = e.target.parentNode.classList;
+    if (targetClasses.contains('dropzone')) {
+      if (targetClasses.contains('index-dropzone')) {
+        pivotType = 1;
+      } else if (targetClasses.contains('column-dropzone')) {
+        pivotType = 2;
+      } else {
+        pivotType = null;
+      }
+      this.props.addPivotField(this.props.id, pivotType);
       console.log('pivot field created');
     }
   }

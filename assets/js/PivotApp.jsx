@@ -24,6 +24,7 @@ class PivotApp extends React.Component {
     this.fieldTypeName = this.fieldTypeName.bind(this);
     this.activeName = this.activeName.bind(this);
     this.handleNameChange = this.handleNameChange.bind(this);
+    this.removeRelatedPivotFields = this.removeRelatedPivotFields.bind(this);
   }
 
   componentDidMount() {
@@ -117,6 +118,18 @@ class PivotApp extends React.Component {
       url: `/script_builder/data_fields/${dataFieldId}`,
       success: this.setState({ dataFields }),
     });
+    this.removeRelatedPivotFields(dataFieldId);
+  }
+
+  removeRelatedPivotFields(dataFieldId) {
+    const fieldsToRemove = this.state.pivotFields.filter(pivotField =>
+      pivotField.data_field === dataFieldId
+    );
+    const pivotFields = this.state.pivotFields;
+    fieldsToRemove.forEach(removeField => {
+      pivotFields.splice(pivotFields.findIndex(f => f.id === removeField.id), 1);
+    });
+    this.setState({ pivotFields });
   }
 
   deletePivotField(pivotFieldId) {

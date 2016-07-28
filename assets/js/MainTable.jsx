@@ -5,11 +5,13 @@ class MainTable extends React.Component {
   render() {
     return (
       <div id="main-dropzone-container" className="main-dropzone-container clear">
-        {this.props.children}
         <div id="left-dropzone-container" className="left-dropzone-container">
           <div id="index-dropzone" className="dropzone index-dropzone">
             <span>Index Fields</span>
             <div id="indexList" type="index" className="index-dropzone">
+              {this.props.children.filter(pivotField =>
+                pivotField.props.field_type === 1
+              )}
             </div>
           </div>
         </div>
@@ -17,11 +19,17 @@ class MainTable extends React.Component {
           <div id="column-dropzone" className="dropzone column-dropzone">
             <span>Column Fields</span>
             <div id="columnList" type="column" className="column-dropzone">
+              {this.props.children.filter(pivotField =>
+                pivotField.props.field_type === 2
+              )}
             </div>
           </div>
           <div id="agg-dropzone" className="dropzone agg-dropzone">
             <span>Aggregate Fields</span>
             <div id="aggList" type="agg" className="agg-dropzone">
+              {this.props.children.filter(pivotField =>
+                pivotField.props.field_type > 2
+              )}
             </div>
           </div>
         </div>
