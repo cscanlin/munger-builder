@@ -6,6 +6,7 @@ const DataField = require('./DataField');
 const FieldBank = require('./FieldBank');
 const MainTable = require('./MainTable');
 const PivotField = require('./PivotField');
+const ScriptBuilder = require('./ScriptBuilder');
 
 class PivotApp extends React.Component {
   constructor(props) {
@@ -192,6 +193,7 @@ class PivotApp extends React.Component {
             />
           )}
         </MainTable>
+        <ScriptBuilder {...this.state} />
       </div>
     );
   }
