@@ -1,5 +1,5 @@
-const React = require('react');
-const Button = require('./Button');
+const React = require('react')
+const Button = require('./Button')
 
 class FieldBank extends React.Component {
 
@@ -17,13 +17,13 @@ class FieldBank extends React.Component {
           />
         </div>
       </div>
-    );
+    )
   }
 }
 
 FieldBank.propTypes = {
   addDataField: React.PropTypes.func.isRequired,
   children: React.PropTypes.node,
-};
+}
 
-module.exports = FieldBank;
+module.exports = FieldBank

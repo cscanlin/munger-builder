@@ -1,7 +1,7 @@
-const React = require('react');
+const React = require('react')
 
 function Button(props) {
-  return <input {...props} />;
+  return <input {...props} />
 }
 
 Button.propTypes = {
@@ -10,5 +10,5 @@ Button.propTypes = {
   value: React.PropTypes.string.isRequired,
   className: React.PropTypes.string.isRequired,
   onClick: React.PropTypes.func.isRequired,
-};
-module.exports = Button;
+}
+module.exports = Button

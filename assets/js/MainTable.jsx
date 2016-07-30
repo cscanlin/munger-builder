@@ -1,4 +1,4 @@
-const React = require('react');
+const React = require('react')
 
 class MainTable extends React.Component {
 
@@ -34,12 +34,12 @@ class MainTable extends React.Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
 MainTable.propTypes = {
   children: React.PropTypes.node,
-};
+}
 
-module.exports = MainTable;
+module.exports = MainTable
