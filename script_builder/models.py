@@ -66,9 +66,6 @@ class MungerBuilder(models.Model, PermissionedModel):
     field_types = models.ManyToManyField(FieldType, related_name='munger_builder', related_query_name='munger_builder')
     default_aggregate_field_type = models.ForeignKey(FieldType, default=3, limit_choices_to={'pk__gt': 2},)
 
-    def aggregate_field_type_choices(self):
-        return
-
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         # Always add default field types unless set from admin
