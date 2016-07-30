@@ -1,6 +1,7 @@
 const React = require('react');
 const $ = require('jquery');
 const Cookie = require('js-cookie');
+const update = require('react-addons-update');
 const DataField = require('./DataField');
 const FieldBank = require('./FieldBank');
 const MainTable = require('./MainTable');
@@ -10,12 +11,17 @@ class PivotApp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataFields: [],
-      pivotFields: [],
-      fieldTypes: [],
-      default_aggregate_field_type: 0,
+      data_fields: [],
+      pivot_fields: [],
+      field_types: [],
+      default_aggregate_field_type: null,
+      input_path: '',
+      munger_name: '',
+      munger_template: '',
+      output_path: '',
+      rows_to_delete_bottom: null,
+      rows_to_delete_top: null,
     };
-    this.setState = this.setState.bind(this);
     this.newFieldName = this.newFieldName.bind(this);
     this.addDataField = this.addDataField.bind(this);
     this.addPivotField = this.addPivotField.bind(this);
@@ -30,7 +36,6 @@ class PivotApp extends React.Component {
   componentDidMount() {
     const source = `/script_builder/mungers/${this.props.mungerId}?format=json`;
     this.serverRequest = $.get(source, result => this.onMount(result));
-    console.log(this.state.dataFields);
   }
 
   componentWillUnmount() {
@@ -38,25 +43,26 @@ class PivotApp extends React.Component {
   }
 
   onMount(result) {
-    this.setState({ dataFields: result.data_fields });
-    this.setState({ pivotFields: result.pivot_fields });
-    this.setState({ fieldTypes: result.field_types });
-    this.setState({ default_aggregate_field_type: result.default_aggregate_field_type });
+    this.setState({ data_fields: result.data_fields });
+    this.setState({ pivot_fields: result.pivot_fields });
+    this.setState({ field_types: result.field_types });
+    this.setState({ ...result });
+    // this.setState({ default_aggregate_field_type: result.default_aggregate_field_type });
   }
 
   handleNameChange(dataFieldId, activeName) {
-    this.state.dataFields.map(dataField => {
+    this.state.data_fields.map(dataField => {
       if (dataField.id === dataFieldId) {
         dataField.active_name = activeName;
       }
       return dataField;
     });
-    this.setState({ dataFields: this.state.dataFields });
+    this.setState({ data_fields: this.state.data_fields });
   }
 
   newFieldName() {
     // TODO Redux - Will not update if fields have changed without reloading
-    let numNewFields = this.state.dataFields.filter(item =>
+    let numNewFields = this.state.data_fields.filter(item =>
       item.active_name.startsWith('New Field')
     ).length;
     if (numNewFields > 0) {
@@ -80,7 +86,7 @@ class PivotApp extends React.Component {
       url: '/script_builder/data_fields/',
       data: newDataField,
       success: data => {
-        this.setState({ dataFields: this.state.dataFields.concat([data]) });
+        this.setState({ data_fields: this.state.data_fields.concat([data]) });
       },
     });
   }
@@ -99,57 +105,52 @@ class PivotApp extends React.Component {
       url: '/script_builder/pivot_fields/',
       data: newPivotField,
       success: data => {
-        this.setState({ pivotFields: this.state.pivotFields.concat([data]) });
-        console.log(data);
+        this.setState({ pivot_fields: this.state.pivot_fields.concat([data]) });
       },
     });
   }
 
   deleteDataField(dataFieldId) {
-    console.log('delete');
-    const dataFields = this.state.dataFields;
-    const deleteIndex = dataFields.findIndex(f => f.id === dataFieldId);
-    dataFields.splice(deleteIndex, 1);
+    console.log('delete data field');
+    const deleteIndex = this.state.data_fields.findIndex(f => f.id === dataFieldId);
     $.ajax({
       beforeSend(jqXHR) {
         jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'DELETE',
       url: `/script_builder/data_fields/${dataFieldId}`,
-      success: this.setState({ dataFields }),
+      success: this.setState({
+        data_fields: update(this.state.data_fields, { $splice: [[deleteIndex, 1]] }),
+      }),
     });
     this.removeRelatedPivotFields(dataFieldId);
   }
 
   removeRelatedPivotFields(dataFieldId) {
-    const fieldsToRemove = this.state.pivotFields.filter(pivotField =>
-      pivotField.data_field === dataFieldId
+    const pivotFieldsToKeep = this.state.pivot_fields.filter(pivotField =>
+      pivotField.data_field !== dataFieldId
     );
-    const pivotFields = this.state.pivotFields;
-    fieldsToRemove.forEach(removeField => {
-      pivotFields.splice(pivotFields.findIndex(f => f.id === removeField.id), 1);
-    });
-    this.setState({ pivotFields });
+    this.setState({ pivot_fields: pivotFieldsToKeep });
   }
 
   deletePivotField(pivotFieldId) {
-    console.log('delete');
-    const pivotFields = this.state.pivotFields;
-    const deleteIndex = pivotFields.findIndex(f => f.id === pivotFieldId);
-    pivotFields.splice(deleteIndex, 1);
+    console.log('delete pivot field');
+    const deleteIndex = this.state.pivot_fields.findIndex(f => f.id === pivotFieldId);
     $.ajax({
       beforeSend(jqXHR) {
         jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
       },
       type: 'DELETE',
       url: `/script_builder/pivot_fields/${pivotFieldId}`,
-      success: this.setState({ pivotFields }),
+      success: this.setState({
+        pivot_fields: update(this.state.pivot_fields, { $splice: [[deleteIndex, 1]] }),
+      }),
     });
   }
 
   fieldTypeName(fieldTypeId) {
     const fieldTypeMap = {};
-    this.state.fieldTypes.map(fieldType => {
+    this.state.field_types.map(fieldType => {
       fieldTypeMap[fieldType.id] = fieldType.type_name;
       return fieldTypeMap;
     });
@@ -158,7 +159,7 @@ class PivotApp extends React.Component {
 
   activeName(dataFieldId) {
     const activeNameMap = {};
-    this.state.dataFields.map(dataField => {
+    this.state.data_fields.map(dataField => {
       activeNameMap[dataField.id] = dataField.active_name;
       return activeNameMap;
     });
@@ -168,8 +169,9 @@ class PivotApp extends React.Component {
   render() {
     return (
       <div className="pivot-app">
+
         <FieldBank addDataField={this.addDataField}>
-          {this.state.dataFields.map(dataField =>
+          {this.state.data_fields.map(dataField =>
             <DataField
               key={dataField.id}
               deleteDataField={this.deleteDataField}
@@ -180,7 +182,7 @@ class PivotApp extends React.Component {
           )}
         </FieldBank>
         <MainTable>
-          {this.state.pivotFields.map(pivotField =>
+          {this.state.pivot_fields.map(pivotField =>
             <PivotField
               key={pivotField.id}
               deletePivotField={this.deletePivotField}

@@ -12,11 +12,11 @@ class PivotField extends React.Component {
   }
 
   componentDidMount() {
-    console.log('created pivot field');
+    console.log('mount pivot field');
   }
 
   componentWillUnmount() {
-    console.log('removed pivot field');
+    console.log('unmount pivot field');
   }
 
   render() {

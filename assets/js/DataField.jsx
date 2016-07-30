@@ -54,7 +54,7 @@ class DataField extends React.Component {
         pivotType = null;
       }
       this.props.addPivotField(this.props.id, pivotType);
-      console.log('pivot field created');
+      console.log('pivot field placed');
     }
   }
 
