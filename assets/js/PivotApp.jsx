@@ -193,7 +193,7 @@ class PivotApp extends React.Component {
             />
           )}
         </MainTable>
-        <ScriptBuilder {...this.state} />
+        <ScriptBuilder activeName={this.activeName} {...this.state} />
       </div>
     );
   }

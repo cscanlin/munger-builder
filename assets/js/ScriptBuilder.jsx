@@ -5,16 +5,33 @@ class ScriptBuilder extends React.Component {
   constructor(props) {
     super(props);
     this.indexFields = this.indexFields.bind(this);
+    this.columnFields = this.columnFields.bind(this);
+    this.renameFieldMapString = this.renameFieldMapString.bind(this);
+  }
+
+  scriptHead() {
+    return `
+    import pandas as pd
+    import numpy as np
+
+    import os
+    from datetime import datetime
+
+    def print_run_status(run_start_time,message):
+        print('\n{0} - {1}'.format(datetime.now()-run_start_time, message))`
   }
 
   indexFields() {
+    console.log(this.renameFieldMapString());
     return this.props.pivot_fields.filter(
       pivotField => pivotField.field_type === 1
-    ).join(', ');
+    ).map(pivotField => this.props.activeName(pivotField.data_field)).join(', ');
   }
 
   columnFields() {
-    return this.props.pivot_fields.filter(pivotField => pivotField.field_type === 2);
+    return this.props.pivot_fields.filter(
+      pivotField => pivotField.field_type === 2
+    ).map(pivotField => this.props.activeName(pivotField.data_field)).join(', ');
   }
 
   aggregateNamesWithFunctions() {
@@ -27,30 +44,34 @@ class ScriptBuilder extends React.Component {
     // return {name: func(', '.join(type_functions)) for name, type_functions in aggregates_dict.items()}
   }
 
-  renameFieldMap() {
+  renameFieldMapString() {
     const renameFieldMap = {};
-    this.state.data_fields.map(dataField => {
-      renameFieldMap[dataField.current_name] = dataField.new_name;
+    this.props.data_fields.map(dataField => {
+      if (dataField.new_name) {
+        renameFieldMap[dataField.current_name] = dataField.new_name;
+      }
       return renameFieldMap;
     });
-    return renameFieldMap;
+    return JSON.stringify(renameFieldMap).replace(/[,:]/g, '$& ');
   }
 
   safeFileName() {
     return this.props.munger_name.replace(' ', '_').toLowerCase();
   }
 
-  fullOutputPath() {
-    return 'TODO output';
-    // if (!this.props.output_path) {
-    //   input_dir = os.path.dirname(this.props.input_path)
-    //   return os.path.join(input_dir, '{0}-output.csv'.format(this.props.safe_file_name))
-    // }
-  }
+  // fullOutputPath() {
+  //   return 'TODO output';
+  //   if (!this.props.output_path) {
+  //     input_dir = os.path.dirname(this.props.input_path)
+  //     return os.path.join(input_dir, '{0}-output.csv'.format(this.props.safe_file_name))
+  //   }
+  // }
 
   render() {
     return (
-      <pre>{this.indexFields()}</pre>
+      <pre>
+        {this.indexFields()}
+      </pre>
     );
   }
 }
@@ -64,6 +85,7 @@ ScriptBuilder.propTypes = {
   output_path: React.PropTypes.string,
   rows_to_delete_bottom: React.PropTypes.number,
   rows_to_delete_top: React.PropTypes.number,
+  activeName: React.PropTypes.func.isRequired,
 };
 module.exports = ScriptBuilder;
 
