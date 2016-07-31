@@ -105,7 +105,9 @@ class MungerBuilder(models.Model, PermissionedModel):
 
     @property
     def get_output_path(self):
-        if not self.output_path:
+        if self.output_path:
+            return self.output_path
+        else:
             input_dir = os.path.dirname(self.input_path)
             return os.path.join(input_dir, '{0}-output.csv'.format(self.safe_file_name))
 
