@@ -26,8 +26,11 @@ function collect(connect, monitor) {
 class DropZone extends React.Component {
   render() {
     const idClass = `${this.props.zoneType}-dropzone`
+    const zoneStyle = {
+      opacity: this.props.isOver ? 0.9 : 1,
+    }
     return this.props.connectDropTarget(
-      <div id={idClass} className={`dropzone ${idClass}`}>
+      <div id={idClass} className={`dropzone ${idClass}`} style={zoneStyle}>
         <span className="zone-heading">{`${this.props.zoneType} fields`}</span>
         {this.props.children}
       </div>

@@ -47,11 +47,7 @@ class PivotApp extends React.Component {
   }
 
   onMount(result) {
-    this.setState({ data_fields: result.data_fields })
-    this.setState({ pivot_fields: result.pivot_fields })
-    this.setState({ field_types: result.field_types })
     this.setState({ ...result })
-    // this.setState({ default_aggregate_field_type: result.default_aggregate_field_type })
   }
 
   handleNameChange(dataFieldId, activeName) {
@@ -65,7 +61,6 @@ class PivotApp extends React.Component {
   }
 
   newFieldName() {
-    // TODO Redux - Will not update if fields have changed without reloading
     let numNewFields = this.state.data_fields.filter(item =>
       item.active_name.startsWith('New Field')
     ).length

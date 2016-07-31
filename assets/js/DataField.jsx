@@ -82,7 +82,7 @@ class DataField extends React.Component {
 
   render() {
     let fieldStyle = {
-      backgroundColor: this.state.active ? '#008000' : '#29e',
+      opacity: this.props.isDragging ? 0.9 : 1,
     }
 
     return this.props.connectDragSource(
