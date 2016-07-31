@@ -1,17 +1,15 @@
 const React = require('react')
 const DropTarget = require('react-dnd').DropTarget
 
-const zoneTypeIdMap = {
-  index: 1,
-  column: 2,
-  aggregate: null,
-}
-
 const zoneTarget = {
   drop(props, monitor) {
     console.log('drop')
-    const dataFieldId = monitor.getItem().dataField
-    props.addPivotField(dataFieldId, zoneTypeIdMap[props.zoneType])
+    const dropItem = monitor.getItem()
+    if ('dataField' in dropItem) {
+      props.addPivotField(dropItem.dataField, props.fieldType)
+    } else if ('pivotField' in dropItem) {
+      props.updatePivotField(dropItem.pivotField, props.fieldType)
+    }
   },
 }
 
@@ -40,10 +38,12 @@ class DropZone extends React.Component {
 
 DropZone.propTypes = {
   zoneType: React.PropTypes.string.isRequired,
+  fieldType: React.PropTypes.number,
   addPivotField: React.PropTypes.func.isRequired,
+  updatePivotField: React.PropTypes.func.isRequired,
   children: React.PropTypes.node,
   isOver: React.PropTypes.bool.isRequired,
   connectDropTarget: React.PropTypes.func.isRequired,
 }
 
-module.exports = DropTarget('DataField', zoneTarget, collect)(DropZone)
+module.exports = DropTarget(['DataField', 'PivotField'], zoneTarget, collect)(DropZone)

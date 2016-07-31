@@ -29,6 +29,7 @@ class PivotApp extends React.Component {
     this.newFieldName = this.newFieldName.bind(this)
     this.addDataField = this.addDataField.bind(this)
     this.addPivotField = this.addPivotField.bind(this)
+    this.updatePivotField = this.updatePivotField.bind(this)
     this.deleteDataField = this.deleteDataField.bind(this)
     this.deletePivotField = this.deletePivotField.bind(this)
     this.fieldTypeName = this.fieldTypeName.bind(this)
@@ -51,6 +52,7 @@ class PivotApp extends React.Component {
   }
 
   handleNameChange(dataFieldId, activeName) {
+    console.log(dataFieldId)
     this.state.data_fields.map(dataField => {
       if (dataField.id === dataFieldId) {
         dataField.active_name = activeName
@@ -105,6 +107,40 @@ class PivotApp extends React.Component {
       data: newPivotField,
       success: data => {
         this.setState({ pivot_fields: this.state.pivot_fields.concat([data]) })
+      },
+    })
+  }
+
+  updateDataField(dataField) {
+    if (dataField.active_name !== dataField.new_name) {
+      dataField.new_name = dataField.active_name
+      $.ajax({
+        beforeSend(jqXHR) {
+          jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
+        },
+        type: 'PUT',
+        url: `/script_builder/data_fields/${dataField.id}`,
+        data: dataField,
+      })
+    }
+  }
+
+  updatePivotField(pivotFieldId, fieldTypeID) {
+    $.ajax({
+      beforeSend(jqXHR) {
+        jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
+      },
+      type: 'PUT',
+      url: `/script_builder/pivot_fields/${pivotFieldId}`,
+      data: { field_type: fieldTypeID },
+      success: data => {
+        this.state.pivot_fields.map(pivotField => {
+          if (pivotField.id === data.id) {
+            pivotField.field_type = data.field_type
+          }
+          return pivotField
+        })
+        this.setState({ pivot_fields: this.state.pivot_fields })
       },
     })
   }
@@ -177,13 +213,18 @@ class PivotApp extends React.Component {
           {this.state.data_fields.map(dataField =>
             <DataField
               key={dataField.id}
+              updateDataField={this.updateDataField}
               deleteDataField={this.deleteDataField}
               handleNameChange={this.handleNameChange}
               {...dataField}
             />
           )}
         </FieldBank>
-        <MainTable addPivotField={this.addPivotField}>
+        <MainTable
+          addPivotField={this.addPivotField}
+          updatePivotField={this.updatePivotField}
+          default_aggregate_field_type={this.state.default_aggregate_field_type}
+        >
           {this.state.pivot_fields.map(pivotField =>
             <PivotField
               key={pivotField.id}

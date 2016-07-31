@@ -1,13 +1,11 @@
 const React = require('react')
-const $ = require('jquery')
-const Cookie = require('js-cookie')
 const DragSource = require('react-dnd').DragSource
 
 const Button = require('./Button')
 
-const fieldSource = {
+const dataFieldSource = {
   beginDrag(props) {
-    console.log('begin drag')
+    console.log('begin data field drag')
     return { dataField: props.id }
   },
 }
@@ -35,7 +33,6 @@ class DataField extends React.Component {
     this.onChange = this.onChange.bind(this)
     this.enableEditing = this.enableEditing.bind(this)
     this.disableEditing = this.disableEditing.bind(this)
-    this.saveDataField = this.saveDataField.bind(this)
   }
 
   onChange(e) {
@@ -48,7 +45,6 @@ class DataField extends React.Component {
   inputID() { return `field-name-input-${this.props.id}` }
 
   enableEditing() {
-    // set your contenteditable field into editing mode.
     console.log('editing')
     this.setState({ editing: true })
     document.body.addEventListener('keypress', this.disableEditing)
@@ -61,22 +57,8 @@ class DataField extends React.Component {
       this.setState({ editing: false })
       document.body.removeEventListener('click', this.disableEditing)
       document.body.removeEventListener('keypress', this.disableEditing)
-      this.saveDataField()
+      this.props.updateDataField(this.state)
       e.preventDefault()
-    }
-  }
-
-  saveDataField() {
-    if (this.state.active_name !== this.state.new_name) {
-      this.state.new_name = this.state.active_name
-      $.ajax({
-        beforeSend(jqXHR) {
-          jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
-        },
-        type: 'PUT',
-        url: `/script_builder/data_fields/${this.props.id}`,
-        data: this.state,
-      })
     }
   }
 
@@ -131,9 +113,10 @@ DataField.propTypes = {
   current_name: React.PropTypes.string.isRequired,
   new_name: React.PropTypes.string,
   active_name: React.PropTypes.string.isRequired,
+  updateDataField: React.PropTypes.func.isRequired,
   deleteDataField: React.PropTypes.func.isRequired,
   handleNameChange: React.PropTypes.func.isRequired,
   connectDragSource: React.PropTypes.func.isRequired,
   isDragging: React.PropTypes.bool.isRequired,
 }
-module.exports = DragSource('DataField', fieldSource, collect)(DataField)
+module.exports = DragSource('DataField', dataFieldSource, collect)(DataField)
