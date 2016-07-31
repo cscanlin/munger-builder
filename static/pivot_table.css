@@ -21,7 +21,7 @@
   padding: 10px;
   display: inline-block;
   transition: background-color 0.3s;
-  min-height: 200px
+  min-height: 130px
 }
 
 .zone-heading {
@@ -51,12 +51,10 @@
 .column-dropzone {
   min-width: 220px;
   width: 100%;
-  min-height: 50px;
 }
 .aggregate-dropzone {
   min-width: 220px;
   width: 100%;
-  min-height: 100px;
 }
 
 .drop-active {

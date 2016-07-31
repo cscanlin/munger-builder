@@ -33,7 +33,6 @@ class DataField extends React.Component {
       active: false,
     }
     this.onChange = this.onChange.bind(this)
-    this.placeField = this.placeField.bind(this)
     this.enableEditing = this.enableEditing.bind(this)
     this.disableEditing = this.disableEditing.bind(this)
     this.saveDataField = this.saveDataField.bind(this)
