@@ -6,7 +6,7 @@ function Button(props) {
 
 Button.propTypes = {
   type: React.PropTypes.string.isRequired,
-  src: React.PropTypes.string.isRequired,
+  src: React.PropTypes.string,
   value: React.PropTypes.string.isRequired,
   className: React.PropTypes.string.isRequired,
   onClick: React.PropTypes.func.isRequired,

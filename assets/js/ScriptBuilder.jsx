@@ -1,7 +1,21 @@
 const React = require('react')
 const Immutable = require('immutable')
+const Button = require('./Button')
 
 class ScriptBuilder extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      showFullScript: true,
+    }
+    this.toggleShowFullScript = this.toggleShowFullScript.bind(this)
+  }
+
+  toggleShowFullScript() {
+    const showHide = !this.state.showFullScript
+    this.setState({ showFullScript: showHide })
+  }
 
   pythonStringify(object) {
     return JSON.stringify(object).replace(/[,:]/g, '$& ').replace(/"/g, '\'')
@@ -21,13 +35,13 @@ class ScriptBuilder extends React.Component {
   indexFields() {
     return this.props.pivot_fields.filter(
       pivotField => pivotField.field_type === 1
-    ).map(pivotField => this.props.activeName(pivotField.data_field)).join(', ')
+    ).map(pivotField => `'${this.props.activeName(pivotField.data_field)}'`).join(', ')
   }
 
   columnFields() {
     return this.props.pivot_fields.filter(
       pivotField => pivotField.field_type === 2
-    ).map(pivotField => this.props.activeName(pivotField.data_field)).join(', ')
+    ).map(pivotField => `'${this.props.activeName(pivotField.data_field)}'`).join(', ')
   }
 
   aggregateNamesWithFunctions() {
@@ -46,7 +60,7 @@ class ScriptBuilder extends React.Component {
   formatAggregateFunctionsMap(aggregateFunctionsMap) {
     const indentString = '\n        '
     return `${indentString}${aggregateFunctionsMap.map(
-      (value, key) => `${key}: [${value.join(', ')}],`
+      (value, key) => `'${key}': ['${value.join("', '")}'],`
     ).join(indentString)}\n    `
   }
 
@@ -69,8 +83,8 @@ class ScriptBuilder extends React.Component {
   }
 
   scriptHead() {
-    return `
-    import pandas as pd
+    return (
+    `import pandas as pd
     import numpy as np
 
     import os
@@ -79,7 +93,7 @@ class ScriptBuilder extends React.Component {
     def print_run_status(run_start_time, message):
         print('\\n{0} - {1}'.format(datetime.now() - run_start_time, message))
 
-    run_start_time = datetime.now()`.replace(/ {4}/g, '')
+    run_start_time = datetime.now()`.replace(/ {4}/g, ''))
   }
 
   inputPath() {
@@ -108,7 +122,7 @@ class ScriptBuilder extends React.Component {
 
   renameFields() {
     const renameString = this.renameFieldMapString()
-    if (renameString) {
+    if (renameString !== '{}') {
       const sprintStatus = '\n\nprint_run_status(run_start_time, \'Renaming Fields...\')'
       const renameDataFrame = `\ndf = df.rename(columns=${renameString})`
       return sprintStatus + renameDataFrame
@@ -142,15 +156,26 @@ print(pivot_output)`
 
   render() {
     return (
-      <pre>
-        {this.scriptHead()}
-        {this.inputPath()}
-        {this.readCSV()}
-        {this.dropBottomRows()}
-        {this.renameFields()}
-        {this.pivotTable()}
-        {this.writeFile()}
-      </pre>
+      <div className="script-builder-container">
+        <Button
+          type="button"
+          value={this.state.showFullScript ? 'Show Pivot Only' : 'Show Full Script'}
+          className="btn btn-primary toggle-show-pivot-only"
+          onClick={this.toggleShowFullScript}
+        />
+        {this.state.showFullScript
+          ? <pre>
+              {this.scriptHead()}
+              {this.inputPath()}
+              {this.readCSV()}
+              {this.dropBottomRows()}
+              {this.renameFields()}
+              {this.pivotTable()}
+              {this.writeFile()}
+          </pre>
+          : <pre>{this.pivotTable().replace('\n\n', '')}</pre>
+        }
+      </div>
     )
   }
 }

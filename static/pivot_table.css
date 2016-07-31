@@ -148,3 +148,7 @@ span.agg-text:first-letter {
 .clear {
   clear: both;
 }
+
+.script-builder-container {
+  width: 60%;
+}
