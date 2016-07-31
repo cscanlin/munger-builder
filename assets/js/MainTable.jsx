@@ -1,4 +1,5 @@
 const React = require('react')
+const DropZone = require('./DropZone')
 
 class MainTable extends React.Component {
 
@@ -6,32 +7,23 @@ class MainTable extends React.Component {
     return (
       <div id="main-dropzone-container" className="main-dropzone-container clear">
         <div id="left-dropzone-container" className="left-dropzone-container">
-          <div id="index-dropzone" className="dropzone index-dropzone">
-            <span>Index Fields</span>
-            <div id="indexList" type="index" className="index-dropzone">
-              {this.props.children.filter(pivotField =>
-                pivotField.props.field_type === 1
-              )}
-            </div>
-          </div>
+          <DropZone addPivotField={this.props.addPivotField} zoneType="index">
+            {this.props.children.filter(pivotField =>
+              pivotField.props.field_type === 1
+            )}
+          </DropZone>
         </div>
         <div id="right-dropzone-container" className="right-dropzone-container">
-          <div id="column-dropzone" className="dropzone column-dropzone">
-            <span>Column Fields</span>
-            <div id="columnList" type="column" className="column-dropzone">
-              {this.props.children.filter(pivotField =>
-                pivotField.props.field_type === 2
-              )}
-            </div>
-          </div>
-          <div id="agg-dropzone" className="dropzone agg-dropzone">
-            <span>Aggregate Fields</span>
-            <div id="aggList" type="agg" className="agg-dropzone">
-              {this.props.children.filter(pivotField =>
-                pivotField.props.field_type > 2
-              )}
-            </div>
-          </div>
+          <DropZone addPivotField={this.props.addPivotField} zoneType="column">
+            {this.props.children.filter(pivotField =>
+              pivotField.props.field_type === 2
+            )}
+          </DropZone>
+          <DropZone addPivotField={this.props.addPivotField} zoneType="aggregate">
+            {this.props.children.filter(pivotField =>
+              pivotField.props.field_type > 2
+            )}
+          </DropZone>
         </div>
       </div>
     )
@@ -39,6 +31,7 @@ class MainTable extends React.Component {
 }
 
 MainTable.propTypes = {
+  addPivotField: React.PropTypes.func.isRequired,
   children: React.PropTypes.node,
 }
 

@@ -1,7 +1,23 @@
 const React = require('react')
 const $ = require('jquery')
 const Cookie = require('js-cookie')
+const DragSource = require('react-dnd').DragSource
+
 const Button = require('./Button')
+
+const fieldSource = {
+  beginDrag(props) {
+    console.log('begin drag')
+    return { dataField: props.id }
+  },
+}
+
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  }
+}
 
 class DataField extends React.Component {
 
@@ -17,7 +33,6 @@ class DataField extends React.Component {
       active: false,
     }
     this.onChange = this.onChange.bind(this)
-    this.onClick = this.onClick.bind(this)
     this.placeField = this.placeField.bind(this)
     this.enableEditing = this.enableEditing.bind(this)
     this.disableEditing = this.disableEditing.bind(this)
@@ -27,35 +42,6 @@ class DataField extends React.Component {
   onChange(e) {
     this.setState({ active_name: e.target.value })
     this.props.handleNameChange(this.props.id, e.target.value)
-  }
-
-  onClick(e) {
-    const notButton = e.target.value !== 'edit' && e.target.value !== 'delete'
-    if (notButton && e.currentTarget.id === this.elementID() && !this.state.editing) {
-      this.setState({ active: true })
-      console.log('active')
-      document.body.addEventListener('click', this.placeField)
-    }
-    // if e.target.id !== this.elementID() && this.state.editing
-  }
-
-  placeField(e) {
-    let pivotType = 0
-    document.body.removeEventListener('click', this.placeField)
-    this.setState({ active: false })
-    console.log('data field inactive')
-    const targetClasses = e.target.parentNode.classList
-    if (targetClasses.contains('dropzone')) {
-      if (targetClasses.contains('index-dropzone')) {
-        pivotType = 1
-      } else if (targetClasses.contains('column-dropzone')) {
-        pivotType = 2
-      } else {
-        pivotType = null
-      }
-      this.props.addPivotField(this.props.id, pivotType)
-      console.log('pivot field placed')
-    }
   }
 
   elementID() { return `base-field-${this.props.id}` }
@@ -100,7 +86,7 @@ class DataField extends React.Component {
       backgroundColor: this.state.active ? '#008000' : '#29e',
     }
 
-    return (
+    return this.props.connectDragSource(
       <div
         id={this.elementID()}
         key={this.props.id}
@@ -147,7 +133,8 @@ DataField.propTypes = {
   new_name: React.PropTypes.string,
   active_name: React.PropTypes.string.isRequired,
   deleteDataField: React.PropTypes.func.isRequired,
-  addPivotField: React.PropTypes.func.isRequired,
   handleNameChange: React.PropTypes.func.isRequired,
+  connectDragSource: React.PropTypes.func.isRequired,
+  isDragging: React.PropTypes.bool.isRequired,
 }
-module.exports = DataField
+module.exports = DragSource('DataField', fieldSource, collect)(DataField)

@@ -25,7 +25,7 @@ class PivotField extends React.Component {
     return (
       <div className={pivotFieldClass}>
         <div className="field-text">
-          <span className="agg-text">{fieldTypeName} of </span>
+          <span className="aggregate-text">{fieldTypeName} of </span>
           <span className="name-text">{this.props.activeName(this.props.data_field)}</span>
         </div>
       </div>

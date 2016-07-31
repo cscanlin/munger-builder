@@ -21,6 +21,12 @@
   padding: 10px;
   display: inline-block;
   transition: background-color 0.3s;
+  min-height: 200px
+}
+
+.zone-heading {
+  display: block;
+  text-transform: capitalize;
 }
 
 .field-source-bank {
@@ -34,7 +40,6 @@
 }
 .index-dropzone {
   width: 220px;
-  min-height: 100px;
 }
 
 .right-dropzone-container {
@@ -48,7 +53,7 @@
   width: 100%;
   min-height: 50px;
 }
-.agg-dropzone {
+.aggregate-dropzone {
   min-width: 220px;
   width: 100%;
   min-height: 100px;
@@ -104,7 +109,7 @@
   background: #59b3f2;
 }
 
-span.agg-text:first-letter {
+span.aggregate-text:first-letter {
   text-transform:capitalize;
 }
 

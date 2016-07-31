@@ -2,6 +2,9 @@ const React = require('react')
 const $ = require('jquery')
 const Cookie = require('js-cookie')
 const update = require('react-addons-update')
+const HTML5Backend = require('react-dnd-html5-backend')
+const DragDropContext = require('react-dnd').DragDropContext
+
 const DataField = require('./DataField')
 const FieldBank = require('./FieldBank')
 const MainTable = require('./MainTable')
@@ -180,13 +183,12 @@ class PivotApp extends React.Component {
             <DataField
               key={dataField.id}
               deleteDataField={this.deleteDataField}
-              addPivotField={this.addPivotField}
               handleNameChange={this.handleNameChange}
               {...dataField}
             />
           )}
         </FieldBank>
-        <MainTable>
+        <MainTable addPivotField={this.addPivotField}>
           {this.state.pivot_fields.map(pivotField =>
             <PivotField
               key={pivotField.id}
@@ -211,4 +213,4 @@ class PivotApp extends React.Component {
 PivotApp.propTypes = {
   mungerId: React.PropTypes.number.isRequired,
 }
-module.exports = PivotApp
+module.exports = DragDropContext(HTML5Backend)(PivotApp)
