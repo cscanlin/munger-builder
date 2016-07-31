@@ -46,7 +46,9 @@ class ScriptBuilder extends React.Component {
 
   aggregateNamesWithFunctions() {
     const aggregateFunctionsMap = {}
-    this.props.pivot_fields.map(pivotField => {
+    this.props.pivot_fields.filter(
+      pivotField => pivotField.field_type > 2
+    ).map(pivotField => {
       const activeName = this.props.activeName(pivotField.data_field)
       if (!(activeName in aggregateFunctionsMap)) {
         aggregateFunctionsMap[activeName] = []
@@ -58,10 +60,10 @@ class ScriptBuilder extends React.Component {
   }
 
   formatAggregateFunctionsMap(aggregateFunctionsMap) {
-    const indentString = '\n        '
+    const indentString = '\n            '
     return `${indentString}${aggregateFunctionsMap.map(
-      (value, key) => `'${key}': ['${value.join("', '")}'],`
-    ).join(indentString)}\n    `
+      (value, key) => `'${key}': [${value.join(', ')}],`
+    ).join(indentString)}\n        `
   }
 
   safeFileName() {
@@ -93,7 +95,7 @@ class ScriptBuilder extends React.Component {
     def print_run_status(run_start_time, message):
         print('\\n{0} - {1}'.format(datetime.now() - run_start_time, message))
 
-    run_start_time = datetime.now()`.replace(/ {4}/g, ''))
+    run_start_time = datetime.now()`.replace(/\n {4}/g, '\n'))
   }
 
   inputPath() {
@@ -133,16 +135,16 @@ class ScriptBuilder extends React.Component {
   pivotTable() {
     const aggregateNamesWithFunctions = this.aggregateNamesWithFunctions()
     return `\n
-print_run_status(run_start_time, 'Building Pivot Table...')
-pivot_output = pd.pivot_table(
-    df,
-    index=[${this.indexFields()}],
-    columns=[${this.columnFields()}],
-    values=[${Array.from(aggregateNamesWithFunctions.keys()).join(', ')}],
-    aggfunc={${this.formatAggregateFunctionsMap(aggregateNamesWithFunctions)}},
-    fill_value=0,
-)
-print(pivot_output)`
+    print_run_status(run_start_time, 'Building Pivot Table...')
+    pivot_output = pd.pivot_table(
+        df,
+        index=[${this.indexFields()}],
+        columns=[${this.columnFields()}],
+        values=['${Array.from(aggregateNamesWithFunctions.keys()).join("', '")}'],
+        aggfunc={${this.formatAggregateFunctionsMap(aggregateNamesWithFunctions)}},
+        fill_value=0,
+    )
+    print(pivot_output)`.replace(/\n {4}/g, '\n')
   }
 
 
@@ -151,7 +153,7 @@ print(pivot_output)`
     print_run_status(run_start_time, 'Writing Output CSVs...')
     pivot_output.to_csv(os.path.abspath(r'${this.fullOutputPath()}'))
 
-    print_run_status(run_start_time, 'Finished!')`.replace(/ {4}/g, '')
+    print_run_status(run_start_time, 'Finished!')`.replace(/\n {4}/g, '\n')
   }
 
   render() {

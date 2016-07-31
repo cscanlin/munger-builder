@@ -91,7 +91,7 @@ class MungerBuilder(models.Model, PermissionedModel):
         # Needs to be ordered dicts
         func = eval if evaled else str
         aggregates_dict = defaultdict(list)
-        for pf in self.pivot_fields:
+        for pf in self.pivot_fields.filter(field_type__id__gt=2):
             aggregates_dict[pf.active_name].append(pf.type_function)
         return {name: func(', '.join(type_functions)) for name, type_functions in aggregates_dict.items()}
 
