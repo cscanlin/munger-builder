@@ -149,10 +149,14 @@ class PivotApp extends React.Component {
     })
   }
 
-  fieldTypeName(fieldTypeId) {
+  fieldTypeName(fieldTypeId, returnFunctionName = false) {
     const fieldTypeMap = {}
     this.state.field_types.map(fieldType => {
-      fieldTypeMap[fieldType.id] = fieldType.type_name
+      if (returnFunctionName) {
+        fieldTypeMap[fieldType.id] = fieldType.type_function
+      } else {
+        fieldTypeMap[fieldType.id] = fieldType.type_name
+      }
       return fieldTypeMap
     })
     return fieldTypeMap[fieldTypeId]
@@ -193,7 +197,11 @@ class PivotApp extends React.Component {
             />
           )}
         </MainTable>
-        <ScriptBuilder activeName={this.activeName} {...this.state} />
+        <ScriptBuilder
+          activeName={this.activeName}
+          fieldTypeName={this.fieldTypeName}
+          {...this.state}
+        />
       </div>
     )
   }

@@ -1,12 +1,71 @@
-const React = require('react');
+const React = require('react')
+const Immutable = require('immutable')
 
 class ScriptBuilder extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.indexFields = this.indexFields.bind(this);
-    this.columnFields = this.columnFields.bind(this);
-    this.renameFieldMapString = this.renameFieldMapString.bind(this);
+  pythonStringify(object) {
+    return JSON.stringify(object).replace(/[,:]/g, '$& ').replace(/"/g, '\'')
+  }
+
+  renameFieldMapString() {
+    const renameFieldMap = {}
+    this.props.data_fields.map(dataField => {
+      if (dataField.new_name) {
+        renameFieldMap[dataField.current_name] = dataField.new_name
+      }
+      return renameFieldMap
+    })
+    return this.pythonStringify(renameFieldMap)
+  }
+
+  indexFields() {
+    return this.props.pivot_fields.filter(
+      pivotField => pivotField.field_type === 1
+    ).map(pivotField => this.props.activeName(pivotField.data_field)).join(', ')
+  }
+
+  columnFields() {
+    return this.props.pivot_fields.filter(
+      pivotField => pivotField.field_type === 2
+    ).map(pivotField => this.props.activeName(pivotField.data_field)).join(', ')
+  }
+
+  aggregateNamesWithFunctions() {
+    const aggregateFunctionsMap = {}
+    this.props.pivot_fields.map(pivotField => {
+      const activeName = this.props.activeName(pivotField.data_field)
+      if (!(activeName in aggregateFunctionsMap)) {
+        aggregateFunctionsMap[activeName] = []
+      }
+      const fieldTypeFunction = this.props.fieldTypeName(pivotField.field_type, true)
+      return aggregateFunctionsMap[activeName].push(fieldTypeFunction)
+    })
+    return Immutable.Map(aggregateFunctionsMap)
+  }
+
+  formatAggregateFunctionsMap(aggregateFunctionsMap) {
+    const indentString = '\n        '
+    return `${indentString}${aggregateFunctionsMap.map(
+      (value, key) => `${key}: [${value.join(', ')}],`
+    ).join(indentString)}\n    `
+  }
+
+  safeFileName() {
+    return this.props.munger_name.replace(/ /g, '_').toLowerCase()
+  }
+
+  fullOutputPath() {
+    console.log(this.props.input_path)
+    if (!this.props.output_path) {
+      let inputDir = this.props.input_path.substring(
+        0, this.props.input_path.lastIndexOf('\\') + 1
+      )
+      if (inputDir !== '') {
+        inputDir += '/'
+      }
+      return `${inputDir}${this.safeFileName()}-output.csv`
+    }
+    return this.props.output_path
   }
 
   scriptHead() {
@@ -17,62 +76,82 @@ class ScriptBuilder extends React.Component {
     import os
     from datetime import datetime
 
-    def print_run_status(run_start_time,message):
-        print('\n{0} - {1}'.format(datetime.now()-run_start_time, message))`
+    def print_run_status(run_start_time, message):
+        print('\\n{0} - {1}'.format(datetime.now() - run_start_time, message))
+
+    run_start_time = datetime.now()`.replace(/ {4}/g, '')
   }
 
-  indexFields() {
-    console.log(this.renameFieldMapString());
-    return this.props.pivot_fields.filter(
-      pivotField => pivotField.field_type === 1
-    ).map(pivotField => this.props.activeName(pivotField.data_field)).join(', ');
+  inputPath() {
+    const inputPath = this.props.input_path || 'ADD INPUT FILE PATH HERE'
+    return `\n\ninput_file = '${inputPath}'`
   }
 
-  columnFields() {
-    return this.props.pivot_fields.filter(
-      pivotField => pivotField.field_type === 2
-    ).map(pivotField => this.props.activeName(pivotField.data_field)).join(', ');
+  readCSV() {
+    const printStatus = 'print_run_status(run_start_time, \'Reading Data From:' +
+                        '\\n{0}\'.format(input_file))'
+    let createDataFrame = ''
+    if (this.props.rows_to_delete_top) {
+      createDataFrame = `\ndf = pd.read_csv(input_file, skiprows=${this.props.rows_to_delete_top})`
+    } else {
+      createDataFrame = '\ndf = pd.read_csv(input_file)'
+    }
+    return `\n\n${printStatus}${createDataFrame}`
   }
 
-  aggregateNamesWithFunctions() {
-    return 'TODO aggregates';
-    // # Needs to be ordered dicts
-    // func = eval if evaled else str
-    // aggregates_dict = defaultdict(list)
-    // for pf in this.props.pivot_fields:
-    // aggregates_dict[pf.active_name].append(pf.type_function)
-    // return {name: func(', '.join(type_functions)) for name, type_functions in aggregates_dict.items()}
+  dropBottomRows() {
+    if (this.props.rows_to_delete_bottom) {
+      return `\n\ndf = df.drop(df.index[-${this.props.rows_to_delete_bottom}:])`
+    }
+    return ''
   }
 
-  renameFieldMapString() {
-    const renameFieldMap = {};
-    this.props.data_fields.map(dataField => {
-      if (dataField.new_name) {
-        renameFieldMap[dataField.current_name] = dataField.new_name;
-      }
-      return renameFieldMap;
-    });
-    return JSON.stringify(renameFieldMap).replace(/[,:]/g, '$& ');
+  renameFields() {
+    const renameString = this.renameFieldMapString()
+    if (renameString) {
+      const sprintStatus = '\n\nprint_run_status(run_start_time, \'Renaming Fields...\')'
+      const renameDataFrame = `\ndf = df.rename(columns=${renameString})`
+      return sprintStatus + renameDataFrame
+    }
+    return ''
   }
 
-  safeFileName() {
-    return this.props.munger_name.replace(' ', '_').toLowerCase();
+  pivotTable() {
+    const aggregateNamesWithFunctions = this.aggregateNamesWithFunctions()
+    return `\n
+print_run_status(run_start_time, 'Building Pivot Table...')
+pivot_output = pd.pivot_table(
+    df,
+    index=[${this.indexFields()}],
+    columns=[${this.columnFields()}],
+    values=[${Array.from(aggregateNamesWithFunctions.keys()).join(', ')}],
+    aggfunc={${this.formatAggregateFunctionsMap(aggregateNamesWithFunctions)}},
+    fill_value=0,
+)
+print(pivot_output)`
   }
 
-  // fullOutputPath() {
-  //   return 'TODO output';
-  //   if (!this.props.output_path) {
-  //     input_dir = os.path.dirname(this.props.input_path)
-  //     return os.path.join(input_dir, '{0}-output.csv'.format(this.props.safe_file_name))
-  //   }
-  // }
+
+  writeFile() {
+    return `\n
+    print_run_status(run_start_time, 'Writing Output CSVs...')
+    pivot_output.to_csv(os.path.abspath(r'${this.fullOutputPath()}'))
+
+    print_run_status(run_start_time, 'Finished!')`.replace(/ {4}/g, '')
+  }
 
   render() {
     return (
       <pre>
-        {this.indexFields()}
+        {this.scriptHead()}
+        {this.inputPath()}
+        {this.readCSV()}
+        {this.dropBottomRows()}
+        {this.renameFields()}
+        {this.pivotTable()}
+        {this.writeFile()}
       </pre>
-    );
+    )
   }
 }
 
@@ -86,53 +165,10 @@ ScriptBuilder.propTypes = {
   rows_to_delete_bottom: React.PropTypes.number,
   rows_to_delete_top: React.PropTypes.number,
   activeName: React.PropTypes.func.isRequired,
-};
-module.exports = ScriptBuilder;
+  fieldTypeName: React.PropTypes.func.isRequired,
+}
+module.exports = ScriptBuilder
 
-// import pandas as pd
-// import numpy as np
-//
-// import os
-// from datetime import datetime
-//
-// def print_run_status(run_start_time,message):
-//     print('\n{0} - {1}'.format(datetime.now()-run_start_time, message))
-//
-// {% if mb.input_path %}
-// input_file = os.path.abspath(r'{{ mb.input_path }}')
-// {% else %}
-// input_file = 'ADD INPUT FILE PATH HERE'
-// {% endif %}
-//
-// print_run_status(run_start_time, 'Reading Data From:\n{0}'.format(input_file))
-// {% if mb.rows_to_delete_top and mb.rows_to_delete_top != 0 %}
-// df = pd.read_csv(input_file, skiprows=mb.rows_to_delete_top)
-// {% else %}
-// df = pd.read_csv(input_file)
-// {% endif %}
-//
-// {% if mb.rows_to_delete_bottom and mb.rows_to_delete_bottom != 0 %}
-// df = df.drop(df.index[-{{ mb.rows_to_delete_bottom }}:])
-// {% endif %}
-//
-// {% if mb.rename_field_dict %}
-// print_run_status(run_start_time, 'Renaming Fields...')
-// df = df.rename(columns={{ mb.rename_field_dict }})
-// {% endif %}
-//
-// print_run_status(run_start_time, 'Building Pivot Table...')
-// pivot_output = pd.pivot_table(
-//     df,
-//     index={{ mb.index_fields }},
-//     columns={{ mb.column_fields }},
-//     values=[{% for key in mb.aggregate_names_with_functions().keys() %}'{{ key }}',{% endfor %}],
-//     aggfunc={
-//       {% for key, value in mb.aggregate_names_with_functions().items() %}
-//         '{{ key }}': [{{ value }}],
-//       {% endfor %}
-//     },
-//     fill_value=0,
-// )
 // print(pivot_output)
 //
 // print_run_status(run_start_time, 'Writing Output CSVs...')
