@@ -1,6 +1,8 @@
 const React = require('react')
 const DragSource = require('react-dnd').DragSource
 
+const Button = require('./Button')
+
 const pivotFieldSource = {
   beginDrag(props) {
     console.log('begin pivot field drag')
@@ -25,18 +27,32 @@ class PivotField extends React.Component {
     console.log('unmount pivot field')
   }
 
+  toggleChooser() {
+    return
+  }
+
   render() {
     const pivotFieldClass = `${this.props.fieldTypeName}-field list-group-item`
+    const fullFieldText = `${this.props.fieldTypeName} of ${this.props.active_name}`
+    const fieldTextStyle = {
+      fontSize: 18.5 - fullFieldText.length / 4,
+    }
+    console.log(fullFieldText.length)
     return this.props.connectDragSource(
-      <div className={pivotFieldClass}>
+      <div className={pivotFieldClass} style={fieldTextStyle}>
         <div className="field-text">
-          <span className="aggregate-text">{this.props.fieldTypeName} of </span>
-          <span className="name-text">{this.props.active_name}</span>
+          {fullFieldText}
         </div>
+        <Button
+          type="image"
+          src="/static/hamburger.png"
+          value="toggle"
+          className="small-image-button right aggregate-chooser-toggle"
+          onClick={this.toggleChooser}
+        />
       </div>
     )
   }
-
 }
 
 PivotField.propTypes = {

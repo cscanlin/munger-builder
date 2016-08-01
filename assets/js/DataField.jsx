@@ -75,12 +75,10 @@ class DataField extends React.Component {
           type="image"
           src="/static/delete-icon-transparent.png"
           value="delete"
-          className="delete-field-button"
+          className="small-image-button left"
           onClick={() => this.props.deleteDataField(this.props.id)}
         />
-        <div
-          className="field-text"
-        >
+        <div className="field-text">
           <input
             id={this.inputID()}
             type="text"
@@ -89,14 +87,14 @@ class DataField extends React.Component {
             className="field-name-input"
             onChange={this.onChange}
           />
-          <Button
-            type="image"
-            src="/static/edit-icon.png"
-            value="edit"
-            className="small-image-button"
-            onClick={this.enableEditing}
-          />
         </div>
+        <Button
+          type="image"
+          src="/static/edit-icon.png"
+          value="edit"
+          className="small-image-button right"
+          onClick={this.enableEditing}
+        />
       </div>
     )
   }

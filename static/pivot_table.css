@@ -5,7 +5,7 @@
   float: left;
   margin-right: 5px;
   border-radius: 5px;
-  width: 200px;
+  width: 250px;
   height: 35px;
   text-align: center;
   font-size: 1.2em;
@@ -39,13 +39,13 @@
   min-height: 100px;
 }
 .index-dropzone {
-  width: 220px;
+  width: 270px;
 }
 
 .right-dropzone-container {
   display: inline-block;
   min-width: 220px;
-  width: calc(100% - 250px);
+  width: calc(100% - 280px);
   min-height: 100px;
 }
 .column-dropzone {
@@ -90,6 +90,15 @@
 
 .field-text {
   margin-top: -5px;
+  margin-left: -15px;
+  display: inline-block;
+  width: 190px;
+  vertical-align: top;
+  max-height: 23px;
+  line-height: 23px;
+}
+.field-text:first-letter {
+  text-transform:capitalize;
 }
 
 .field-name-input {
@@ -107,22 +116,24 @@
   background: #59b3f2;
 }
 
-span.aggregate-text:first-letter {
-  text-transform:capitalize;
-}
-
 .small-image-button {
-  display: inline;
+  position: absolute;
   width:15px;
   height:15px;
-  float:right;
+}
+
+.small-image-button.right {
+  right: 10px;
+}
+.small-image-button.left {
+  left: 10px;
 }
 
 .delete-field-button {
-  display: inline;
+  position: absolute;
+  left: 10px;
   width:15px;
   height:15px;
-  float:left;
 }
 
 .save-pivot-button {
