@@ -66,9 +66,6 @@ class MungerBuilder(models.Model, PermissionedModel):
     field_types = models.ManyToManyField(FieldType, related_name='munger_builder', related_query_name='munger_builder')
     default_aggregate_field_type = models.ForeignKey(FieldType, default=3, limit_choices_to={'pk__gt': 2},)
 
-    def aggregate_field_type_choices(self):
-        return
-
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         # Always add default field types unless set from admin
@@ -94,7 +91,7 @@ class MungerBuilder(models.Model, PermissionedModel):
         # Needs to be ordered dicts
         func = eval if evaled else str
         aggregates_dict = defaultdict(list)
-        for pf in self.pivot_fields:
+        for pf in self.pivot_fields.filter(field_type__id__gt=2):
             aggregates_dict[pf.active_name].append(pf.type_function)
         return {name: func(', '.join(type_functions)) for name, type_functions in aggregates_dict.items()}
 
@@ -108,7 +105,9 @@ class MungerBuilder(models.Model, PermissionedModel):
 
     @property
     def get_output_path(self):
-        if not self.output_path:
+        if self.output_path:
+            return self.output_path
+        else:
             input_dir = os.path.dirname(self.input_path)
             return os.path.join(input_dir, '{0}-output.csv'.format(self.safe_file_name))
 

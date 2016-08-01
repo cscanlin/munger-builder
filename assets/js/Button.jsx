@@ -1,14 +1,14 @@
-const React = require('react');
+const React = require('react')
 
 function Button(props) {
-  return <input {...props} />;
+  return <input {...props} />
 }
 
 Button.propTypes = {
-  type: React.PropTypes.string.isRequired,
-  src: React.PropTypes.string.isRequired,
+  type: React.PropTypes.string,
+  src: React.PropTypes.string,
   value: React.PropTypes.string.isRequired,
-  className: React.PropTypes.string.isRequired,
+  className: React.PropTypes.string,
   onClick: React.PropTypes.func.isRequired,
-};
-module.exports = Button;
+}
+module.exports = Button

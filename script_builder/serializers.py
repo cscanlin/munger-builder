@@ -1,22 +1,30 @@
 from rest_framework import serializers
 from .models import MungerBuilder, DataField, PivotField, FieldType
 
-class FieldTypeSerializer(serializers.ModelSerializer):
+class PartialAllowed(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.partial = True
+
+class FieldTypeSerializer(PartialAllowed):
     class Meta:
         model = FieldType
         fields = '__all__'
 
-class DataFieldSerializer(serializers.ModelSerializer):
+class DataFieldSerializer(PartialAllowed):
     class Meta:
         model = DataField
         fields = ('id', 'munger_builder', 'current_name', 'new_name', 'active_name')
 
-class PivotFieldSerializer(serializers.ModelSerializer):
+class PivotFieldSerializer(PartialAllowed):
     class Meta:
         model = PivotField
-        fields = '__all__'
 
-class MungerSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.partial = True
+
+class MungerSerializer(PartialAllowed):
     data_fields = DataFieldSerializer(many=True, read_only=True)
     pivot_fields = PivotFieldSerializer(many=True, read_only=True)
     field_types = FieldTypeSerializer(many=True, read_only=True)

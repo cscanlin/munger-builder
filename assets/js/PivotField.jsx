@@ -1,31 +1,50 @@
-const React = require('react');
+const React = require('react')
+const DragSource = require('react-dnd').DragSource
+
+const pivotFieldSource = {
+  beginDrag(props) {
+    console.log('begin pivot field drag')
+    return { pivotField: props.id }
+  },
+}
+
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  }
+}
 
 class PivotField extends React.Component {
 
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       id: this.props.id,
       data_field: this.props.data_field,
       field_type: this.props.field_type,
-    };
+    }
   }
 
   componentDidMount() {
-    console.log('created pivot field');
+    console.log('mount pivot field')
   }
 
   componentWillUnmount() {
-    console.log('removed pivot field');
+    console.log('unmount pivot field')
   }
 
   render() {
-    // console.log(this.context.getState());
-    return (
-      <div onClick={() => this.props.deletePivotField(this.props.id)}>
-        ({this.props.id})  -
-        {this.props.fieldTypeName(this.state.field_type)}
-      </div>);
+    const fieldTypeName = this.props.fieldTypeName(this.state.field_type)
+    const pivotFieldClass = `${fieldTypeName}-field list-group-item`
+    return this.props.connectDragSource(
+      <div className={pivotFieldClass}>
+        <div className="field-text">
+          <span className="aggregate-text">{fieldTypeName} of </span>
+          <span className="name-text">{this.props.activeName(this.props.data_field)}</span>
+        </div>
+      </div>
+    )
   }
 
 }
@@ -36,7 +55,9 @@ PivotField.propTypes = {
   data_field: React.PropTypes.number.isRequired,
   field_type: React.PropTypes.number.isRequired,
   deletePivotField: React.PropTypes.func.isRequired,
-  activeName: React.PropTypes.func.isRequired, // Redux/remove here
-  fieldTypeName: React.PropTypes.func.isRequired, // Redux/remove here
-};
-module.exports = PivotField;
+  fieldTypeName: React.PropTypes.func.isRequired,
+  activeName: React.PropTypes.func.isRequired,
+  connectDragSource: React.PropTypes.func.isRequired,
+  isDragging: React.PropTypes.bool.isRequired,
+}
+module.exports = DragSource('PivotField', pivotFieldSource, collect)(PivotField)

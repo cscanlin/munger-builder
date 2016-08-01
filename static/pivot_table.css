@@ -21,6 +21,12 @@
   padding: 10px;
   display: inline-block;
   transition: background-color 0.3s;
+  min-height: 130px
+}
+
+.zone-heading {
+  display: block;
+  text-transform: capitalize;
 }
 
 .field-source-bank {
@@ -34,7 +40,6 @@
 }
 .index-dropzone {
   width: 220px;
-  min-height: 100px;
 }
 
 .right-dropzone-container {
@@ -46,12 +51,10 @@
 .column-dropzone {
   min-width: 220px;
   width: 100%;
-  min-height: 50px;
 }
-.agg-dropzone {
+.aggregate-dropzone {
   min-width: 220px;
   width: 100%;
-  min-height: 100px;
 }
 
 .drop-active {
@@ -95,11 +98,16 @@
   width: 80%;
   text-align: center;
 }
+
+.field-name-input:disabled {
+  cursor: inherit;
+}
+
 .field-name-input:not(:disabled) {
   background: #59b3f2;
 }
 
-span.agg-text:first-letter {
+span.aggregate-text:first-letter {
   text-transform:capitalize;
 }
 
@@ -142,4 +150,8 @@ span.agg-text:first-letter {
 
 .clear {
   clear: both;
+}
+
+.script-builder-container {
+  width: 60%;
 }

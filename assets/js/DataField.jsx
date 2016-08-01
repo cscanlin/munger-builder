@@ -1,13 +1,27 @@
 const React = require('react');
-const $ = require('jquery');
-const Cookie = require('js-cookie');
-const Button = require('./Button');
+const DragSource = require('react-dnd').DragSource
+
+const Button = require('./Button')
 import { setActiveName } from './actions'
+
+const dataFieldSource = {
+  beginDrag(props) {
+    console.log('begin data field drag')
+    return { dataField: props.id }
+  },
+}
+
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  }
+}
 
 class DataField extends React.Component {
 
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       id: this.props.id,
       munger_builder: this.props.munger_builder,
@@ -16,84 +30,45 @@ class DataField extends React.Component {
       active_name: this.props.active_name,
       editing: false,
       active: false,
-    };
-    this.onChange = this.onChange.bind(this);
-    this.onClick = this.onClick.bind(this);
-    this.placeField = this.placeField.bind(this);
-    this.enableEditing = this.enableEditing.bind(this);
-    this.disableEditing = this.disableEditing.bind(this);
-    this.saveDataField = this.saveDataField.bind(this);
+    }
+    this.onChange = this.onChange.bind(this)
+    this.enableEditing = this.enableEditing.bind(this)
+    this.disableEditing = this.disableEditing.bind(this)
   }
 
   onChange(e) {
-    this.setState({ active_name: e.target.value });
-    console.log(this);
-    this.context.dispatch(setActiveName(this.props.id, e.target.value));
+    this.setState({ active_name: e.target.value })
+    this.props.handleNameChange(this.props.id, e.target.value)
   }
 
-  onClick(e) {
-    const notButton = e.target.value !== 'edit' && e.target.value !== 'delete';
-    if (notButton && e.currentTarget.id === this.elementID() && !this.state.editing) {
-      this.setState({ active: true });
-      console.log('active');
-      document.body.addEventListener('click', this.placeField);
-    }
-    // if e.target.id !== this.elementID() && this.state.editing
-  }
+  elementID() { return `base-field-${this.props.id}` }
 
-  placeField(e) {
-    document.body.removeEventListener('click', this.placeField);
-    this.setState({ active: false });
-    console.log('data field inactive');
-    if (e.target.parentNode.classList.contains('dropzone')) {
-      this.props.addPivotField(this.props.id, null);
-      console.log('pivot field created');
-    }
-  }
-
-  elementID() { return `base-field-${this.props.id}`; }
-
-  inputID() { return `field-name-input-${this.props.id}`; }
+  inputID() { return `field-name-input-${this.props.id}` }
 
   enableEditing() {
-    // set your contenteditable field into editing mode.
-    console.log('editing');
-    this.setState({ editing: true });
-    document.body.addEventListener('keypress', this.disableEditing);
-    document.body.addEventListener('click', this.disableEditing);
+    console.log('editing')
+    this.setState({ editing: true })
+    document.body.addEventListener('keypress', this.disableEditing)
+    document.body.addEventListener('click', this.disableEditing)
   }
 
   disableEditing(e) {
     if (e.target.id !== this.inputID() || e.key === 'Enter') {
-      console.log('not editing');
-      this.setState({ editing: false });
-      document.body.removeEventListener('click', this.disableEditing);
-      document.body.removeEventListener('keypress', this.disableEditing);
-      this.saveDataField();
-      e.preventDefault();
-    }
-  }
-
-  saveDataField() {
-    if (this.state.active_name !== this.state.new_name) {
-      this.state.new_name = this.state.active_name;
-      $.ajax({
-        beforeSend(jqXHR) {
-          jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'));
-        },
-        type: 'PUT',
-        url: `/script_builder/data_fields/${this.props.id}`,
-        data: this.state,
-      });
+      console.log('not editing')
+      this.setState({ editing: false })
+      document.body.removeEventListener('click', this.disableEditing)
+      document.body.removeEventListener('keypress', this.disableEditing)
+      this.props.updateDataField(this.state)
+      e.preventDefault()
     }
   }
 
   render() {
     let fieldStyle = {
-      backgroundColor: this.state.active ? '#008000' : '#29e',
-    };
+      opacity: this.props.isDragging ? 0.9 : 1,
+    }
 
-    return (
+    return this.props.connectDragSource(
       <div
         id={this.elementID()}
         key={this.props.id}
@@ -129,7 +104,7 @@ class DataField extends React.Component {
           />
         </div>
       </div>
-    );
+    )
   }
 }
 
@@ -155,7 +130,10 @@ DataField.propTypes = {
   current_name: React.PropTypes.string.isRequired,
   new_name: React.PropTypes.string,
   active_name: React.PropTypes.string.isRequired,
+  updateDataField: React.PropTypes.func.isRequired,
   deleteDataField: React.PropTypes.func.isRequired,
-  addPivotField: React.PropTypes.func.isRequired,
-};
-module.exports = DataField;
+  handleNameChange: React.PropTypes.func.isRequired,
+  connectDragSource: React.PropTypes.func.isRequired,
+  isDragging: React.PropTypes.bool.isRequired,
+}
+module.exports = DragSource('DataField', dataFieldSource, collect)(DataField)
