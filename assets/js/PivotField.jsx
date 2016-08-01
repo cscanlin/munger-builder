@@ -43,12 +43,12 @@ class PivotField extends React.Component {
   }
 
   render() {
-    const pivotFieldClass = `${this.props.fieldTypeName}-field list-group-item`
-    const fullFieldText = `${this.props.fieldTypeName} of ${this.props.active_name}`
+    const fieldTypeName = this.props.getFieldTypeName(this.props.field_type)
+    const pivotFieldClass = `${fieldTypeName}-field list-group-item`
+    const fullFieldText = `${fieldTypeName} of ${this.props.active_name}`
     const fieldTextStyle = {
       fontSize: 18.5 - fullFieldText.length / 4,
     }
-    console.log(this.state.showAggregateChooser)
     return this.props.connectDragSource(
       <div className={pivotFieldClass} style={fieldTextStyle}>
         <div className="field-text">
@@ -65,7 +65,10 @@ class PivotField extends React.Component {
           : null
         }
       {this.state.showAggregateChooser
-        ? <AggregateChooser aggregateFieldTypes={this.props.aggregateFieldTypes} />
+        ? <AggregateChooser
+          aggregateFieldTypes={this.props.aggregateFieldTypes}
+          getFieldTypeName={this.props.getFieldTypeName}
+        />
         : null
       }
       </div>
@@ -79,7 +82,7 @@ PivotField.propTypes = {
   field_type: React.PropTypes.number.isRequired,
   active_name: React.PropTypes.string.isRequired,
   deletePivotField: React.PropTypes.func.isRequired,
-  fieldTypeName: React.PropTypes.string.isRequired,
+  getFieldTypeName: React.PropTypes.func.isRequired,
   connectDragSource: React.PropTypes.func.isRequired,
   isDragging: React.PropTypes.bool.isRequired,
   aggregateFieldTypes: React.PropTypes.array.isRequired,

@@ -164,6 +164,16 @@
   clear: both;
 }
 
+.aggregate-chooser-menu {
+  display: inline-block;
+  position: absolute;
+  top: 30px;
+  right: 5px;
+  color: #000;
+  text-align: right;
+  text-transform: capitalize;
+}
+
 .script-builder-container {
   width: 60%;
 }

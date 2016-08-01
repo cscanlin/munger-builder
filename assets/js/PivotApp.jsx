@@ -32,8 +32,8 @@ class PivotApp extends React.Component {
     this.updatePivotField = this.updatePivotField.bind(this)
     this.deleteDataField = this.deleteDataField.bind(this)
     this.deletePivotField = this.deletePivotField.bind(this)
-    this.fieldTypeName = this.fieldTypeName.bind(this)
-    this.activeName = this.activeName.bind(this)
+    this.getFieldTypeName = this.getFieldTypeName.bind(this)
+    this.getActiveName = this.getActiveName.bind(this)
     this.handleNameChange = this.handleNameChange.bind(this)
     this.removeRelatedPivotFields = this.removeRelatedPivotFields.bind(this)
   }
@@ -181,7 +181,7 @@ class PivotApp extends React.Component {
     })
   }
 
-  fieldTypeName(fieldTypeId, returnFunctionName = false) {
+  getFieldTypeName(fieldTypeId, returnFunctionName = false) {
     const fieldTypeMap = {}
     this.state.field_types.map(fieldType => {
       if (returnFunctionName) {
@@ -194,13 +194,7 @@ class PivotApp extends React.Component {
     return fieldTypeMap[fieldTypeId]
   }
 
-  aggregateFieldTypes() {
-    return this.state.field_types.filter(fieldType => fieldType.id > 2).map(
-      aggregateFieldType => this.fieldTypeName(aggregateFieldType.id)
-    )
-  }
-
-  activeName(dataFieldId) {
+  getActiveName(dataFieldId) {
     const activeNameMap = {}
     this.state.data_fields.map(dataField => {
       activeNameMap[dataField.id] = dataField.active_name
@@ -232,16 +226,16 @@ class PivotApp extends React.Component {
             <PivotField
               key={pivotField.id}
               deletePivotField={this.deletePivotField}
-              fieldTypeName={this.fieldTypeName(pivotField.field_type)}
-              active_name={this.activeName(pivotField.data_field)}
-              aggregateFieldTypes={this.aggregateFieldTypes()}
+              active_name={this.getActiveName(pivotField.data_field)}
+              aggregateFieldTypes={this.state.field_types.filter(fieldType => fieldType.id > 2)}
+              getFieldTypeName={this.getFieldTypeName}
               {...pivotField}
             />
           )}
         </MainTable>
         <ScriptBuilder
-          activeName={this.activeName}
-          fieldTypeName={this.fieldTypeName}
+          getActiveName={this.getActiveName}
+          getFieldTypeName={this.getFieldTypeName}
           {...this.state}
         />
       </div>
