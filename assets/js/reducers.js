@@ -1,4 +1,4 @@
-import { SET_ACTIVE_NAME } from './actions';
+import { SET_ACTIVE_NAME } from './actions'
 
 function pivotStoreApp(state = null, action) {
   switch (action.type) {
@@ -6,10 +6,10 @@ function pivotStoreApp(state = null, action) {
       return Object.assign({}, state, {
         dataFieldId: action.dataFieldId,
         activeName: action.activeName,
-      });
+      })
     default:
-      return state;
+      return state
   }
 }
 
-module.exports = pivotStoreApp;
+module.exports = pivotStoreApp
