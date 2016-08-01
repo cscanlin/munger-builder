@@ -30,6 +30,7 @@ class PivotApp extends React.Component {
     this.addDataField = this.addDataField.bind(this)
     this.addPivotField = this.addPivotField.bind(this)
     this.updatePivotField = this.updatePivotField.bind(this)
+    this.updateDataField = this.updateDataField.bind(this)
     this.deleteDataField = this.deleteDataField.bind(this)
     this.deletePivotField = this.deletePivotField.bind(this)
     this.getFieldTypeName = this.getFieldTypeName.bind(this)
@@ -208,36 +209,20 @@ class PivotApp extends React.Component {
       <div className="pivot-app">
         <FieldBank addDataField={this.addDataField}>
           {this.state.data_fields.map(dataField =>
-            <DataField
-              key={dataField.id}
-              updateDataField={this.updateDataField}
-              deleteDataField={this.deleteDataField}
-              handleNameChange={this.handleNameChange}
-              {...dataField}
-            />
+            <DataField key={dataField.id} {...this} {...dataField} />
           )}
         </FieldBank>
-        <MainTable
-          addPivotField={this.addPivotField}
-          updatePivotField={this.updatePivotField}
-          default_aggregate_field_type={this.state.default_aggregate_field_type}
-        >
+        <MainTable {...this} {...this.state} >
           {this.state.pivot_fields.map(pivotField =>
             <PivotField
               key={pivotField.id}
-              deletePivotField={this.deletePivotField}
-              active_name={this.getActiveName(pivotField.data_field)}
               aggregateFieldTypes={this.state.field_types.filter(fieldType => fieldType.id > 2)}
-              getFieldTypeName={this.getFieldTypeName}
+              {...this}
               {...pivotField}
             />
           )}
         </MainTable>
-        <ScriptBuilder
-          getActiveName={this.getActiveName}
-          getFieldTypeName={this.getFieldTypeName}
-          {...this.state}
-        />
+        <ScriptBuilder {...this} {...this.state} />
       </div>
     )
   }
