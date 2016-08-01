@@ -96,6 +96,7 @@
   vertical-align: top;
   max-height: 23px;
   line-height: 23px;
+  overflow: hidden;
 }
 .field-text:first-letter {
   text-transform:capitalize;

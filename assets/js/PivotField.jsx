@@ -2,6 +2,7 @@ const React = require('react')
 const DragSource = require('react-dnd').DragSource
 
 const Button = require('./Button')
+const AggregateChooser = require('./AggregateChooser')
 
 const pivotFieldSource = {
   beginDrag(props) {
@@ -19,6 +20,15 @@ function collect(connect, monitor) {
 
 class PivotField extends React.Component {
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      showAggregateChooser: false,
+    }
+    this.toggleAggregateChooser = this.toggleAggregateChooser.bind(this)
+  }
+
+
   componentDidMount() {
     console.log('mount pivot field')
   }
@@ -27,8 +37,9 @@ class PivotField extends React.Component {
     console.log('unmount pivot field')
   }
 
-  toggleChooser() {
-    return
+  toggleAggregateChooser() {
+    const showHide = !this.state.showAggregateChooser
+    this.setState({ showAggregateChooser: showHide })
   }
 
   render() {
@@ -37,19 +48,26 @@ class PivotField extends React.Component {
     const fieldTextStyle = {
       fontSize: 18.5 - fullFieldText.length / 4,
     }
-    console.log(fullFieldText.length)
+    console.log(this.state.showAggregateChooser)
     return this.props.connectDragSource(
       <div className={pivotFieldClass} style={fieldTextStyle}>
         <div className="field-text">
           {fullFieldText}
         </div>
-        <Button
-          type="image"
-          src="/static/hamburger.png"
-          value="toggle"
-          className="small-image-button right aggregate-chooser-toggle"
-          onClick={this.toggleChooser}
-        />
+        {this.props.field_type > 2
+          ? <Button
+            type="image"
+            src="/static/hamburger.png"
+            value="toggle"
+            className="small-image-button right aggregate-chooser-toggle"
+            onClick={this.toggleAggregateChooser}
+          />
+          : null
+        }
+      {this.state.showAggregateChooser
+        ? <AggregateChooser aggregateFieldTypes={this.props.aggregateFieldTypes} />
+        : null
+      }
       </div>
     )
   }
@@ -64,5 +82,6 @@ PivotField.propTypes = {
   fieldTypeName: React.PropTypes.string.isRequired,
   connectDragSource: React.PropTypes.func.isRequired,
   isDragging: React.PropTypes.bool.isRequired,
+  aggregateFieldTypes: React.PropTypes.array.isRequired,
 }
 module.exports = DragSource('PivotField', pivotFieldSource, collect)(PivotField)

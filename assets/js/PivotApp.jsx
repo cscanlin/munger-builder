@@ -194,6 +194,12 @@ class PivotApp extends React.Component {
     return fieldTypeMap[fieldTypeId]
   }
 
+  aggregateFieldTypes() {
+    return this.state.field_types.filter(fieldType => fieldType.id > 2).map(
+      aggregateFieldType => this.fieldTypeName(aggregateFieldType.id)
+    )
+  }
+
   activeName(dataFieldId) {
     const activeNameMap = {}
     this.state.data_fields.map(dataField => {
@@ -228,6 +234,7 @@ class PivotApp extends React.Component {
               deletePivotField={this.deletePivotField}
               fieldTypeName={this.fieldTypeName(pivotField.field_type)}
               active_name={this.activeName(pivotField.data_field)}
+              aggregateFieldTypes={this.aggregateFieldTypes()}
               {...pivotField}
             />
           )}
