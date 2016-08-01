@@ -17,15 +17,6 @@ function collect(connect, monitor) {
 
 class PivotField extends React.Component {
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      id: this.props.id,
-      data_field: this.props.data_field,
-      field_type: this.props.field_type,
-    }
-  }
-
   componentDidMount() {
     console.log('mount pivot field')
   }
@@ -35,13 +26,12 @@ class PivotField extends React.Component {
   }
 
   render() {
-    const fieldTypeName = this.props.fieldTypeName(this.state.field_type)
-    const pivotFieldClass = `${fieldTypeName}-field list-group-item`
+    const pivotFieldClass = `${this.props.fieldTypeName}-field list-group-item`
     return this.props.connectDragSource(
       <div className={pivotFieldClass}>
         <div className="field-text">
-          <span className="aggregate-text">{fieldTypeName} of </span>
-          <span className="name-text">{this.props.activeName(this.props.data_field)}</span>
+          <span className="aggregate-text">{this.props.fieldTypeName} of </span>
+          <span className="name-text">{this.props.active_name}</span>
         </div>
       </div>
     )
@@ -53,9 +43,9 @@ PivotField.propTypes = {
   id: React.PropTypes.number.isRequired,
   data_field: React.PropTypes.number.isRequired,
   field_type: React.PropTypes.number.isRequired,
+  active_name: React.PropTypes.string.isRequired,
   deletePivotField: React.PropTypes.func.isRequired,
-  fieldTypeName: React.PropTypes.func.isRequired,
-  activeName: React.PropTypes.func.isRequired,
+  fieldTypeName: React.PropTypes.string.isRequired,
   connectDragSource: React.PropTypes.func.isRequired,
   isDragging: React.PropTypes.bool.isRequired,
 }

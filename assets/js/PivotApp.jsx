@@ -111,18 +111,16 @@ class PivotApp extends React.Component {
     })
   }
 
-  updateDataField(dataField) {
-    if (dataField.active_name !== dataField.new_name) {
-      dataField.new_name = dataField.active_name
-      $.ajax({
-        beforeSend(jqXHR) {
-          jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
-        },
-        type: 'PUT',
-        url: `/script_builder/data_fields/${dataField.id}`,
-        data: dataField,
-      })
-    }
+  updateDataField(dataFieldId, newName) {
+    console.log('update pivot field')
+    $.ajax({
+      beforeSend(jqXHR) {
+        jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
+      },
+      type: 'PUT',
+      url: `/script_builder/data_fields/${dataFieldId}`,
+      data: { new_name: newName },
+    })
   }
 
   updatePivotField(pivotFieldId, fieldTypeID) {
@@ -208,7 +206,6 @@ class PivotApp extends React.Component {
   render() {
     return (
       <div className="pivot-app">
-
         <FieldBank addDataField={this.addDataField}>
           {this.state.data_fields.map(dataField =>
             <DataField
@@ -229,8 +226,8 @@ class PivotApp extends React.Component {
             <PivotField
               key={pivotField.id}
               deletePivotField={this.deletePivotField}
-              fieldTypeName={this.fieldTypeName}
-              activeName={this.activeName}
+              fieldTypeName={this.fieldTypeName(pivotField.field_type)}
+              active_name={this.activeName(pivotField.data_field)}
               {...pivotField}
             />
           )}

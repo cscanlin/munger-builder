@@ -22,13 +22,7 @@ class DataField extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      id: this.props.id,
-      munger_builder: this.props.munger_builder,
-      current_name: this.props.current_name,
-      new_name: this.props.new_name,
-      active_name: this.props.active_name,
       editing: false,
-      active: false,
     }
     this.onChange = this.onChange.bind(this)
     this.enableEditing = this.enableEditing.bind(this)
@@ -36,7 +30,6 @@ class DataField extends React.Component {
   }
 
   onChange(e) {
-    this.setState({ active_name: e.target.value })
     this.props.handleNameChange(this.props.id, e.target.value)
   }
 
@@ -57,7 +50,9 @@ class DataField extends React.Component {
       this.setState({ editing: false })
       document.body.removeEventListener('click', this.disableEditing)
       document.body.removeEventListener('keypress', this.disableEditing)
-      this.props.updateDataField(this.state)
+      if (this.props.new_name !== this.props.active_name) {
+        this.props.updateDataField(this.props.id, this.props.active_name)
+      }
       e.preventDefault()
     }
   }
@@ -90,7 +85,7 @@ class DataField extends React.Component {
             id={this.inputID()}
             type="text"
             disabled={!this.state.editing}
-            value={this.state.active_name}
+            value={this.props.active_name}
             className="field-name-input"
             onChange={this.onChange}
           />
