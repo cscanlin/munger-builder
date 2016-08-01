@@ -165,14 +165,28 @@
 }
 
 .aggregate-chooser-menu {
+  cursor: pointer;
   display: inline-block;
   position: absolute;
-  top: 30px;
-  right: 5px;
+  top: 33px;
+  right: 0px;
   color: #000;
   text-align: right;
   text-transform: capitalize;
   font-size: 15px;
+  border: gray;
+  border-style: solid;
+  border-radius: 2px;
+  border-width: 1px;
+}
+
+.aggregate-type-choice {
+  background-color: #FFF;
+  padding: 5px;
+}
+.aggregate-type-choice:hover {
+  background-color: #e3f2fd;
+  padding: 5px;
 }
 
 .script-builder-container {

@@ -25,7 +25,8 @@ class PivotField extends React.Component {
     this.state = {
       showAggregateChooser: false,
     }
-    this.toggleAggregateChooser = this.toggleAggregateChooser.bind(this)
+    this.showAggregateChooser = this.showAggregateChooser.bind(this)
+    this.hideAggregateChooser = this.hideAggregateChooser.bind(this)
   }
 
 
@@ -37,9 +38,20 @@ class PivotField extends React.Component {
     console.log('unmount pivot field')
   }
 
-  toggleAggregateChooser() {
-    const showHide = !this.state.showAggregateChooser
-    this.setState({ showAggregateChooser: showHide })
+  showAggregateChooser() {
+    console.log('show agg chooser')
+    document.body.addEventListener('click', this.hideAggregateChooser)
+    this.setState({ showAggregateChooser: true })
+  }
+
+  hideAggregateChooser(e) {
+    if (e.target.hasAttribute('data-field-type')) {
+      console.log('agg selected')
+      const fieldTypeID = e.target.getAttribute('data-field-type')
+      this.props.updatePivotField(this.props.id, fieldTypeID)
+    }
+    document.body.removeEventListener('click', this.hideAggregateChooser)
+    this.setState({ showAggregateChooser: false })
   }
 
   render() {
@@ -60,7 +72,7 @@ class PivotField extends React.Component {
             src="/static/hamburger.png"
             value="toggle"
             className="small-image-button right aggregate-chooser-toggle"
-            onClick={this.toggleAggregateChooser}
+            onClick={this.showAggregateChooser}
           />
           : null
         }
