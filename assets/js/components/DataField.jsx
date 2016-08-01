@@ -1,8 +1,7 @@
-const React = require('react');
+const React = require('react')
 const DragSource = require('react-dnd').DragSource
 
 const Button = require('./Button')
-import { setActiveName } from './actions'
 
 const dataFieldSource = {
   beginDrag(props) {
@@ -37,8 +36,7 @@ class DataField extends React.Component {
   }
 
   onChange(e) {
-    this.setState({ active_name: e.target.value })
-    this.props.handleNameChange(this.props.id, e.target.value)
+    this.props.syncActiveName(this.props.id, e.target.value)
   }
 
   elementID() { return `base-field-${this.props.id}` }
@@ -67,7 +65,6 @@ class DataField extends React.Component {
     let fieldStyle = {
       opacity: this.props.isDragging ? 0.9 : 1,
     }
-
     return this.props.connectDragSource(
       <div
         id={this.elementID()}
@@ -91,7 +88,7 @@ class DataField extends React.Component {
             id={this.inputID()}
             type="text"
             disabled={!this.state.editing}
-            value={this.state.active_name}
+            defaultValue={this.props.active_name}
             className="field-name-input"
             onChange={this.onChange}
           />
@@ -108,23 +105,7 @@ class DataField extends React.Component {
   }
 }
 
-// const mapStateToProps = (state) => {
-//   return {
-//     dataFieldId: state.id,
-//     activeName: state.active_name,
-//   };
-// };
-// const mapDispatchToProps = (dispatch, ownProps) => {
-//   return {
-//     onClick: () => {
-//       dispatch(setVisibilityFilter(ownProps.filter))
-//     }
-//   }
-// }
-
-
 DataField.propTypes = {
-  store: React.PropTypes.object,
   id: React.PropTypes.number.isRequired,
   munger_builder: React.PropTypes.number.isRequired,
   current_name: React.PropTypes.string.isRequired,
@@ -132,8 +113,8 @@ DataField.propTypes = {
   active_name: React.PropTypes.string.isRequired,
   updateDataField: React.PropTypes.func.isRequired,
   deleteDataField: React.PropTypes.func.isRequired,
-  handleNameChange: React.PropTypes.func.isRequired,
   connectDragSource: React.PropTypes.func.isRequired,
   isDragging: React.PropTypes.bool.isRequired,
+  syncActiveName: React.PropTypes.func.isRequired,
 }
 module.exports = DragSource('DataField', dataFieldSource, collect)(DataField)

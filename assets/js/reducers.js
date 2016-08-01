@@ -1,12 +1,10 @@
 import { SET_ACTIVE_NAME } from './actions'
 
-function pivotStoreApp(state = null, action) {
+function pivotStoreApp(state = { activeNameMap: {} }, action) {
   switch (action.type) {
     case SET_ACTIVE_NAME:
-      return Object.assign({}, state, {
-        dataFieldId: action.dataFieldId,
-        activeName: action.activeName,
-      })
+      state.activeNameMap[action.dataFieldId] = action.activeName
+      return Object.assign({}, state)
     default:
       return state
   }

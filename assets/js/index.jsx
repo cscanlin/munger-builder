@@ -1,6 +1,6 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
-const PivotApp = require('./PivotApp')
+const PivotAppLink = require('./containers/PivotAppLink')
 
 // TODO Refactor to pass argument directly to PivotApp
 const $ = require('jquery')
@@ -10,9 +10,11 @@ import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import pivotStoreApp from './reducers'
 
+const store = createStore(pivotStoreApp)
+
 ReactDOM.render(
-  <Provider store={createStore(pivotStoreApp)}>
-    <PivotApp mungerId={mungerId} />
+  <Provider store={store}>
+    <PivotAppLink mungerId={mungerId} />
   </Provider>,
   document.getElementById('pivot-app')
 )

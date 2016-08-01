@@ -41,7 +41,7 @@ class PivotField extends React.Component {
       <div className={pivotFieldClass}>
         <div className="field-text">
           <span className="aggregate-text">{fieldTypeName} of </span>
-          <span className="name-text">{this.props.activeName(this.props.data_field)}</span>
+          <span className="name-text">{this.props.active_name}</span>
         </div>
       </div>
     )
@@ -56,8 +56,8 @@ PivotField.propTypes = {
   field_type: React.PropTypes.number.isRequired,
   deletePivotField: React.PropTypes.func.isRequired,
   fieldTypeName: React.PropTypes.func.isRequired,
-  activeName: React.PropTypes.func.isRequired,
   connectDragSource: React.PropTypes.func.isRequired,
   isDragging: React.PropTypes.bool.isRequired,
+  active_name: React.PropTypes.string,
 }
 module.exports = DragSource('PivotField', pivotFieldSource, collect)(PivotField)

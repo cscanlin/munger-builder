@@ -5,11 +5,12 @@ const update = require('react-addons-update')
 const HTML5Backend = require('react-dnd-html5-backend')
 const DragDropContext = require('react-dnd').DragDropContext
 
-const DataField = require('./DataField')
 const FieldBank = require('./FieldBank')
 const MainTable = require('./MainTable')
-const PivotField = require('./PivotField')
-const ScriptBuilder = require('./ScriptBuilder')
+
+const DataFieldLink = require('../containers/DataFieldLink')
+const PivotFieldLink = require('../containers/PivotFieldLink')
+const ScriptBuilderLink = require('../containers/ScriptBuilderLink')
 
 class PivotApp extends React.Component {
   constructor(props) {
@@ -33,8 +34,6 @@ class PivotApp extends React.Component {
     this.deleteDataField = this.deleteDataField.bind(this)
     this.deletePivotField = this.deletePivotField.bind(this)
     this.fieldTypeName = this.fieldTypeName.bind(this)
-    this.activeName = this.activeName.bind(this)
-    this.handleNameChange = this.handleNameChange.bind(this)
     this.removeRelatedPivotFields = this.removeRelatedPivotFields.bind(this)
   }
 
@@ -48,18 +47,9 @@ class PivotApp extends React.Component {
   }
 
   onMount(result) {
-    this.setState({ ...result })
-  }
-
-  handleNameChange(dataFieldId, activeName) {
-    console.log(dataFieldId)
-    this.state.data_fields.map(dataField => {
-      if (dataField.id === dataFieldId) {
-        dataField.active_name = activeName
-      }
-      return dataField
+    this.state.data_fields.forEach(dataField => {
+      this.props.syncActiveName(dataField.id, dataField.active_name)
     })
-    this.setState({ data_fields: this.state.data_fields })
   }
 
   newFieldName() {
@@ -196,26 +186,15 @@ class PivotApp extends React.Component {
     return fieldTypeMap[fieldTypeId]
   }
 
-  activeName(dataFieldId) {
-    const activeNameMap = {}
-    this.state.data_fields.map(dataField => {
-      activeNameMap[dataField.id] = dataField.active_name
-      return activeNameMap
-    })
-    return activeNameMap[dataFieldId]
-  }
-
   render() {
     return (
       <div className="pivot-app">
-
         <FieldBank addDataField={this.addDataField}>
           {this.state.data_fields.map(dataField =>
-            <DataField
+            <DataFieldLink
               key={dataField.id}
               updateDataField={this.updateDataField}
               deleteDataField={this.deleteDataField}
-              handleNameChange={this.handleNameChange}
               {...dataField}
             />
           )}
@@ -226,18 +205,17 @@ class PivotApp extends React.Component {
           default_aggregate_field_type={this.state.default_aggregate_field_type}
         >
           {this.state.pivot_fields.map(pivotField =>
-            <PivotField
+            <PivotFieldLink
               key={pivotField.id}
               deletePivotField={this.deletePivotField}
               fieldTypeName={this.fieldTypeName}
-              activeName={this.activeName}
               {...pivotField}
             />
           )}
         </MainTable>
-        <ScriptBuilder
-          activeName={this.activeName}
+        <ScriptBuilderLink
           fieldTypeName={this.fieldTypeName}
+          activeNameMap={null}
           {...this.state}
         />
       </div>
@@ -247,7 +225,7 @@ class PivotApp extends React.Component {
 
 
 PivotApp.propTypes = {
-  store: React.PropTypes.object,
   mungerId: React.PropTypes.number.isRequired,
+  syncActiveName: React.PropTypes.func.isRequired,
 }
 module.exports = DragDropContext(HTML5Backend)(PivotApp)
