@@ -16,10 +16,6 @@ class PivotApp extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      data_fields: [],
-      pivot_fields: [],
-      field_types: [],
-      default_aggregate_field_type: null,
       input_path: '',
       munger_name: '',
       munger_template: '',
@@ -47,6 +43,7 @@ class PivotApp extends React.Component {
   }
 
   onMount(result) {
+    this.setState({ ...result })
     this.state.data_fields.forEach(dataField => {
       this.props.syncActiveName(dataField.id, dataField.active_name)
     })
@@ -226,6 +223,10 @@ class PivotApp extends React.Component {
 
 PivotApp.propTypes = {
   mungerId: React.PropTypes.number.isRequired,
+  data_fields: React.PropTypes.array,
+  pivot_fields: React.PropTypes.array,
+  field_types: React.PropTypes.array,
+  // default_aggregate_field_type: React.PropTypes.number,
   syncActiveName: React.PropTypes.func.isRequired,
 }
 module.exports = DragDropContext(HTML5Backend)(PivotApp)

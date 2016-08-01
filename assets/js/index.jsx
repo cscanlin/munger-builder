@@ -8,9 +8,9 @@ const mungerId = parseInt($('#mb-id').attr('value'), 10)
 
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
-import pivotStoreApp from './reducers'
+import pivotStore from './reducers'
 
-const store = createStore(pivotStoreApp)
+const store = createStore(pivotStore)
 
 ReactDOM.render(
   <Provider store={store}>
