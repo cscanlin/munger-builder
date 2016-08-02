@@ -13,9 +13,6 @@
 
 {% block content %}
     <div id="mb-id" name="mb-id" class="hidden" value="{{ mb.id }}"></div>
-    <div class="header-container">
-      <h3 style="display:inline-block;">{{ mb.munger_name }}</h3>
-    </div>
     <div id="main-pivot-wrapper" class="main-pivot-wrapper">
       <div id="pivot-app"></div>
       {% render_bundle 'main' %}

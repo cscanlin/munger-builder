@@ -166,6 +166,7 @@
 
 .aggregate-chooser-menu {
   cursor: pointer;
+  z-index: 1;
   display: inline-block;
   position: absolute;
   top: 33px;
@@ -190,5 +191,14 @@
 }
 
 .script-builder-container {
+  display: inline-block;
   width: 60%;
+}
+
+.additional-options-container {
+  display: inline-block;
+}
+
+.munger-name-input {
+  border: none;
 }

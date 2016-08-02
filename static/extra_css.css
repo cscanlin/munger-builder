@@ -1,5 +1,9 @@
 /*BASE*/
 
+.container {
+  min-width: 100%;
+}
+
 .main-content {
   margin-left: 10px;
   padding-top: 50px;
