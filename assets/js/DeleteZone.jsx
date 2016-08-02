@@ -14,9 +14,8 @@ function collect(connect, monitor) {
   console.log(monitor)
   return {
     connectDropTarget: connect.dropTarget(),
-    isOver: monitor.isOver(),
-    dataField: monitor.getItem(),
-    canDrop: monitor.canDrop(),
+    // isOver: monitor.isOver(),
+    // canDrop: monitor.canDrop(),
   }
 }
 
@@ -27,10 +26,10 @@ function DeleteZone(props) {
 
 DeleteZone.propTypes = {
   children: React.PropTypes.node,
-  isOver: React.PropTypes.bool.isRequired,
   connectDropTarget: React.PropTypes.func.isRequired,
   deletePivotField: React.PropTypes.func.isRequired,
-  canDrop: React.PropTypes.bool.isRequired,
+  // isOver: React.PropTypes.bool.isRequired,
+  // canDrop: React.PropTypes.bool.isRequired,
 }
 
 module.exports = DropTarget('PivotField', deleteTarget, collect)(DeleteZone)

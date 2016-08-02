@@ -156,13 +156,13 @@ class ScriptBuilder extends React.Component {
   }
 
   fullScript() {
-    return `${this.scriptHead()}
-            ${this.inputPath()}
-            ${this.readCSV()}
-            ${this.dropBottomRows()}
-            ${this.renameFields()}
-            ${this.pivotTable()}
-            ${this.writeFile()}`
+    return [this.scriptHead(),
+            this.inputPath(),
+            this.readCSV(),
+            this.dropBottomRows(),
+            this.renameFields(),
+            this.pivotTable(),
+            this.writeFile()].join('')
   }
 
   downloadLink() {
