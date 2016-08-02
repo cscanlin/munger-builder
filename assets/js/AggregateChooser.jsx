@@ -22,7 +22,6 @@ AggregateChooser.propTypes = {
   id: React.PropTypes.number.isRequired,
   aggregateFieldTypes: React.PropTypes.array.isRequired,
   getFieldTypeName: React.PropTypes.func.isRequired,
-  updatePivotField: React.PropTypes.func.isRequired,
 }
 
 module.exports = AggregateChooser

@@ -30,7 +30,6 @@
     "react-dnd": "^2.1.4",
     "react-dnd-html5-backend": "^2.1.2",
     "react-dom": "^15.3.0",
-    "react-select": "^1.0.0-beta14",
     "webpack": "^1.13.1",
     "webpack-bundle-tracker": "0.0.93"
   }

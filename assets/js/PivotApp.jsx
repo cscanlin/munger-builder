@@ -10,6 +10,7 @@ const FieldBank = require('./FieldBank')
 const MainTable = require('./MainTable')
 const PivotField = require('./PivotField')
 const ScriptBuilder = require('./ScriptBuilder')
+const AdditonalOptions = require('./AdditonalOptions')
 
 class PivotApp extends React.Component {
   constructor(props) {
@@ -21,7 +22,6 @@ class PivotApp extends React.Component {
       default_aggregate_field_type: null,
       input_path: '',
       munger_name: '',
-      munger_template: '',
       output_path: '',
       rows_to_delete_bottom: null,
       rows_to_delete_top: null,
@@ -29,6 +29,7 @@ class PivotApp extends React.Component {
     this.newFieldName = this.newFieldName.bind(this)
     this.addDataField = this.addDataField.bind(this)
     this.addPivotField = this.addPivotField.bind(this)
+    this.updateMunger = this.updateMunger.bind(this)
     this.updatePivotField = this.updatePivotField.bind(this)
     this.updateDataField = this.updateDataField.bind(this)
     this.deleteDataField = this.deleteDataField.bind(this)
@@ -52,6 +53,28 @@ class PivotApp extends React.Component {
     this.setState({ ...result })
   }
 
+  getFieldTypeName(fieldTypeId, returnFunctionName = false) {
+    const fieldTypeMap = {}
+    this.state.field_types.map(fieldType => {
+      if (returnFunctionName) {
+        fieldTypeMap[fieldType.id] = fieldType.type_function
+      } else {
+        fieldTypeMap[fieldType.id] = fieldType.type_name
+      }
+      return fieldTypeMap
+    })
+    return fieldTypeMap[fieldTypeId]
+  }
+
+  getActiveName(dataFieldId) {
+    const activeNameMap = {}
+    this.state.data_fields.map(dataField => {
+      activeNameMap[dataField.id] = dataField.active_name
+      return activeNameMap
+    })
+    return activeNameMap[dataFieldId]
+  }
+
   handleNameChange(dataFieldId, activeName) {
     console.log(dataFieldId)
     this.state.data_fields.map(dataField => {
@@ -72,6 +95,22 @@ class PivotApp extends React.Component {
       return `New Field ${numNewFields}`
     }
     return 'New Field'
+  }
+
+  updateMunger(data, e) {
+    if (e) {
+      this.setState({ ...data })
+      if (e.type === 'blur') {
+        $.ajax({
+          beforeSend(jqXHR) {
+            jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
+          },
+          type: 'PUT',
+          url: `/script_builder/mungers/${this.props.mungerId}`,
+          data: { ...data },
+        })
+      }
+    }
   }
 
   addDataField() {
@@ -182,31 +221,18 @@ class PivotApp extends React.Component {
     })
   }
 
-  getFieldTypeName(fieldTypeId, returnFunctionName = false) {
-    const fieldTypeMap = {}
-    this.state.field_types.map(fieldType => {
-      if (returnFunctionName) {
-        fieldTypeMap[fieldType.id] = fieldType.type_function
-      } else {
-        fieldTypeMap[fieldType.id] = fieldType.type_name
-      }
-      return fieldTypeMap
-    })
-    return fieldTypeMap[fieldTypeId]
-  }
-
-  getActiveName(dataFieldId) {
-    const activeNameMap = {}
-    this.state.data_fields.map(dataField => {
-      activeNameMap[dataField.id] = dataField.active_name
-      return activeNameMap
-    })
-    return activeNameMap[dataFieldId]
-  }
-
   render() {
     return (
       <div className="pivot-app">
+        <h3>
+          <input
+            type="text"
+            value={this.state.munger_name}
+            className="munger-name-input"
+            onChange={(e) => this.setState({ munger_name: e.target.value })}
+            onBlur={this.updateMunger({ munger_name: this.state.munger_name })}
+          />
+        </h3>
         <FieldBank addDataField={this.addDataField}>
           {this.state.data_fields.map(dataField =>
             <DataField key={dataField.id} {...this} {...dataField} />
@@ -223,6 +249,7 @@ class PivotApp extends React.Component {
           )}
         </MainTable>
         <ScriptBuilder {...this} {...this.state} />
+        <AdditonalOptions {...this.state} updateMunger={this.updateMunger} />
       </div>
     )
   }
