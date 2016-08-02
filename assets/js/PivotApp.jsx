@@ -11,6 +11,7 @@ const MainTable = require('./MainTable')
 const PivotField = require('./PivotField')
 const ScriptBuilder = require('./ScriptBuilder')
 const AdditonalOptions = require('./AdditonalOptions')
+const DeleteZone = require('./DeleteZone')
 
 class PivotApp extends React.Component {
   constructor(props) {
@@ -223,7 +224,7 @@ class PivotApp extends React.Component {
 
   render() {
     return (
-      <div className="pivot-app">
+      <DeleteZone className="pivot-app" deletePivotField={this.deletePivotField}>
         <h3>
           <input
             type="text"
@@ -250,7 +251,7 @@ class PivotApp extends React.Component {
         </MainTable>
         <ScriptBuilder {...this} {...this.state} />
         <AdditonalOptions {...this.state} updateMunger={this.updateMunger} />
-      </div>
+      </DeleteZone>
     )
   }
 }
