@@ -60,8 +60,8 @@ class MungerBuilder(models.Model, PermissionedModel):
     input_path = models.CharField(max_length=999, default='', blank=True)
     output_path = models.CharField(max_length=999, default='', blank=True)
 
-    rows_to_delete_top = models.IntegerField(null=True, blank=True)
-    rows_to_delete_bottom = models.IntegerField(null=True, blank=True)
+    rows_to_delete_top = models.IntegerField(default=0)
+    rows_to_delete_bottom = models.IntegerField(default=0)
 
     field_types = models.ManyToManyField(FieldType, related_name='munger_builder', related_query_name='munger_builder')
     default_aggregate_field_type = models.ForeignKey(FieldType, default=3, limit_choices_to={'pk__gt': 2},)

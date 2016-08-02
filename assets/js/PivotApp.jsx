@@ -23,8 +23,8 @@ class PivotApp extends React.Component {
       input_path: '',
       munger_name: '',
       output_path: '',
-      rows_to_delete_bottom: null,
-      rows_to_delete_top: null,
+      rows_to_delete_bottom: 0,
+      rows_to_delete_top: 0,
     }
     this.newFieldName = this.newFieldName.bind(this)
     this.addDataField = this.addDataField.bind(this)

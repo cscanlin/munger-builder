@@ -7,6 +7,7 @@ rules:
   no-param-reassign: 0
   semi: [2, "never"]
   new-cap: ["error", { "capIsNewExceptions": ["Map", "DragDropContext", "DragSource", "DropTarget"] }]
+  radix: ["error", "as-needed"]
 
 parserOptions:
   ecmaVersion: 6

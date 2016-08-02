@@ -1,21 +1,19 @@
 const React = require('react')
 
-class AggregateChooser extends React.Component {
-  render() {
-    return (
-      <div className="aggregate-chooser-menu">
-        {this.props.aggregateFieldTypes.map(fieldType =>
-          <div
-            key={fieldType.id}
-            data-field-type={fieldType.id}
-            className="aggregate-type-choice"
-          >
-            {this.props.getFieldTypeName(fieldType.id)}
-          </div>
-        )}
-      </div>
-    )
-  }
+function AggregateChooser(props) {
+  return (
+    <div className="aggregate-chooser-menu">
+      {props.aggregateFieldTypes.map(fieldType =>
+        <div
+          key={fieldType.id}
+          data-field-type={fieldType.id}
+          className="aggregate-type-choice"
+        >
+          {props.getFieldTypeName(fieldType.id)}
+        </div>
+      )}
+    </div>
+  )
 }
 
 AggregateChooser.propTypes = {
