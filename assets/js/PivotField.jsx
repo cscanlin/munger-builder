@@ -7,7 +7,7 @@ const AggregateChooser = require('./AggregateChooser')
 const pivotFieldSource = {
   beginDrag(props) {
     console.log('begin pivot field drag')
-    return { pivotField: props.id }
+    return { pivotField: props.id, fieldType: props.field_type }
   },
 }
 

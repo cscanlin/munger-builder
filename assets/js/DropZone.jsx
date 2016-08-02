@@ -8,7 +8,11 @@ const zoneTarget = {
     if ('dataField' in dropItem) {
       props.addPivotField(dropItem.dataField, props.fieldType)
     } else if ('pivotField' in dropItem) {
-      props.updatePivotField(dropItem.pivotField, props.fieldType)
+      const fieldType = (props.fieldType === 3 && dropItem.fieldType >= 3
+        ? dropItem.fieldType
+        : props.fieldType
+      )
+      props.updatePivotField(dropItem.pivotField, fieldType)
     }
   },
 }
