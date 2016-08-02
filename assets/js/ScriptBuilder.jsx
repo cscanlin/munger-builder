@@ -155,6 +155,20 @@ class ScriptBuilder extends React.Component {
     print_run_status(run_start_time, 'Finished!')`.replace(/\n {4}/g, '\n')
   }
 
+  fullScript() {
+    return `${this.scriptHead()}
+            ${this.inputPath()}
+            ${this.readCSV()}
+            ${this.dropBottomRows()}
+            ${this.renameFields()}
+            ${this.pivotTable()}
+            ${this.writeFile()}`
+  }
+
+  downloadLink() {
+    return `data:text/plaincharset=utf-8,${encodeURIComponent(this.fullScript())}`
+  }
+
   render() {
     return (
       <div className="script-builder-container">
@@ -164,16 +178,15 @@ class ScriptBuilder extends React.Component {
           className="btn btn-primary toggle-show-pivot-only"
           onClick={this.toggleShowFullScript}
         />
+        <a
+          href={this.downloadLink()}
+          download={`${this.safeFileName()}.py`}
+          className="btn btn-primary"
+        >
+          Download Script
+        </a>
         {this.state.showFullScript
-          ? <pre>
-              {this.scriptHead()}
-              {this.inputPath()}
-              {this.readCSV()}
-              {this.dropBottomRows()}
-              {this.renameFields()}
-              {this.pivotTable()}
-              {this.writeFile()}
-          </pre>
+          ? <pre>{this.fullScript()}</pre>
           : <pre>{this.pivotTable().replace('\n\n', '')}</pre>
         }
       </div>
