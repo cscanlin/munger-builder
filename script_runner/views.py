@@ -32,7 +32,7 @@ def munger_builder_index(request):
 
 @user_passes_test(lambda u: u.is_superuser)
 def run_munger_output(request, munger_builder_id):
-    pretext_url = reverse('munger_tools', args=[munger_builder_id])
+    pretext_url = reverse('pivot_builder', args=[munger_builder_id])
     pretext = "<p><a class=back-link href=\"{0}\">< Munger Tools</a></p>".format(pretext_url)
     return StreamingHttpResponse(
         content_generator(run_munger.main(munger_builder_id), pretext=pretext)

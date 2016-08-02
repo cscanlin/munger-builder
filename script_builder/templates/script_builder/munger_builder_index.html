@@ -12,10 +12,10 @@
 
 {% block content %}
     <h2>Mungers</h2>
-    <a class="index-link index-heading" href="{% url 'munger_builder_setup' %}">New Munger Builder...</a>
+    <a class="index-link index-heading" href="{% url 'new_munger_builder' %}">New Munger Builder...</a>
     {% if munger_builder_list %}
         {% for munger_builder in munger_builder_list %}
-            <h3><a href="{% url 'munger_tools' munger_builder.id %}" id='{{ munger_builder.id }}' name="run" type="submit" >{{ munger_builder.munger_name }}</a></h3>
+            <h3><a href="{% url 'pivot_builder' munger_builder.id %}" id='{{ munger_builder.id }}' name="run" type="submit" >{{ munger_builder.munger_name }}</a></h3>
         {% endfor %}
     {% endif %}
 {% endblock content %}

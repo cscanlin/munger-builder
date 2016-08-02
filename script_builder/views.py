@@ -14,7 +14,6 @@ from django.conf import settings
 from guardian.shortcuts import assign_perm, get_objects_for_user
 
 from .models import DataField, FieldType, CSVDocument, MungerBuilder, PivotField
-from .forms import SetupForm, FieldParser, UploadFileForm
 from .tasks import download_munger_async, download_test_data_async
 
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
@@ -77,55 +76,13 @@ def add_sample_munger(user):
 
     return get_objects_for_user(user, 'script_builder.change_mungerbuilder')
 
-def munger_tools(request, munger_builder_id):
+def new_munger_builder(request):
 
-    anon_check(request)
-
-    mb = MungerBuilder.objects.get(pk=munger_builder_id)
-
-    if not mb.user_is_authorized():
-        return INDEX_REDIRECT
-
-    if request.method == 'POST':
-        return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder_id))
-
-    context = {'mb': mb}
-    return render(request, 'script_builder/munger_tools.html', context)
-
-def munger_builder_setup(request, munger_builder_id=None):
-
-    anon_check(request)
-
-    max_munger_builders = 5
-
-    if munger_builder_id:
-        mb = MungerBuilder.objects.get(pk=munger_builder_id)
-        if not mb.user_is_authorized():
-            return INDEX_REDIRECT
-    else:
-        user = request.user
-        current_munger_builders = get_objects_for_user(user, 'script_builder.change_mungerbuilder')
-        if len(current_munger_builders) >= max_munger_builders and not user.is_superuser:
-            messages.warning(request, 'Cannot Create more Munger Builders - Delete some to make space')
-            return INDEX_REDIRECT
-        else:
-            mb = None
-
-    if request.method == 'POST':
-        form = SetupForm(request.POST, instance=mb)
-        mb = form.save()
-
-        assign_perm('add_mungerbuilder', request.user, mb)
-        assign_perm('change_mungerbuilder', request.user, mb)
-        assign_perm('delete_mungerbuilder', request.user, mb)
-        assign_perm('view_mungerbuilder', request.user, mb)
-
-        return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(mb.id))
-
-    else:
-        form = SetupForm(instance=mb)
-        context = {'form': form, 'formset': form, 'mb': mb}
-        return render(request, 'script_builder/munger_builder_setup.html', context)
+    user = get_user_or_create_anon(request)
+    mb = MungerBuilder.objects.create(munger_name='New Munger - {0}'.format(user.username))
+    mb.save()
+    mb.assign_perms(user)
+    return HttpResponseRedirect('/script_builder/pivot_builder/{0}'.format(mb.id))
 
 def pivot_builder(request, munger_builder_id):
 
