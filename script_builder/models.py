@@ -64,7 +64,9 @@ class MungerBuilder(models.Model, PermissionedModel):
     rows_to_delete_bottom = models.IntegerField(default=0)
 
     field_types = models.ManyToManyField(FieldType, related_name='munger_builder', related_query_name='munger_builder')
+
     default_aggregate_field_type = models.ForeignKey(FieldType, default=3, limit_choices_to={'pk__gt': 2},)
+    is_sample = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

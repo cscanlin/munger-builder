@@ -52,7 +52,11 @@ def get_user_or_create_anon(request):
 
 def add_sample_munger(user):
 
-    mb = MungerBuilder.objects.create(munger_name='Sample for {0}'.format(user.username), input_path='test_data.csv')
+    mb = MungerBuilder.objects.create(
+        munger_name='Sample for {0}'.format(user.username),
+        input_path='test_data.csv',
+        is_sample=True,
+    )
     mb.save()
     mb.assign_perms(user)
 

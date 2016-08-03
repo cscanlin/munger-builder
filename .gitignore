@@ -67,4 +67,6 @@ webpack-stats.json
 **/media/*/*.*
 !**/media/*/*.keep
 
+test_script.py
+
 *.DS_Store

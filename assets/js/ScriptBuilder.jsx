@@ -2,6 +2,8 @@ const React = require('react')
 const Immutable = require('immutable')
 const Button = require('./Button')
 
+import { sampleData } from './Constants'
+
 class ScriptBuilder extends React.Component {
 
   constructor(props) {
@@ -165,8 +167,8 @@ class ScriptBuilder extends React.Component {
             this.writeFile()].join('')
   }
 
-  downloadLink() {
-    return `data:text/plaincharset=utf-8,${encodeURIComponent(this.fullScript())}`
+  downloadLink(text) {
+    return `data:text/plaincharset=utf-8,${encodeURIComponent(text)}`
   }
 
   render() {
@@ -179,12 +181,22 @@ class ScriptBuilder extends React.Component {
           onClick={this.toggleShowFullScript}
         />
         <a
-          href={this.downloadLink()}
+          href={this.downloadLink(this.fullScript())}
           download={`${this.safeFileName()}.py`}
           className="btn btn-primary"
         >
           Download Script
         </a>
+        {this.props.is_sample
+          ? <a
+            href={this.downloadLink(sampleData)}
+            download={`${this.safeFileName()}.csv`}
+            className="btn btn-primary"
+          >
+            Download Sample Data
+          </a>
+          : null
+        }
         {this.state.showFullScript
           ? <pre>{this.fullScript()}</pre>
           : <pre>{this.pivotTable().replace('\n\n', '')}</pre>
@@ -203,6 +215,7 @@ ScriptBuilder.propTypes = {
   output_path: React.PropTypes.string,
   rows_to_delete_bottom: React.PropTypes.number,
   rows_to_delete_top: React.PropTypes.number,
+  is_sample: React.PropTypes.bool,
   getActiveName: React.PropTypes.func.isRequired,
   getFieldTypeName: React.PropTypes.func.isRequired,
 }

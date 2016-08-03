@@ -33,4 +33,4 @@ class MungerSerializer(PartialAllowed):
         model = MungerBuilder
         fields = ('munger_name', 'munger_template', 'input_path', 'output_path', 'rows_to_delete_top',
                   'rows_to_delete_bottom', 'data_fields', 'pivot_fields', 'field_types',
-                  'default_aggregate_field_type')
+                  'default_aggregate_field_type', 'is_sample')

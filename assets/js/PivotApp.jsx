@@ -26,6 +26,7 @@ class PivotApp extends React.Component {
       output_path: '',
       rows_to_delete_bottom: 0,
       rows_to_delete_top: 0,
+      is_sample: false,
     }
     this.newFieldName = this.newFieldName.bind(this)
     this.addDataField = this.addDataField.bind(this)

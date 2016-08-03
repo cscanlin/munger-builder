@@ -2,7 +2,6 @@
 - enforce uniqueness
 - change DataField original name
 
-- download test data
 - delete munger
 
 - chores:
@@ -27,6 +26,7 @@
 
 - remove extra links
 - default aggregate field
+- download test data
 
 - Draggability: https://gaearon.github.io/react-dnd/docs-tutorial.html
   - ~multiple "drag spots"~
