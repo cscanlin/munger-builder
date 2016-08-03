@@ -125,41 +125,41 @@ class PivotApp extends React.Component {
     }
   }
 
-  addDataField() {
+  async addDataField() {
     console.log('add data field')
     const newDataField = {
       munger_builder: this.props.mungerId,
       current_name: this.newFieldName(),
     }
-    fetch('/script_builder/data_fields/', {
+    const response = await fetch('/script_builder/data_fields/', {
       credentials: 'same-origin',
       method: 'POST',
       headers: this.csrfHeader,
       body: JSON.stringify({ ...newDataField }),
-    }).then(response => response.json()).then(
-      data => this.setState({ data_fields: this.state.data_fields.concat([data]) })
-    )
+    })
+    const data = await response.json();
+    this.setState({ data_fields: this.state.data_fields.concat([data]) })
   }
 
-  addPivotField(dataFieldId, fieldTypeId) {
+  async addPivotField(dataFieldId, fieldTypeId) {
     console.log('add pivot field')
     const newPivotField = {
       data_field: dataFieldId,
       field_type: fieldTypeId || this.state.default_aggregate_field_type,
     }
-    fetch('/script_builder/pivot_fields/', {
+    const response = await fetch('/script_builder/pivot_fields/', {
       credentials: 'same-origin',
       method: 'POST',
       headers: this.csrfHeader,
       body: JSON.stringify({ ...newPivotField }),
-    }).then(response => response.json()).then(
-      data => this.setState({ pivot_fields: this.state.pivot_fields.concat([data]) })
-    )
+    })
+    const data = await response.json();
+    this.setState({ pivot_fields: this.state.pivot_fields.concat([data]) })
   }
 
-  updateDataField(dataFieldId, newName) {
+  async updateDataField(dataFieldId, newName) {
     console.log('update pivot field')
-    fetch(`/script_builder/data_fields/${dataFieldId}`, {
+    const response = await fetch(`/script_builder/data_fields/${dataFieldId}`, {
       credentials: 'same-origin',
       method: 'PUT',
       headers: this.csrfHeader,
@@ -167,53 +167,48 @@ class PivotApp extends React.Component {
     })
   }
 
-  updatePivotField(pivotFieldId, fieldTypeID) {
-    fetch(`/script_builder/pivot_fields/${pivotFieldId}`, {
+  async updatePivotField(pivotFieldId, fieldTypeID) {
+    const response = await fetch(`/script_builder/pivot_fields/${pivotFieldId}`, {
       credentials: 'same-origin',
       method: 'PUT',
       headers: this.csrfHeader,
       body: JSON.stringify({ field_type: fieldTypeID }),
     })
-    .then(response => response.json()).then(data =>
-      this.state.pivot_fields.map(pivotField => {
-        if (pivotField.id === data.id) {
-          pivotField.field_type = data.field_type
-        }
-        return pivotField
-      })
-    )
-    .then(pivotFields => this.setState({ pivot_fields: pivotFields }))
+    const data = await response.json();
+    const pivotFields = await this.state.pivot_fields.map(pivotField => {
+      if (pivotField.id === data.id) {
+        pivotField.field_type = data.field_type
+      }
+      return pivotField
+    })
+    this.setState({ pivot_fields: pivotFields })
   }
 
-  deleteDataField(dataFieldId) {
+  async deleteDataField(dataFieldId) {
     console.log('delete data field')
+    this.removeRelatedPivotFields(dataFieldId)
     const deleteIndex = this.state.data_fields.findIndex(f => f.id === dataFieldId)
-    fetch(`/script_builder/data_fields/${dataFieldId}`, {
+    const response = await fetch(`/script_builder/data_fields/${dataFieldId}`, {
       credentials: 'same-origin',
       method: 'DELETE',
       headers: this.csrfHeader,
     })
-    .then(response => response.json()).then(
-      this.setState({
-        data_fields: update(this.state.data_fields, { $splice: [[deleteIndex, 1]] }),
-      })
-    )
-    .then(this.removeRelatedPivotFields(dataFieldId))
+    this.setState({
+      data_fields: update(this.state.data_fields, { $splice: [[deleteIndex, 1]] }),
+    })
   }
 
-  deletePivotField(pivotFieldId) {
+  async deletePivotField(pivotFieldId) {
     console.log('delete pivot field')
     const deleteIndex = this.state.pivot_fields.findIndex(f => f.id === pivotFieldId)
-    fetch(`/script_builder/pivot_fields/${pivotFieldId}`, {
+    const response = await fetch(`/script_builder/pivot_fields/${pivotFieldId}`, {
       credentials: 'same-origin',
       method: 'DELETE',
       headers: this.csrfHeader,
     })
-    .then(response => response.json()).then(
-      this.setState({
-        pivot_fields: update(this.state.pivot_fields, { $splice: [[deleteIndex, 1]] }),
-      })
-    )
+    this.setState({
+      pivot_fields: update(this.state.pivot_fields, { $splice: [[deleteIndex, 1]] }),
+    })
   }
 
   removeRelatedPivotFields(dataFieldId) {
