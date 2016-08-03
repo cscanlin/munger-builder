@@ -9,9 +9,10 @@
   padding-top: 50px;
 }
 
-.delete-munger-holder {
-  margin-top: -49px;
-  margin-left: 65px;
+.delete-munger {
+  cursor: pointer;
+  margin-top: -10px;
+  margin-right: 5px;
 }
 
 .index-link {

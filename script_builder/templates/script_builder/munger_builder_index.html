@@ -15,7 +15,32 @@
     <a class="index-link index-heading" href="{% url 'new_munger_builder' %}">New Munger Builder...</a>
     {% if munger_builder_list %}
         {% for munger_builder in munger_builder_list %}
-            <h3><a href="{% url 'pivot_builder' munger_builder.id %}" id='{{ munger_builder.id }}' name="run" type="submit" >{{ munger_builder.munger_name }}</a></h3>
+          <div class="munger-link-item">
+            <img onclick="deleteMunger({{ munger_builder.id }})" src="{{ STATIC_URL }}delete-icon.png" width="20" height="20" class="delete-munger">
+            <h3 style="display:inline-block">
+              <a href="{% url 'pivot_builder' munger_builder.id %}" id='{{ munger_builder.id }}' name="run" type="submit">
+                {{ munger_builder.munger_name }}
+              </a>
+            </h3>
+          </div>
         {% endfor %}
     {% endif %}
 {% endblock content %}
+
+{% block extra_js %}
+<script src="/static/jquery.cookie.js"></script>
+<script>
+  function deleteMunger(mungerID) {
+    $.ajax({
+      beforeSend(jqXHR) {
+        jqXHR.setRequestHeader('x-csrftoken', $.cookie('csrftoken'));
+      },
+      type: 'DELETE',
+      url: `/script_builder/mungers/${mungerID}`,
+      success: function(response) {
+        window.location.href = '/script_builder';
+      },
+    });
+  }
+</script>
+{% endblock extra_js %}
