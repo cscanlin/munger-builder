@@ -2,8 +2,6 @@
 - enforce uniqueness
 - change DataField original name
 
-- delete munger
-
 - chores:
   - move functions into utils/api
     - switch to fetch
@@ -27,6 +25,7 @@
 - remove extra links
 - default aggregate field
 - download test data
+- delete munger
 
 - Draggability: https://gaearon.github.io/react-dnd/docs-tutorial.html
   - ~multiple "drag spots"~

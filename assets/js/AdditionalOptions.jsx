@@ -2,6 +2,7 @@ const React = require('react')
 const Button = require('./Button')
 const AdditionalOptionsField = require('./AdditionalOptionsField')
 const AggregateChooser = require('./AggregateChooser')
+const titleize = require('titleize')
 
 class AdditionalOptions extends React.Component {
 
@@ -31,9 +32,12 @@ class AdditionalOptions extends React.Component {
   }
 
   render() {
+    const typeName = this.props.getFieldTypeName(this.props.default_aggregate_field_type) || ''
     return (
       <form className="additional-options-container">
-        <label htmlFor="default-aggregate-dropdown">Default Aggregate Type</label>
+        <label htmlFor="default-aggregate-dropdown">
+          {`Default Aggregate Type: ${titleize(typeName)}`}
+        </label>
         <Button
           id="default-aggregate-dropdown"
           type="button"

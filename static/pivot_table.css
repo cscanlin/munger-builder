@@ -218,9 +218,14 @@
   background: inherit;
 }
 
+.script-builder-button {
+  margin: 10px;
+}
+
 .default-aggregate-container {
   position: absolute;
 }
+
 .default-aggregate-dropdown {
   font-size: 10px;
   padding: 5px 5px;

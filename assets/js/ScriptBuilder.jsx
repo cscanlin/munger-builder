@@ -177,13 +177,13 @@ class ScriptBuilder extends React.Component {
         <Button
           type="button"
           value={this.state.showFullScript ? 'Show Pivot Only' : 'Show Full Script'}
-          className="btn btn-primary toggle-show-pivot-only"
+          className="btn btn-primary toggle-show-pivot-only script-builder-button"
           onClick={this.toggleShowFullScript}
         />
         <a
           href={this.downloadLink(this.fullScript())}
           download={`${this.safeFileName()}.py`}
-          className="btn btn-primary"
+          className="btn btn-primary script-builder-button"
         >
           Download Script
         </a>
@@ -191,7 +191,7 @@ class ScriptBuilder extends React.Component {
           ? <a
             href={this.downloadLink(sampleData)}
             download={`${this.safeFileName()}.csv`}
-            className="btn btn-primary"
+            className="btn btn-primary script-builder-button"
           >
             Download Sample Data
           </a>
