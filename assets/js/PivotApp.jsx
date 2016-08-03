@@ -12,6 +12,7 @@ const PivotField = require('./PivotField')
 const ScriptBuilder = require('./ScriptBuilder')
 const AdditionalOptions = require('./AdditionalOptions')
 const DeleteZone = require('./DeleteZone')
+// const Api = require('./Api')
 
 class PivotApp extends React.Component {
   constructor(props) {
@@ -28,19 +29,27 @@ class PivotApp extends React.Component {
       rows_to_delete_top: 0,
       is_sample: false,
     }
+    this.csrfHeader = new Headers({
+      'x-csrftoken': Cookie.get('csrftoken'),
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    })
     this.newFieldName = this.newFieldName.bind(this)
-    this.addDataField = this.addDataField.bind(this)
-    this.addPivotField = this.addPivotField.bind(this)
-    this.updateMunger = this.updateMunger.bind(this)
-    this.updatePivotField = this.updatePivotField.bind(this)
-    this.updateDataField = this.updateDataField.bind(this)
-    this.deleteDataField = this.deleteDataField.bind(this)
-    this.deletePivotField = this.deletePivotField.bind(this)
     this.getFieldTypeName = this.getFieldTypeName.bind(this)
     this.getActiveName = this.getActiveName.bind(this)
     this.handleNameChange = this.handleNameChange.bind(this)
     this.removeRelatedPivotFields = this.removeRelatedPivotFields.bind(this)
     this.aggregateFieldTypes = this.aggregateFieldTypes.bind(this)
+
+    this.updateMunger = this.updateMunger.bind(this)
+
+    this.addDataField = this.addDataField.bind(this)
+    this.updateDataField = this.updateDataField.bind(this)
+    this.deleteDataField = this.deleteDataField.bind(this)
+
+    this.addPivotField = this.addPivotField.bind(this)
+    this.updatePivotField = this.updatePivotField.bind(this)
+    this.deletePivotField = this.deletePivotField.bind(this)
   }
 
   componentDidMount() {
@@ -106,13 +115,11 @@ class PivotApp extends React.Component {
     if (e) {
       this.setState({ ...data })
       if (e.type === 'blur' || e.type === 'save') {
-        $.ajax({
-          beforeSend(jqXHR) {
-            jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
-          },
-          type: 'PUT',
-          url: `/script_builder/mungers/${this.props.mungerId}`,
-          data: { ...data },
+        fetch(`/script_builder/mungers/${this.props.mungerId}`, {
+          credentials: 'same-origin',
+          method: 'PUT',
+          headers: this.csrfHeader,
+          body: JSON.stringify({ ...data }),
         })
       }
     }
@@ -124,17 +131,14 @@ class PivotApp extends React.Component {
       munger_builder: this.props.mungerId,
       current_name: this.newFieldName(),
     }
-    $.ajax({
-      beforeSend(jqXHR) {
-        jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
-      },
-      type: 'POST',
-      url: '/script_builder/data_fields/',
-      data: newDataField,
-      success: data => {
-        this.setState({ data_fields: this.state.data_fields.concat([data]) })
-      },
-    })
+    fetch('/script_builder/data_fields/', {
+      credentials: 'same-origin',
+      method: 'POST',
+      headers: this.csrfHeader,
+      body: JSON.stringify({ ...newDataField }),
+    }).then(response => response.json()).then(
+      data => this.setState({ data_fields: this.state.data_fields.concat([data]) })
+    )
   }
 
   addPivotField(dataFieldId, fieldTypeId) {
@@ -143,80 +147,73 @@ class PivotApp extends React.Component {
       data_field: dataFieldId,
       field_type: fieldTypeId || this.state.default_aggregate_field_type,
     }
-    $.ajax({
-      beforeSend(jqXHR) {
-        jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
-      },
-      type: 'POST',
-      url: '/script_builder/pivot_fields/',
-      data: newPivotField,
-      success: data => {
-        this.setState({ pivot_fields: this.state.pivot_fields.concat([data]) })
-      },
-    })
+    fetch('/script_builder/pivot_fields/', {
+      credentials: 'same-origin',
+      method: 'POST',
+      headers: this.csrfHeader,
+      body: JSON.stringify({ ...newPivotField }),
+    }).then(response => response.json()).then(
+      data => this.setState({ pivot_fields: this.state.pivot_fields.concat([data]) })
+    )
   }
 
   updateDataField(dataFieldId, newName) {
     console.log('update pivot field')
-    $.ajax({
-      beforeSend(jqXHR) {
-        jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
-      },
-      type: 'PUT',
-      url: `/script_builder/data_fields/${dataFieldId}`,
-      data: { new_name: newName },
+    fetch(`/script_builder/data_fields/${dataFieldId}`, {
+      credentials: 'same-origin',
+      method: 'PUT',
+      headers: this.csrfHeader,
+      body: JSON.stringify({ new_name: newName }),
     })
   }
 
   updatePivotField(pivotFieldId, fieldTypeID) {
-    $.ajax({
-      beforeSend(jqXHR) {
-        jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
-      },
-      type: 'PUT',
-      url: `/script_builder/pivot_fields/${pivotFieldId}`,
-      data: { field_type: fieldTypeID },
-      success: data => {
-        this.state.pivot_fields.map(pivotField => {
-          if (pivotField.id === data.id) {
-            pivotField.field_type = data.field_type
-          }
-          return pivotField
-        })
-        this.setState({ pivot_fields: this.state.pivot_fields })
-      },
+    fetch(`/script_builder/pivot_fields/${pivotFieldId}`, {
+      credentials: 'same-origin',
+      method: 'PUT',
+      headers: this.csrfHeader,
+      body: JSON.stringify({ field_type: fieldTypeID }),
     })
+    .then(response => response.json()).then(data =>
+      this.state.pivot_fields.map(pivotField => {
+        if (pivotField.id === data.id) {
+          pivotField.field_type = data.field_type
+        }
+        return pivotField
+      })
+    )
+    .then(pivotFields => this.setState({ pivot_fields: pivotFields }))
   }
 
   deleteDataField(dataFieldId) {
     console.log('delete data field')
     const deleteIndex = this.state.data_fields.findIndex(f => f.id === dataFieldId)
-    $.ajax({
-      beforeSend(jqXHR) {
-        jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
-      },
-      type: 'DELETE',
-      url: `/script_builder/data_fields/${dataFieldId}`,
-      success: this.setState({
-        data_fields: update(this.state.data_fields, { $splice: [[deleteIndex, 1]] }),
-      }),
+    fetch(`/script_builder/data_fields/${dataFieldId}`, {
+      credentials: 'same-origin',
+      method: 'DELETE',
+      headers: this.csrfHeader,
     })
-    this.removeRelatedPivotFields(dataFieldId)
+    .then(response => response.json()).then(
+      this.setState({
+        data_fields: update(this.state.data_fields, { $splice: [[deleteIndex, 1]] }),
+      })
+    )
+    .then(this.removeRelatedPivotFields(dataFieldId))
   }
 
   deletePivotField(pivotFieldId) {
     console.log('delete pivot field')
     const deleteIndex = this.state.pivot_fields.findIndex(f => f.id === pivotFieldId)
-    $.ajax({
-      beforeSend(jqXHR) {
-        jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
-      },
-      type: 'DELETE',
-      url: `/script_builder/pivot_fields/${pivotFieldId}`,
-      success: this.setState({
-        pivot_fields: update(this.state.pivot_fields, { $splice: [[deleteIndex, 1]] }),
-      }),
+    fetch(`/script_builder/pivot_fields/${pivotFieldId}`, {
+      credentials: 'same-origin',
+      method: 'DELETE',
+      headers: this.csrfHeader,
     })
+    .then(response => response.json()).then(
+      this.setState({
+        pivot_fields: update(this.state.pivot_fields, { $splice: [[deleteIndex, 1]] }),
+      })
+    )
   }
 
   removeRelatedPivotFields(dataFieldId) {
