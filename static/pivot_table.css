@@ -44,16 +44,14 @@
 
 .right-dropzone-container {
   display: inline-block;
-  min-width: 220px;
+  min-width: 270px;
   width: calc(100% - 280px);
   min-height: 100px;
 }
 .column-dropzone {
-  min-width: 220px;
   width: 100%;
 }
 .aggregate-dropzone {
-  min-width: 220px;
   width: 100%;
 }
 
@@ -193,6 +191,7 @@
 .script-builder-container {
   display: inline-block;
   width: 60%;
+  min-width: 650px;
 }
 
 .additional-options-container {
@@ -200,6 +199,7 @@
   vertical-align: top;
   margin-left: 30px;
   margin-top: 30px;
+  width: 25%;
 }
 
 .additional-options-field {
@@ -208,6 +208,9 @@
 
 .additional-options-input {
   display: block;
+}
+.additional-options-input.text {
+  width: 100%;
 }
 
 .munger-name-input {

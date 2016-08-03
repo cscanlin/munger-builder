@@ -22,7 +22,7 @@ class AdditionalOptionsField extends React.Component {
         <input
           id={this.fieldId()}
           type={this.props.type}
-          className="additional-options-input"
+          className={`additional-options-input ${this.props.type}`}
           placeholder={this.fieldLabel()}
           value={this.props.fieldValue}
           onChange={(e) => this.props.updateMunger(this.fieldUpdateData(e), e)}
