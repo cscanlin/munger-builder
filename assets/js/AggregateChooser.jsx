@@ -3,7 +3,7 @@ const React = require('react')
 function AggregateChooser(props) {
   return (
     <div className="aggregate-chooser-menu">
-      {props.aggregateFieldTypes.map(fieldType =>
+      {props.aggregateFieldTypes().map(fieldType =>
         <div
           key={fieldType.id}
           data-field-type={fieldType.id}
@@ -17,8 +17,7 @@ function AggregateChooser(props) {
 }
 
 AggregateChooser.propTypes = {
-  id: React.PropTypes.number.isRequired,
-  aggregateFieldTypes: React.PropTypes.array.isRequired,
+  aggregateFieldTypes: React.PropTypes.func.isRequired,
   getFieldTypeName: React.PropTypes.func.isRequired,
 }
 

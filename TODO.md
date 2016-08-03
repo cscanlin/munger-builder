@@ -3,14 +3,12 @@
 - default aggregate field
 - change DataField original name
 
-- remove extra links √
-  - download test data
-  - delete munger
+- download test data
+- delete munger
 
 - chores:
   - move functions into utils/api
-  - switch to fetch
-  - style setup forms
+    - switch to fetch
 
 - V1.1:
   - ghosts
@@ -28,12 +26,16 @@
 - setup fields
 - deletePivot
 
+- remove extra links
 
 - Draggability: https://gaearon.github.io/react-dnd/docs-tutorial.html
   - ~multiple "drag spots"~
   - Needs a zone handler
   - handle cloning
   - movePivot
+
+- chores:
+  - style setup forms
 
 # Hold
 - Redux - needs to hold all info in PivotFields

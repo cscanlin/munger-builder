@@ -94,7 +94,7 @@ PivotField.propTypes = {
   getActiveName: React.PropTypes.func.isRequired,
   connectDragSource: React.PropTypes.func.isRequired,
   isDragging: React.PropTypes.bool.isRequired,
-  aggregateFieldTypes: React.PropTypes.array.isRequired,
+  aggregateFieldTypes: React.PropTypes.func.isRequired,
   updatePivotField: React.PropTypes.func.isRequired,
 }
 module.exports = DragSource('PivotField', pivotFieldSource, collect)(PivotField)

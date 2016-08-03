@@ -39,6 +39,7 @@ class PivotApp extends React.Component {
     this.getActiveName = this.getActiveName.bind(this)
     this.handleNameChange = this.handleNameChange.bind(this)
     this.removeRelatedPivotFields = this.removeRelatedPivotFields.bind(this)
+    this.aggregateFieldTypes = this.aggregateFieldTypes.bind(this)
   }
 
   componentDidMount() {
@@ -75,6 +76,8 @@ class PivotApp extends React.Component {
     })
     return activeNameMap[dataFieldId]
   }
+
+  aggregateFieldTypes() { return this.state.field_types.filter(fieldType => fieldType.id > 2) }
 
   handleNameChange(dataFieldId, activeName) {
     console.log(dataFieldId)
@@ -241,16 +244,11 @@ class PivotApp extends React.Component {
         </FieldBank>
         <MainTable {...this} {...this.state} >
           {this.state.pivot_fields.map(pivotField =>
-            <PivotField
-              key={pivotField.id}
-              aggregateFieldTypes={this.state.field_types.filter(fieldType => fieldType.id > 2)}
-              {...this}
-              {...pivotField}
-            />
+            <PivotField key={pivotField.id} {...this} {...pivotField} />
           )}
         </MainTable>
         <ScriptBuilder {...this} {...this.state} />
-        <AdditionalOptions {...this.state} updateMunger={this.updateMunger} />
+        <AdditionalOptions {...this} {...this.state} />
       </DeleteZone>
     )
   }
