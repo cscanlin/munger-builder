@@ -203,8 +203,11 @@
 }
 
 .additional-options-field {
+  margin-top: 20px;
+}
+
+.additional-options-input {
   display: block;
-  margin-bottom: 20px;
 }
 
 .munger-name-input {
@@ -218,4 +221,5 @@
 .default-aggregate-dropdown {
   font-size: 10px;
   padding: 5px 5px;
+  margin-left: 5px;
 }

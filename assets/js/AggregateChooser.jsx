@@ -2,7 +2,7 @@ const React = require('react')
 
 function AggregateChooser(props) {
   return (
-    <div className="aggregate-chooser-menu">
+    <div className="aggregate-chooser-menu" style={props.chooserStyle}>
       {props.aggregateFieldTypes().map(fieldType =>
         <div
           key={fieldType.id}
@@ -19,6 +19,7 @@ function AggregateChooser(props) {
 AggregateChooser.propTypes = {
   aggregateFieldTypes: React.PropTypes.func.isRequired,
   getFieldTypeName: React.PropTypes.func.isRequired,
+  chooserStyle: React.PropTypes.object,
 }
 
 module.exports = AggregateChooser

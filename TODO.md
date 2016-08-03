@@ -1,6 +1,5 @@
 # TODO
 - enforce uniqueness
-- default aggregate field
 - change DataField original name
 
 - download test data
@@ -27,6 +26,7 @@
 - deletePivot
 
 - remove extra links
+- default aggregate field
 
 - Draggability: https://gaearon.github.io/react-dnd/docs-tutorial.html
   - ~multiple "drag spots"~

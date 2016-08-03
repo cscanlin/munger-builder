@@ -15,17 +15,16 @@ class AdditionalOptions extends React.Component {
   }
 
   showAggregateChooser() {
-    console.log('show agg chooser')
+    console.log('show default agg chooser')
     document.body.addEventListener('click', this.hideAggregateChooser)
     this.setState({ showAggregateChooser: true })
   }
 
   hideAggregateChooser(e) {
     if (e.target.hasAttribute('data-field-type')) {
-      console.log('agg selected')
-      const fieldTypeID = e.target.getAttribute('data-field-type')
-      console.log(fieldTypeID)
-      // this.props.updatePivotField(this.props.id, fieldTypeID)
+      console.log('default agg selected')
+      const fieldTypeID = parseInt(e.target.getAttribute('data-field-type'))
+      this.props.updateMunger({ default_aggregate_field_type: fieldTypeID }, { type: 'save' })
     }
     document.body.removeEventListener('click', this.hideAggregateChooser)
     this.setState({ showAggregateChooser: false })
@@ -34,14 +33,19 @@ class AdditionalOptions extends React.Component {
   render() {
     return (
       <form className="additional-options-container">
+        <label htmlFor="default-aggregate-dropdown">Default Aggregate Type</label>
         <Button
+          id="default-aggregate-dropdown"
           type="button"
           value="╲╱"
           className="btn btn-primary default-aggregate-dropdown"
           onClick={this.showAggregateChooser}
         />
         <div className="default-aggregate-container">
-          {this.state.showAggregateChooser ? <AggregateChooser {...this.props} /> : null}
+          {this.state.showAggregateChooser
+            ? <AggregateChooser {...this.props} chooserStyle={{ top: '0px', right: '-200px' }} />
+            : null
+          }
         </div>
         <AdditionalOptionsField
           type="text"

@@ -17,12 +17,12 @@ class AdditionalOptionsField extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="additional-options-field">
         <label htmlFor={this.fieldId()}>{this.fieldLabel()}</label>
         <input
           id={this.fieldId()}
-          className="additional-options-field"
           type={this.props.type}
+          className="additional-options-input"
           placeholder={this.fieldLabel()}
           value={this.props.fieldValue}
           onChange={(e) => this.props.updateMunger(this.fieldUpdateData(e), e)}

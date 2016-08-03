@@ -104,7 +104,7 @@ class PivotApp extends React.Component {
   updateMunger(data, e) {
     if (e) {
       this.setState({ ...data })
-      if (e.type === 'blur') {
+      if (e.type === 'blur' || e.type === 'save') {
         $.ajax({
           beforeSend(jqXHR) {
             jqXHR.setRequestHeader('x-csrftoken', Cookie.get('csrftoken'))
