@@ -204,13 +204,6 @@ class PivotApp extends React.Component {
     this.removeRelatedPivotFields(dataFieldId)
   }
 
-  removeRelatedPivotFields(dataFieldId) {
-    const pivotFieldsToKeep = this.state.pivot_fields.filter(pivotField =>
-      pivotField.data_field !== dataFieldId
-    )
-    this.setState({ pivot_fields: pivotFieldsToKeep })
-  }
-
   deletePivotField(pivotFieldId) {
     console.log('delete pivot field')
     const deleteIndex = this.state.pivot_fields.findIndex(f => f.id === pivotFieldId)
@@ -224,6 +217,13 @@ class PivotApp extends React.Component {
         pivot_fields: update(this.state.pivot_fields, { $splice: [[deleteIndex, 1]] }),
       }),
     })
+  }
+
+  removeRelatedPivotFields(dataFieldId) {
+    const pivotFieldsToDelete = this.state.pivot_fields.filter(pivotField =>
+      pivotField.data_field === dataFieldId
+    )
+    pivotFieldsToDelete.forEach(pivotField => this.deletePivotField(pivotField.id))
   }
 
   render() {
