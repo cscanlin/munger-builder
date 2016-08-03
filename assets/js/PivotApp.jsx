@@ -10,7 +10,7 @@ const FieldBank = require('./FieldBank')
 const MainTable = require('./MainTable')
 const PivotField = require('./PivotField')
 const ScriptBuilder = require('./ScriptBuilder')
-const AdditonalOptions = require('./AdditonalOptions')
+const AdditionalOptions = require('./AdditionalOptions')
 const DeleteZone = require('./DeleteZone')
 
 class PivotApp extends React.Component {
@@ -250,7 +250,7 @@ class PivotApp extends React.Component {
           )}
         </MainTable>
         <ScriptBuilder {...this} {...this.state} />
-        <AdditonalOptions {...this.state} updateMunger={this.updateMunger} />
+        <AdditionalOptions {...this.state} updateMunger={this.updateMunger} />
       </DeleteZone>
     )
   }

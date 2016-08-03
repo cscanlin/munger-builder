@@ -197,6 +197,14 @@
 
 .additional-options-container {
   display: inline-block;
+  vertical-align: top;
+  margin-left: 30px;
+  margin-top: 30px;
+}
+
+.additional-options-field {
+  display: block;
+  margin-bottom: 20px;
 }
 
 .munger-name-input {
