@@ -27,10 +27,14 @@ class DataField extends React.Component {
     this.onChange = this.onChange.bind(this)
     this.enableEditing = this.enableEditing.bind(this)
     this.disableEditing = this.disableEditing.bind(this)
+    this.activeName = this.activeName.bind(this)
   }
 
   onChange(e) {
-    this.props.handleNameChange(this.props.id, e.target.value)
+    return (this.props.showOriginalNames
+      ? this.props.handleOriginalNameChange(this.props.id, e.target.value)
+      : this.props.handleNewNameChange(this.props.id, e.target.value)
+    )
   }
 
   elementID() { return `base-field-${this.props.id}` }
@@ -45,16 +49,27 @@ class DataField extends React.Component {
   }
 
   disableEditing(e) {
+    const data = {}
+    const inputValue = document.getElementById(this.inputID()).value
     if (e.target.id !== this.inputID() || e.key === 'Enter') {
       console.log('not editing')
       this.setState({ editing: false })
       document.body.removeEventListener('click', this.disableEditing)
       document.body.removeEventListener('keypress', this.disableEditing)
-      if (this.props.new_name !== this.props.active_name) {
-        this.props.updateDataField(this.props.id, this.props.active_name)
+      if (this.props.showOriginalNames) {
+        data.current_name = inputValue
+      } else {
+        data.new_name = inputValue
       }
+      this.props.updateDataField(this.props.id, data)
       e.preventDefault()
     }
+  }
+
+  activeName() {
+    return (this.props.showOriginalNames || !this.props.new_name
+      ? this.props.current_name
+      : this.props.new_name)
   }
 
   render() {
@@ -83,7 +98,7 @@ class DataField extends React.Component {
             id={this.inputID()}
             type="text"
             disabled={!this.state.editing}
-            value={this.props.active_name}
+            value={this.activeName()}
             className="field-name-input"
             onChange={this.onChange}
           />
@@ -105,11 +120,12 @@ DataField.propTypes = {
   munger_builder: React.PropTypes.number.isRequired,
   current_name: React.PropTypes.string.isRequired,
   new_name: React.PropTypes.string,
-  active_name: React.PropTypes.string.isRequired,
   updateDataField: React.PropTypes.func.isRequired,
   deleteDataField: React.PropTypes.func.isRequired,
-  handleNameChange: React.PropTypes.func.isRequired,
+  handleNewNameChange: React.PropTypes.func.isRequired,
+  handleOriginalNameChange: React.PropTypes.func.isRequired,
   connectDragSource: React.PropTypes.func.isRequired,
   isDragging: React.PropTypes.bool.isRequired,
+  showOriginalNames: React.PropTypes.bool.isRequired,
 }
 module.exports = DragSource('DataField', dataFieldSource, collect)(DataField)

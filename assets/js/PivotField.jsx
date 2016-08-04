@@ -57,7 +57,7 @@ class PivotField extends React.Component {
   render() {
     const fieldTypeName = this.props.getFieldTypeName(this.props.field_type)
     const pivotFieldClass = `${fieldTypeName}-field list-group-item`
-    const fullFieldText = `${fieldTypeName} of ${this.props.getActiveName(this.props.data_field)}`
+    const fullFieldText = `${fieldTypeName} of ${this.props.getNewName(this.props.data_field)}`
     const fieldTextStyle = {
       fontSize: 18.5 - fullFieldText.length / 4,
     }
@@ -91,7 +91,7 @@ PivotField.propTypes = {
   field_type: React.PropTypes.number.isRequired,
   deletePivotField: React.PropTypes.func.isRequired,
   getFieldTypeName: React.PropTypes.func.isRequired,
-  getActiveName: React.PropTypes.func.isRequired,
+  getNewName: React.PropTypes.func.isRequired,
   connectDragSource: React.PropTypes.func.isRequired,
   isDragging: React.PropTypes.bool.isRequired,
   aggregateFieldTypes: React.PropTypes.func.isRequired,

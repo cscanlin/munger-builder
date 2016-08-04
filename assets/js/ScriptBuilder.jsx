@@ -26,7 +26,7 @@ class ScriptBuilder extends React.Component {
   renameFieldMapString() {
     const renameFieldMap = {}
     this.props.data_fields.map(dataField => {
-      if (dataField.new_name) {
+      if (dataField.current_name !== dataField.new_name) {
         renameFieldMap[dataField.current_name] = dataField.new_name
       }
       return renameFieldMap
@@ -37,13 +37,13 @@ class ScriptBuilder extends React.Component {
   indexFields() {
     return this.props.pivot_fields.filter(
       pivotField => pivotField.field_type === 1
-    ).map(pivotField => `'${this.props.getActiveName(pivotField.data_field)}'`).join(', ')
+    ).map(pivotField => `'${this.props.getNewName(pivotField.data_field)}'`).join(', ')
   }
 
   columnFields() {
     return this.props.pivot_fields.filter(
       pivotField => pivotField.field_type === 2
-    ).map(pivotField => `'${this.props.getActiveName(pivotField.data_field)}'`).join(', ')
+    ).map(pivotField => `'${this.props.getNewName(pivotField.data_field)}'`).join(', ')
   }
 
   aggregateNamesWithFunctions() {
@@ -51,12 +51,12 @@ class ScriptBuilder extends React.Component {
     this.props.pivot_fields.filter(
       pivotField => pivotField.field_type > 2
     ).map(pivotField => {
-      const activeName = this.props.getActiveName(pivotField.data_field)
-      if (!(activeName in aggregateFunctionsMap)) {
-        aggregateFunctionsMap[activeName] = []
+      const newName = this.props.getNewName(pivotField.data_field)
+      if (!(newName in aggregateFunctionsMap)) {
+        aggregateFunctionsMap[newName] = []
       }
       const fieldTypeFunction = this.props.getFieldTypeName(pivotField.field_type, true)
-      return aggregateFunctionsMap[activeName].push(fieldTypeFunction)
+      return aggregateFunctionsMap[newName].push(fieldTypeFunction)
     })
     return Immutable.Map(aggregateFunctionsMap)
   }
@@ -216,7 +216,7 @@ ScriptBuilder.propTypes = {
   rows_to_delete_bottom: React.PropTypes.number,
   rows_to_delete_top: React.PropTypes.number,
   is_sample: React.PropTypes.bool,
-  getActiveName: React.PropTypes.func.isRequired,
+  getNewName: React.PropTypes.func.isRequired,
   getFieldTypeName: React.PropTypes.func.isRequired,
 }
 module.exports = ScriptBuilder

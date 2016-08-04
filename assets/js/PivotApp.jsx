@@ -28,6 +28,7 @@ class PivotApp extends React.Component {
       rows_to_delete_bottom: 0,
       rows_to_delete_top: 0,
       is_sample: false,
+      showOriginalNames: false,
     }
     this.csrfHeader = new Headers({
       'x-csrftoken': Cookie.get('csrftoken'),
@@ -36,10 +37,12 @@ class PivotApp extends React.Component {
     })
     this.newFieldName = this.newFieldName.bind(this)
     this.getFieldTypeName = this.getFieldTypeName.bind(this)
-    this.getActiveName = this.getActiveName.bind(this)
-    this.handleNameChange = this.handleNameChange.bind(this)
+    this.getNewName = this.getNewName.bind(this)
+    this.handleNewNameChange = this.handleNewNameChange.bind(this)
+    this.handleOriginalNameChange = this.handleOriginalNameChange.bind(this)
     this.removeRelatedPivotFields = this.removeRelatedPivotFields.bind(this)
     this.aggregateFieldTypes = this.aggregateFieldTypes.bind(this)
+    this.toggleOriginalNames = this.toggleOriginalNames.bind(this)
 
     this.updateMunger = this.updateMunger.bind(this)
 
@@ -78,22 +81,38 @@ class PivotApp extends React.Component {
     return fieldTypeMap[fieldTypeId]
   }
 
-  getActiveName(dataFieldId) {
-    const activeNameMap = {}
+  getNewName(dataFieldId) {
+    const newNameMap = {}
     this.state.data_fields.map(dataField => {
-      activeNameMap[dataField.id] = dataField.active_name
-      return activeNameMap
+      newNameMap[dataField.id] = dataField.new_name
+      return newNameMap
     })
-    return activeNameMap[dataFieldId]
+    return newNameMap[dataFieldId]
   }
 
   aggregateFieldTypes() { return this.state.field_types.filter(fieldType => fieldType.id > 2) }
 
-  handleNameChange(dataFieldId, activeName) {
-    console.log(dataFieldId)
+  toggleOriginalNames() {
+    const showHide = !this.state.showOriginalNames
+    this.setState({ showOriginalNames: showHide })
+  }
+
+  handleNewNameChange(dataFieldId, newName) {
+    console.log('change new_name')
     this.state.data_fields.map(dataField => {
       if (dataField.id === dataFieldId) {
-        dataField.active_name = activeName
+        dataField.new_name = newName
+      }
+      return dataField
+    })
+    this.setState({ data_fields: this.state.data_fields })
+  }
+
+  handleOriginalNameChange(dataFieldId, newOriginalName) {
+    console.log('change original')
+    this.state.data_fields.map(dataField => {
+      if (dataField.id === dataFieldId) {
+        dataField.current_name = newOriginalName
       }
       return dataField
     })
@@ -102,7 +121,7 @@ class PivotApp extends React.Component {
 
   newFieldName() {
     let numNewFields = this.state.data_fields.filter(item =>
-      item.active_name.startsWith('New Field')
+      item.new_name.startsWith('New Field')
     ).length
     if (numNewFields > 0) {
       numNewFields += 1
