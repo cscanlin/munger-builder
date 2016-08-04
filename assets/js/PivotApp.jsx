@@ -111,11 +111,11 @@ class PivotApp extends React.Component {
     return 'New Field'
   }
 
-  updateMunger(data, e) {
+  async updateMunger(data, e) {
     if (e) {
       this.setState({ ...data })
       if (e.type === 'blur' || e.type === 'save') {
-        fetch(`/script_builder/mungers/${this.props.mungerId}`, {
+        const response = await fetch(`/script_builder/mungers/${this.props.mungerId}`, {
           credentials: 'same-origin',
           method: 'PUT',
           headers: this.csrfHeader,
@@ -157,13 +157,13 @@ class PivotApp extends React.Component {
     this.setState({ pivot_fields: this.state.pivot_fields.concat([data]) })
   }
 
-  async updateDataField(dataFieldId, newName) {
+  async updateDataField(dataFieldId, data) {
     console.log('update pivot field')
     const response = await fetch(`/script_builder/data_fields/${dataFieldId}`, {
       credentials: 'same-origin',
       method: 'PUT',
       headers: this.csrfHeader,
-      body: JSON.stringify({ new_name: newName }),
+      body: JSON.stringify({ ...data }),
     })
   }
 
@@ -227,12 +227,12 @@ class PivotApp extends React.Component {
             value={this.state.munger_name}
             className="munger-name-input"
             onChange={(e) => this.setState({ munger_name: e.target.value })}
-            onBlur={this.updateMunger({ munger_name: this.state.munger_name })}
+            onBlur={(e) => this.updateMunger({ munger_name: this.state.munger_name }, e)}
           />
         </h3>
-        <FieldBank addDataField={this.addDataField}>
+        <FieldBank {...this} {...this.state}>
           {this.state.data_fields.map(dataField =>
-            <DataField key={dataField.id} {...this} {...dataField} />
+            <DataField key={dataField.id} {...this} {...this.state} {...dataField} />
           )}
         </FieldBank>
         <MainTable {...this} {...this.state} >

@@ -4,7 +4,6 @@
 
 - chores:
   - move functions into utils/api
-    - switch to fetch
 
 - V1.1:
   - ghosts
@@ -26,6 +25,8 @@
 - default aggregate field
 - download test data
 - delete munger
+
+- switch to fetch
 
 - Draggability: https://gaearon.github.io/react-dnd/docs-tutorial.html
   - ~multiple "drag spots"~
