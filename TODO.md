@@ -1,5 +1,4 @@
 # TODO
-- enforce uniqueness
 
 - chores:
   - move functions into utils/api
@@ -24,9 +23,10 @@
 - default aggregate field
 - download test data
 - delete munger
-- change DataField original name
 
 - switch to fetch
+- change DataField original name
+- enforce uniqueness (in script)
 
 - Draggability: https://gaearon.github.io/react-dnd/docs-tutorial.html
   - ~multiple "drag spots"~

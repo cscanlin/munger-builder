@@ -35,7 +35,6 @@ class PivotApp extends React.Component {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     })
-    this.newFieldName = this.newFieldName.bind(this)
     this.getFieldTypeName = this.getFieldTypeName.bind(this)
     this.getNewName = this.getNewName.bind(this)
     this.handleNewNameChange = this.handleNewNameChange.bind(this)
@@ -119,17 +118,6 @@ class PivotApp extends React.Component {
     this.setState({ data_fields: this.state.data_fields })
   }
 
-  newFieldName() {
-    let numNewFields = this.state.data_fields.filter(item =>
-      item.new_name.startsWith('New Field')
-    ).length
-    if (numNewFields > 0) {
-      numNewFields += 1
-      return `New Field ${numNewFields}`
-    }
-    return 'New Field'
-  }
-
   async updateMunger(data, e) {
     if (e) {
       this.setState({ ...data })
@@ -146,9 +134,10 @@ class PivotApp extends React.Component {
 
   async addDataField() {
     console.log('add data field')
+    console.log(this);
     const newDataField = {
       munger_builder: this.props.mungerId,
-      current_name: this.newFieldName(),
+      current_name: `New Field #${this.state.data_fields.length + 1}`,
     }
     const response = await fetch('/script_builder/data_fields/', {
       credentials: 'same-origin',
