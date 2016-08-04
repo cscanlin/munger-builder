@@ -3,10 +3,11 @@ const DragSource = require('react-dnd').DragSource
 
 const Button = require('./Button')
 const AggregateChooser = require('./AggregateChooser')
+const Logger = require('./Logger')
 
 const pivotFieldSource = {
   beginDrag(props) {
-    console.log('begin pivot field drag')
+    Logger.log('begin pivot field drag')
     return { pivotField: props.id, fieldType: props.field_type }
   },
 }
@@ -31,22 +32,22 @@ class PivotField extends React.Component {
 
 
   componentDidMount() {
-    console.log('mount pivot field')
+    Logger.log('mount pivot field')
   }
 
   componentWillUnmount() {
-    console.log('unmount pivot field')
+    Logger.log('unmount pivot field')
   }
 
   showAggregateChooser() {
-    console.log('show agg chooser')
+    Logger.log('show agg chooser')
     document.body.addEventListener('click', this.hideAggregateChooser)
     this.setState({ showAggregateChooser: true })
   }
 
   hideAggregateChooser(e) {
     if (e.target.hasAttribute('data-field-type')) {
-      console.log('agg selected')
+      Logger.log('agg selected')
       const fieldTypeID = e.target.getAttribute('data-field-type')
       this.props.updatePivotField(this.props.id, fieldTypeID)
     }

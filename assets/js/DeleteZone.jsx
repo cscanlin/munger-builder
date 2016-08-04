@@ -1,10 +1,12 @@
 const React = require('react')
 const DropTarget = require('react-dnd').DropTarget
 
+const Logger = require('./Logger')
+
 const deleteTarget = {
   drop(props, monitor) {
     if (!monitor.didDrop()) {
-      console.log('delete-pivot')
+      Logger.log('delete-pivot')
       props.deletePivotField(monitor.getItem().pivotField)
     }
   },

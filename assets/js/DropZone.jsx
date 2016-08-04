@@ -1,10 +1,12 @@
 const React = require('react')
 const DropTarget = require('react-dnd').DropTarget
 
+const Logger = require('./Logger')
+
 const zoneTarget = {
   drop(props, monitor) {
-    console.log('drop')
     const dropItem = monitor.getItem()
+    Logger.log('drop', monitor.getItem())
     if ('dataField' in dropItem) {
       props.addPivotField(dropItem.dataField, props.fieldType)
     } else if ('pivotField' in dropItem) {

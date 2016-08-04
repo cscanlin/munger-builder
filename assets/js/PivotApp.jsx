@@ -10,6 +10,7 @@ const ScriptBuilder = require('./ScriptBuilder')
 const AdditionalOptions = require('./AdditionalOptions')
 const DeleteZone = require('./DeleteZone')
 const Api = require('./Api')
+const Logger = require('./Logger')
 
 class PivotApp extends React.Component {
   constructor(props) {
@@ -81,7 +82,7 @@ class PivotApp extends React.Component {
   }
 
   handleNewNameChange(dataFieldId, newName) {
-    console.log('change new_name')
+    Logger.log('change new_name')
     this.state.data_fields.map(dataField => {
       if (dataField.id === dataFieldId) {
         dataField.new_name = newName
@@ -92,7 +93,7 @@ class PivotApp extends React.Component {
   }
 
   handleOriginalNameChange(dataFieldId, newOriginalName) {
-    console.log('change original')
+    Logger.log('change original')
     this.state.data_fields.map(dataField => {
       if (dataField.id === dataFieldId) {
         dataField.current_name = newOriginalName

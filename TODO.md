@@ -1,8 +1,5 @@
 # TODO
 
-- chores:
-  - move functions into utils/api
-
 - V1.1:
   - ghosts
 
@@ -27,6 +24,7 @@
 - switch to fetch
 - change DataField original name
 - enforce uniqueness (in script)
+- move functions into utils/api
 
 - Draggability: https://gaearon.github.io/react-dnd/docs-tutorial.html
   - ~multiple "drag spots"~

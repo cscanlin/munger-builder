@@ -2,10 +2,11 @@ const React = require('react')
 const DragSource = require('react-dnd').DragSource
 
 const Button = require('./Button')
+const Logger = require('./Logger')
 
 const dataFieldSource = {
   beginDrag(props) {
-    console.log('begin data field drag')
+    Logger.log('begin data field drag')
     return { dataField: props.id }
   },
 }
@@ -42,7 +43,7 @@ class DataField extends React.Component {
   inputID() { return `field-name-input-${this.props.id}` }
 
   enableEditing() {
-    console.log('editing')
+    Logger.log('editing')
     this.setState({ editing: true })
     document.body.addEventListener('keypress', this.disableEditing)
     document.body.addEventListener('click', this.disableEditing)
@@ -52,7 +53,7 @@ class DataField extends React.Component {
     const data = {}
     const inputValue = document.getElementById(this.inputID()).value
     if (e.target.id !== this.inputID() || e.key === 'Enter') {
-      console.log('not editing')
+      Logger.log('not editing')
       this.setState({ editing: false })
       document.body.removeEventListener('click', this.disableEditing)
       document.body.removeEventListener('keypress', this.disableEditing)

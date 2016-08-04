@@ -1,6 +1,8 @@
 const Cookie = require('js-cookie')
 const update = require('react-addons-update')
 
+const Logger = require('./Logger')
+
 const csrfHeader = new Headers({
   'x-csrftoken': Cookie.get('csrftoken'),
   'Accept': 'application/json',
@@ -34,7 +36,7 @@ class Api {
   }
 
   static async addDataField() {
-    console.log('add data field')
+    Logger.log('add data field')
     const newDataField = {
       munger_builder: this.props.mungerId,
       current_name: `New Field #${this.state.data_fields.length + 1}`,
@@ -50,7 +52,7 @@ class Api {
   }
 
   static async updateDataField(dataFieldId, data) {
-    console.log('update data field')
+    Logger.log('update data field')
     const response = await fetch(`/script_builder/data_fields/${dataFieldId}`, {
       credentials: 'same-origin',
       method: 'PUT',
@@ -60,7 +62,7 @@ class Api {
   }
 
   static async deleteDataField(dataFieldId) {
-    console.log('delete data field')
+    Logger.log('delete data field')
     this.removeRelatedPivotFields(dataFieldId)
     const deleteIndex = this.state.data_fields.findIndex(f => f.id === dataFieldId)
     const response = await fetch(`/script_builder/data_fields/${dataFieldId}`, {
@@ -74,7 +76,7 @@ class Api {
   }
 
   static async addPivotField(dataFieldId, fieldTypeId) {
-    console.log('add pivot field')
+    Logger.log('add pivot field')
     const newPivotField = {
       data_field: dataFieldId,
       field_type: fieldTypeId || this.state.default_aggregate_field_type,
@@ -90,7 +92,7 @@ class Api {
   }
 
   static async updatePivotField(pivotFieldId, fieldTypeID) {
-    console.log('update pivot field');
+    Logger.log('update pivot field');
     const response = await fetch(`/script_builder/pivot_fields/${pivotFieldId}`, {
       credentials: 'same-origin',
       method: 'PUT',
@@ -108,7 +110,7 @@ class Api {
   }
 
   static async deletePivotField(pivotFieldId) {
-    console.log('delete pivot field')
+    Logger.log('delete pivot field')
     const deleteIndex = this.state.pivot_fields.findIndex(f => f.id === pivotFieldId)
     const response = await fetch(`/script_builder/pivot_fields/${pivotFieldId}`, {
       credentials: 'same-origin',

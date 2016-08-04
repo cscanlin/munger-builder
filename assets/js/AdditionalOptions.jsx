@@ -1,8 +1,10 @@
 const React = require('react')
+const titleize = require('titleize')
+
 const Button = require('./Button')
 const AdditionalOptionsField = require('./AdditionalOptionsField')
 const AggregateChooser = require('./AggregateChooser')
-const titleize = require('titleize')
+const Logger = require('./Logger')
 
 class AdditionalOptions extends React.Component {
 
@@ -16,14 +18,14 @@ class AdditionalOptions extends React.Component {
   }
 
   showAggregateChooser() {
-    console.log('show default agg chooser')
+    Logger.log('show default agg chooser')
     document.body.addEventListener('click', this.hideAggregateChooser)
     this.setState({ showAggregateChooser: true })
   }
 
   hideAggregateChooser(e) {
     if (e.target.hasAttribute('data-field-type')) {
-      console.log('default agg selected')
+      Logger.log('default agg selected')
       const fieldTypeID = parseInt(e.target.getAttribute('data-field-type'))
       this.props.updateMunger({ default_aggregate_field_type: fieldTypeID }, { type: 'save' })
     }
