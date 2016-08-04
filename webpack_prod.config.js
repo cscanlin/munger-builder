@@ -1,23 +1,36 @@
 const path = require('path')
+const webpack = require('webpack')
 const BundleTracker = require('webpack-bundle-tracker')
 
 module.exports = {
   context: __dirname,
+  devtool: 'source-map',
 
-  // entry point of our app.
-  // assets/js/index.js should require other js modules and dependencies it needs
   entry: [
     'babel-polyfill',
     './assets/js/index.jsx',
   ],
 
   output: {
-    path: path.resolve('./assets/distributions'),
-    filename: 'active-bundle.js',
+    path: path.join(__dirname, 'public'),
+    filename: 'bundle.js',
+    publicPath: '/public/',
   },
 
   plugins: [
     new BundleTracker({ filename: './webpack-stats-prod.json' }),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      minimize: true,
+      compress: {
+        warnings: false,
+      },
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production'),
+      },
+    }),
   ],
 
   module: {
