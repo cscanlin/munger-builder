@@ -1,6 +1,5 @@
 # TODO
 - enforce uniqueness
-- change DataField original name
 
 - chores:
   - move functions into utils/api
@@ -25,6 +24,7 @@
 - default aggregate field
 - download test data
 - delete munger
+- change DataField original name
 
 - switch to fetch
 

@@ -26,7 +26,7 @@ class ScriptBuilder extends React.Component {
   renameFieldMapString() {
     const renameFieldMap = {}
     this.props.data_fields.map(dataField => {
-      if (dataField.current_name !== dataField.new_name) {
+      if (dataField.new_name && dataField.current_name !== dataField.new_name) {
         renameFieldMap[dataField.current_name] = dataField.new_name
       }
       return renameFieldMap
@@ -47,23 +47,26 @@ class ScriptBuilder extends React.Component {
   }
 
   aggregateNamesWithFunctions() {
-    const aggregateFunctionsMap = {}
+    const aggFuncMap = {}
     this.props.pivot_fields.filter(
       pivotField => pivotField.field_type > 2
     ).map(pivotField => {
       const newName = this.props.getNewName(pivotField.data_field)
-      if (!(newName in aggregateFunctionsMap)) {
-        aggregateFunctionsMap[newName] = []
+      if (!(newName in aggFuncMap)) {
+        aggFuncMap[newName] = []
       }
       const fieldTypeFunction = this.props.getFieldTypeName(pivotField.field_type, true)
-      return aggregateFunctionsMap[newName].push(fieldTypeFunction)
+      if (!aggFuncMap[newName].includes(fieldTypeFunction)) {
+        aggFuncMap[newName].push(fieldTypeFunction)
+      }
+      return aggFuncMap
     })
-    return Immutable.Map(aggregateFunctionsMap)
+    return Immutable.Map(aggFuncMap)
   }
 
-  formatAggregateFunctionsMap(aggregateFunctionsMap) {
+  formatAggregateFunctionsMap(aggFuncMap) {
     const indentString = '\n            '
-    return `${indentString}${aggregateFunctionsMap.map(
+    return `${indentString}${aggFuncMap.map(
       (value, key) => `'${key}': [${value.join(', ')}],`
     ).join(indentString)}\n        `
   }

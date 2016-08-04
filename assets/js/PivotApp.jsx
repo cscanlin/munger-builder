@@ -84,7 +84,7 @@ class PivotApp extends React.Component {
   getNewName(dataFieldId) {
     const newNameMap = {}
     this.state.data_fields.map(dataField => {
-      newNameMap[dataField.id] = dataField.new_name
+      newNameMap[dataField.id] = dataField.new_name || dataField.current_name
       return newNameMap
     })
     return newNameMap[dataFieldId]
