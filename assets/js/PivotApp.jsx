@@ -1,7 +1,4 @@
 const React = require('react')
-const $ = require('jquery')
-const Cookie = require('js-cookie')
-const update = require('react-addons-update')
 const HTML5Backend = require('react-dnd-html5-backend')
 const DragDropContext = require('react-dnd').DragDropContext
 
@@ -12,7 +9,7 @@ const PivotField = require('./PivotField')
 const ScriptBuilder = require('./ScriptBuilder')
 const AdditionalOptions = require('./AdditionalOptions')
 const DeleteZone = require('./DeleteZone')
-// const Api = require('./Api')
+const Api = require('./Api')
 
 class PivotApp extends React.Component {
   constructor(props) {
@@ -30,11 +27,6 @@ class PivotApp extends React.Component {
       is_sample: false,
       showOriginalNames: false,
     }
-    this.csrfHeader = new Headers({
-      'x-csrftoken': Cookie.get('csrftoken'),
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    })
     this.getFieldTypeName = this.getFieldTypeName.bind(this)
     this.getNewName = this.getNewName.bind(this)
     this.handleNewNameChange = this.handleNewNameChange.bind(this)
@@ -43,28 +35,20 @@ class PivotApp extends React.Component {
     this.aggregateFieldTypes = this.aggregateFieldTypes.bind(this)
     this.toggleOriginalNames = this.toggleOriginalNames.bind(this)
 
-    this.updateMunger = this.updateMunger.bind(this)
+    this.loadInitial = Api.loadInitial.bind(this)
+    this.updateMunger = Api.updateMunger.bind(this)
 
-    this.addDataField = this.addDataField.bind(this)
-    this.updateDataField = this.updateDataField.bind(this)
-    this.deleteDataField = this.deleteDataField.bind(this)
+    this.addDataField = Api.addDataField.bind(this)
+    this.updateDataField = Api.updateDataField.bind(this)
+    this.deleteDataField = Api.deleteDataField.bind(this)
 
-    this.addPivotField = this.addPivotField.bind(this)
-    this.updatePivotField = this.updatePivotField.bind(this)
-    this.deletePivotField = this.deletePivotField.bind(this)
+    this.addPivotField = Api.addPivotField.bind(this)
+    this.updatePivotField = Api.updatePivotField.bind(this)
+    this.deletePivotField = Api.deletePivotField.bind(this)
   }
 
   componentDidMount() {
-    const source = `/script_builder/mungers/${this.props.mungerId}?format=json`
-    this.serverRequest = $.get(source, result => this.onMount(result))
-  }
-
-  componentWillUnmount() {
-    this.serverRequest.abort()
-  }
-
-  onMount(result) {
-    this.setState({ ...result })
+    this.loadInitial()
   }
 
   getFieldTypeName(fieldTypeId, returnFunctionName = false) {
@@ -116,107 +100,6 @@ class PivotApp extends React.Component {
       return dataField
     })
     this.setState({ data_fields: this.state.data_fields })
-  }
-
-  async updateMunger(data, e) {
-    if (e) {
-      this.setState({ ...data })
-      if (e.type === 'blur' || e.type === 'save') {
-        const response = await fetch(`/script_builder/mungers/${this.props.mungerId}`, {
-          credentials: 'same-origin',
-          method: 'PUT',
-          headers: this.csrfHeader,
-          body: JSON.stringify({ ...data }),
-        })
-      }
-    }
-  }
-
-  async addDataField() {
-    console.log('add data field')
-    console.log(this);
-    const newDataField = {
-      munger_builder: this.props.mungerId,
-      current_name: `New Field #${this.state.data_fields.length + 1}`,
-    }
-    const response = await fetch('/script_builder/data_fields/', {
-      credentials: 'same-origin',
-      method: 'POST',
-      headers: this.csrfHeader,
-      body: JSON.stringify({ ...newDataField }),
-    })
-    const data = await response.json();
-    this.setState({ data_fields: this.state.data_fields.concat([data]) })
-  }
-
-  async addPivotField(dataFieldId, fieldTypeId) {
-    console.log('add pivot field')
-    const newPivotField = {
-      data_field: dataFieldId,
-      field_type: fieldTypeId || this.state.default_aggregate_field_type,
-    }
-    const response = await fetch('/script_builder/pivot_fields/', {
-      credentials: 'same-origin',
-      method: 'POST',
-      headers: this.csrfHeader,
-      body: JSON.stringify({ ...newPivotField }),
-    })
-    const data = await response.json();
-    this.setState({ pivot_fields: this.state.pivot_fields.concat([data]) })
-  }
-
-  async updateDataField(dataFieldId, data) {
-    console.log('update pivot field')
-    const response = await fetch(`/script_builder/data_fields/${dataFieldId}`, {
-      credentials: 'same-origin',
-      method: 'PUT',
-      headers: this.csrfHeader,
-      body: JSON.stringify({ ...data }),
-    })
-  }
-
-  async updatePivotField(pivotFieldId, fieldTypeID) {
-    const response = await fetch(`/script_builder/pivot_fields/${pivotFieldId}`, {
-      credentials: 'same-origin',
-      method: 'PUT',
-      headers: this.csrfHeader,
-      body: JSON.stringify({ field_type: fieldTypeID }),
-    })
-    const data = await response.json();
-    const pivotFields = await this.state.pivot_fields.map(pivotField => {
-      if (pivotField.id === data.id) {
-        pivotField.field_type = data.field_type
-      }
-      return pivotField
-    })
-    this.setState({ pivot_fields: pivotFields })
-  }
-
-  async deleteDataField(dataFieldId) {
-    console.log('delete data field')
-    this.removeRelatedPivotFields(dataFieldId)
-    const deleteIndex = this.state.data_fields.findIndex(f => f.id === dataFieldId)
-    const response = await fetch(`/script_builder/data_fields/${dataFieldId}`, {
-      credentials: 'same-origin',
-      method: 'DELETE',
-      headers: this.csrfHeader,
-    })
-    this.setState({
-      data_fields: update(this.state.data_fields, { $splice: [[deleteIndex, 1]] }),
-    })
-  }
-
-  async deletePivotField(pivotFieldId) {
-    console.log('delete pivot field')
-    const deleteIndex = this.state.pivot_fields.findIndex(f => f.id === pivotFieldId)
-    const response = await fetch(`/script_builder/pivot_fields/${pivotFieldId}`, {
-      credentials: 'same-origin',
-      method: 'DELETE',
-      headers: this.csrfHeader,
-    })
-    this.setState({
-      pivot_fields: update(this.state.pivot_fields, { $splice: [[deleteIndex, 1]] }),
-    })
   }
 
   removeRelatedPivotFields(dataFieldId) {
