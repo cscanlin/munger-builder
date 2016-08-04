@@ -16,7 +16,7 @@
     "url": "https://github.com/cscanlin/munger-builder/issues"
   },
   "homepage": "https://github.com/cscanlin/munger-builder#readme",
-  "devDependencies": {
+  "dependencies": {
     "babel-core": "^6.11.4",
     "babel-loader": "^6.2.4",
     "babel-polyfill": "^6.9.1",
@@ -24,8 +24,6 @@
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-0": "^6.5.0",
     "eslint-plugin-babel": "^3.3.0",
-    "immutable": "^3.8.1",
-    "jquery": "^3.1.0",
     "js-cookie": "^2.1.2",
     "json-loader": "^0.5.4",
     "react": "^15.3.0",

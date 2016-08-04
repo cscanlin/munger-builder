@@ -1,5 +1,4 @@
 const React = require('react')
-const Immutable = require('immutable')
 const Button = require('./Button')
 
 import { sampleData } from './Constants'
@@ -61,7 +60,7 @@ class ScriptBuilder extends React.Component {
       }
       return aggFuncMap
     })
-    return Immutable.Map(aggFuncMap)
+    return aggFuncMap
   }
 
   formatAggregateFunctionsMap(aggFuncMap) {
@@ -223,10 +222,3 @@ ScriptBuilder.propTypes = {
   getFieldTypeName: React.PropTypes.func.isRequired,
 }
 module.exports = ScriptBuilder
-
-// print(pivot_output)
-//
-// print_run_status(run_start_time, 'Writing Output CSVs...')
-// pivot_output.to_csv(os.path.abspath(r'{{ mb.get_output_path }}'))
-//
-// print_run_status(run_start_time, 'Finished!')

@@ -220,6 +220,10 @@ MIDDLEWARE_CLASSES = (
 if os.getenv('DJANGO_CONFIGURATION') == 'Prod':
     DEBUG = False
     DATABASES = {'default': dj_database_url.config()}
+    WEBPACK_LOADER.update({
+        'BUNDLE_DIR_NAME': 'distributions/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-prod.json')
+    })
     # MIDDLEWARE_CLASSES = (
     #     ['sslify.middleware.SSLifyMiddleware'] + middleware_list
     # )
