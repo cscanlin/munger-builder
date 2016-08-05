@@ -209,7 +209,7 @@ ANONYMOUS_USER_ID = -1
 # GUARDIAN_GET_INIT_ANONYMOUS_USER = 'script_builder.models.get_anonymous_user_instance'
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', # default
+    'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
 
@@ -217,11 +217,13 @@ MIDDLEWARE_CLASSES = (
     middleware_list
 )
 
-if os.getenv('DJANGO_CONFIGURATION') == 'Prod':
-    DEBUG = False
+environment_type = os.getenv('DJANGO_CONFIGURATION')
+
+if environment_type in ['Prod', 'Stage']:
+    DEBUG = False if environment_type == 'Prod' else True
     DATABASES = {'default': dj_database_url.config()}
     WEBPACK_LOADER.update({
-        'BUNDLE_DIR_NAME': 'distributions/',
+        'BUNDLE_DIR_NAME': 'public/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-prod.json')
     })
     # MIDDLEWARE_CLASSES = (
@@ -237,8 +239,5 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
-    # MIDDLEWARE_CLASSES = (
-    #     middleware_list
-    # )
 
-    STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+    # STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
