@@ -1,1 +1,1 @@
-{"status":"done","chunks":{"main":[{"name":"bundle.js","publicPath":"/public/bundle.js","path":"/Users/cscanlin/python_scripts/munger_builder/public/bundle.js"}]},"publicPath":"/public/"}
+{"status":"done","chunks":{"main":[{"name":"bundle.js","publicPath":"/static/bundles/bundle.js","path":"/Users/cscanlin/python_scripts/munger_builder/assets/bundles/bundle.js"},{"name":"bundle.js.map","publicPath":"/static/bundles/bundle.js.map","path":"/Users/cscanlin/python_scripts/munger_builder/assets/bundles/bundle.js.map"}]},"publicPath":"/static/bundles/"}

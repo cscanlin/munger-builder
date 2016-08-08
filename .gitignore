@@ -61,7 +61,8 @@ target/
 
 # Node
 node_modules/
-assets/bundles/
+assets/bundles/*
+!assets/bundles/bundle.js
 webpack-stats.json
 
 **/media/*/*.*

@@ -133,13 +133,6 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'assets'),
 )
 
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'BUNDLE_DIR_NAME': 'bundles/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
-    }
-}
-
 # redis server address
 # BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 # CELERY_RESULT_BACKEND = 'amqp://guest:guest@localhost:5672//'
@@ -222,10 +215,14 @@ environment_type = os.getenv('DJANGO_CONFIGURATION')
 if environment_type in ['Prod', 'Stage']:
     DEBUG = False if environment_type == 'Prod' else True
     DATABASES = {'default': dj_database_url.config()}
-    WEBPACK_LOADER.update({
-        'BUNDLE_DIR_NAME': 'public/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-prod.json')
-    })
+    WEBPACK_LOADER = {
+        'DEFAULT': {
+            'CACHE': True,
+            'BUNDLE_DIR_NAME': 'bundles/',
+            'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-prod.json'),
+            'IGNORE': ['.+\.map']
+        }
+    }
     # MIDDLEWARE_CLASSES = (
     #     ['sslify.middleware.SSLifyMiddleware'] + middleware_list
     # )
@@ -237,6 +234,12 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+    WEBPACK_LOADER = {
+        'DEFAULT': {
+            'BUNDLE_DIR_NAME': 'bundles/',
+            'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
         }
     }
 

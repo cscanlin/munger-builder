@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="mb-id" name="mb-id" class="hidden" value="{{ mb.id }}"></div>
+    <div id="mb-id" name="mb-id" class="hidden">{{ mb.id }}</div>
     <div id="main-pivot-wrapper" class="main-pivot-wrapper">
       <div id="pivot-app"></div>
       {% render_bundle 'main' %}

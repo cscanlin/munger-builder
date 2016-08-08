@@ -12,9 +12,9 @@ module.exports = {
   ],
 
   output: {
-    path: path.join(__dirname, 'public'),
+    path: path.resolve('./assets/bundles/'),
     filename: 'bundle.js',
-    publicPath: '/public/',
+    publicPath: '/static/bundles/',
   },
 
   plugins: [

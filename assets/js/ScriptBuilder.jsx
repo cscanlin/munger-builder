@@ -1,4 +1,6 @@
 const React = require('react')
+const Immutable = require('immutable')
+
 const Button = require('./Button')
 
 import { sampleData } from './Constants'
@@ -60,7 +62,7 @@ class ScriptBuilder extends React.Component {
       }
       return aggFuncMap
     })
-    return aggFuncMap
+    return Immutable.Map(aggFuncMap)
   }
 
   formatAggregateFunctionsMap(aggFuncMap) {
