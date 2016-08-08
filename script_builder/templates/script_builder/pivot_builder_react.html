@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% load render_bundle from webpack_loader %}
+{% load humanize %}
+
+{% block extra_css %}
+    <link href="{{ STATIC_URL }}pivot_table.css" rel="stylesheet" media="screen">
+{% endblock %}
+
+{% block back_link %}
+    <p><a class=back-link href="{% url 'munger_builder_index' %}">< Mungers</a></p>
+{% endblock %}
+
+{% block content %}
+    <div id="mb-id" name="mb-id" class="hidden">{{ mb.id }}</div>
+    <div id="main-pivot-wrapper" class="main-pivot-wrapper">
+      <div id="pivot-app"></div>
+      {% render_bundle 'main' %}
+    </div>
+{% endblock content %}

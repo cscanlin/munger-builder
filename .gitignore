@@ -59,7 +59,15 @@ target/
 *.sqlite3
 *.pid
 
+# Node
+node_modules/
+assets/bundles/*
+!assets/bundles/bundle.js
+webpack-stats.json
+
 **/media/*/*.*
 !**/media/*/*.keep
+
+test_script.py
 
 *.DS_Store

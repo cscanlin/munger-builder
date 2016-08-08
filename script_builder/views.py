@@ -4,9 +4,8 @@ import csv
 import json
 import time
 
-from django.shortcuts import render, get_object_or_404, render_to_response
+from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
@@ -14,16 +13,14 @@ from django.conf import settings
 
 from guardian.shortcuts import assign_perm, get_objects_for_user
 
-from .models import DataField, FieldType, CSVDocument, MungerBuilder
-from .forms import SetupForm, FieldParser, UploadFileForm
+from .models import DataField, FieldType, CSVDocument, MungerBuilder, PivotField
 from .tasks import download_munger_async, download_test_data_async
-
 
 INDEX_REDIRECT = HttpResponseRedirect('/script_builder/munger_builder_index')
 
 def munger_builder_index(request):
 
-    user = get_user_or_anon(request)
+    user = get_user_or_create_anon(request)
 
     anon_check(request)
 
@@ -34,39 +31,38 @@ def munger_builder_index(request):
     context = {'munger_builder_list': munger_builder_list}
     return render(request, 'script_builder/munger_builder_index.html', context)
 
-def get_user_or_anon(request):
-    if request.user.id is None:
+def get_user_or_create_anon(request):
+    if not request.user.id:
         timestamp = int(time.time())
-        user = User.objects.create_user(username='anon_{0}'.format(timestamp), password=timestamp)
+        credentials = {
+            'username': 'anon_{0}'.format(timestamp),
+            'password': timestamp,
+        }
+        user = User.objects.create_user(**credentials)
         user.save()
-        anon_user = authenticate(username='anon_{0}'.format(timestamp), password=timestamp)
+        assign_perm('script_builder.add_mungerbuilder', user)
+        assign_perm('script_builder.add_fieldtype', user)
+        assign_perm('script_builder.add_datafield', user)
+        assign_perm('script_builder.add_pivotfield', user)
+        anon_user = authenticate(**credentials)
         login(request, anon_user)
     else:
         user = request.user
     return user
 
-def delete_munger(request, munger_builder_id):
-    mb = get_object_or_404(MungerBuilder, pk=munger_builder_id)
-    if not request.user.has_perm('script_builder.change_mungerbuilder', mb):
-        return INDEX_REDIRECT
-
-    mb.delete()
-    messages.success(request, '{0} Deleted Successfully'.format(mb.munger_name))
-    return HttpResponseRedirect('/script_builder/munger_builder_index/')
-
 def add_sample_munger(user):
 
-    safe_user_name = user.username.replace(' ', '').lower()
-    mb = MungerBuilder.objects.create(munger_name='sample_for_{0}'.format(safe_user_name), input_path='test_data.csv')
+    mb = MungerBuilder.objects.create(
+        munger_name='Sample for {0}'.format(user.username),
+        input_path='test_data.csv',
+        is_sample=True,
+    )
     mb.save()
-
-    assign_perm('add_mungerbuilder', user, mb)
-    assign_perm('change_mungerbuilder', user, mb)
-    assign_perm('delete_mungerbuilder', user, mb)
+    mb.assign_perms(user)
 
     sample_field_dict = {
         'order_num': ['count'],
-        'product': [None],
+        'product': None,
         'sales_name': ['index'],
         'region': ['column'],
         'revenue': ['mean', 'sum'],
@@ -76,96 +72,20 @@ def add_sample_munger(user):
     for field_name, field_types in sample_field_dict.items():
         data_field = DataField.objects.create(munger_builder=mb, current_name=field_name)
         data_field.save()
-        if field_types != [None]:
+        data_field.assign_perms(user)
+        if field_types:
             for type_name in field_types:
                 field_type = FieldType.objects.get(type_name=type_name)
-                data_field.field_types.add(field_type)
-            data_field.save()
+                PivotField.objects.create(data_field=data_field, field_type=field_type).save()
 
     return get_objects_for_user(user, 'script_builder.change_mungerbuilder')
 
-def munger_tools(request, munger_builder_id):
-
-    anon_check(request)
-
-    mb = MungerBuilder.objects.get(pk=munger_builder_id)
-
-    # if request.method == 'POST':
-    #     return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(munger_builder.id))
-
-    if not has_mb_permission(mb, request):
-        return INDEX_REDIRECT
-
-    context = {'mb': mb}
-    return render(request, 'script_builder/munger_tools.html', context)
-
-def munger_builder_setup(request, munger_builder_id=None):
-
-    anon_check(request)
-
-    max_munger_builders = 5
-
-    if munger_builder_id:
-        mb = MungerBuilder.objects.get(pk=munger_builder_id)
-        if not has_mb_permission(mb, request):
-            return INDEX_REDIRECT
-        else:
-            pass
-    else:
-        user = request.user
-        current_munger_builders = get_objects_for_user(user, 'script_builder.change_mungerbuilder')
-        if len(current_munger_builders) >= max_munger_builders and not user.is_superuser:
-            messages.warning(request, 'Cannot Create more Munger Builders - Delete some to make space')
-            return INDEX_REDIRECT
-        else:
-            mb = None
-
-    if request.method == 'POST':
-        form = SetupForm(request.POST, instance=mb)
-        mb = form.save()
-
-        assign_perm('add_mungerbuilder', request.user, mb)
-        assign_perm('change_mungerbuilder', request.user, mb)
-        assign_perm('delete_mungerbuilder', request.user, mb)
-
-        return HttpResponseRedirect('/script_builder/munger_tools/{0}'.format(mb.id))
-
-    else:
-        form = SetupForm(instance=mb)
-        context = {'form': form, 'formset': form, 'mb': mb}
-        return render(request, 'script_builder/munger_builder_setup.html', context)
-
-
-def field_parser(request, munger_builder_id):
-
-    anon_check(request)
-
-    mb = MungerBuilder.objects.get(pk=munger_builder_id)
-    field_list = MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all()
-
-    if not has_mb_permission(munger_builder_id, request):
-        return INDEX_REDIRECT
-
-    if request.method == 'POST':
-        if 'upload-fields-csv' in request.POST:
-            input_form = UploadFileForm(request.POST, request.FILES)
-            fields = validate_and_save_fields(request, munger_builder_id, input_form, 'csv')
-
-        else:
-            upload_form = FieldParser(request.POST, request.FILES)
-            fields = validate_and_save_fields(request, munger_builder_id, upload_form, 'text')
-
-        return HttpResponseRedirect('/script_builder/field_parser/{0}'.format(munger_builder_id))
-
-    else:
-        messages.info(
-            request, 'Paste in a list of comma or tab separated fields, or upload a csv with the desired columns'
-        )
-        input_form = FieldParser()
-        upload_form = UploadFileForm()
-
-    context = {'field_list': field_list, 'input_form': input_form, 'upload_form': upload_form, 'mb': mb}
-    return render(request, 'script_builder/field_parser.html', context)
+def new_munger_builder(request):
+    user = get_user_or_create_anon(request)
+    mb = MungerBuilder.objects.create(munger_name='New Munger - {0}'.format(user.username))
+    mb.save()
+    mb.assign_perms(user)
+    return HttpResponseRedirect('/script_builder/pivot_builder/{0}'.format(mb.id))
 
 def pivot_builder(request, munger_builder_id):
 
@@ -173,13 +93,10 @@ def pivot_builder(request, munger_builder_id):
 
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
 
-    if not has_mb_permission(mb, request):
+    if not mb.user_is_authorized():
         return INDEX_REDIRECT
 
-    fields = mb.data_fields.all()
-    field_type_names = [ft.type_name for ft in FieldType.objects.all()]
-    context = {'mb': mb, 'fields': fields, 'field_type_names': field_type_names}
-    return render(request, 'script_builder/pivot_builder.html', context)
+    return render(request, 'script_builder/pivot_builder_react.html', context={'mb': mb})
 
 def download_munger(request, munger_builder_id):
     task = download_munger_async.delay(munger_builder_id)
@@ -216,33 +133,6 @@ def poll_for_download(request):
 
 # Helper Functions
 
-def has_mb_permission(mb, request):
-    if not isinstance(mb, MungerBuilder):
-        mb = MungerBuilder.objects.get(pk=mb)
-    return request.user.has_perm('script_builder.change_mungerbuilder', mb)
-
-def validate_and_save_fields(request, munger_builder_id, form, input_type):
-    if form.is_valid():
-
-        fields_list = parse_text_fields(form, request, input_type)
-
-        mb = MungerBuilder.objects.get(pk=munger_builder_id)
-
-        field_objects = []
-        for field_name in fields_list:
-            field, created = DataField.objects.get_or_create(
-                munger_builder=mb,
-                current_name=field_name,
-            )
-            field.save()
-            field_objects.append(field)
-
-        return field_objects
-
-    else:
-        messages.error(request, 'Field Creation Failed Unexpectedly')
-        return None
-
 def parse_text_fields(form, request, input_type):
     if input_type == 'text':
         return re.split('[,\t\n]', form.cleaned_data['fields_paste'])
@@ -252,64 +142,6 @@ def parse_text_fields(form, request, input_type):
         new_csv.save()
         reader = csv.DictReader(request.FILES['csv_file'])
         return reader.fieldnames
-
-def save_pivot_fields(request, munger_builder_id):
-    if request.is_ajax():
-        active_fields_data = json.loads(request.POST['active_fields'])
-
-        clear_field_data(munger_builder_id)
-
-        for field_data in active_fields_data:
-            field_object = DataField.objects.filter(pk=field_data['field_id']).first()
-            if not field_object:
-                continue
-            field_object.new_name = field_data['new_name']
-
-            field_type = FieldType.objects.get(type_name=field_data['type'])
-            field_object.field_types.add(field_type)
-
-            field_object.save()
-
-    messages.success(request, 'Pivot Fields Saved Successfully')
-    return HttpResponse("OK")
-
-def add_pivot_field(request, munger_builder_id):
-    if request.is_ajax():
-
-        num_new_fields = len(DataField.objects.filter(current_name__startswith='New Field'))
-        if num_new_fields > 0:
-            new_field_name = 'New Field {0}'.format(num_new_fields+1)
-        else:
-            new_field_name = 'New Field'
-
-        field_object = DataField(
-            munger_builder=MungerBuilder.objects.get(pk=munger_builder_id),
-            current_name=new_field_name,
-        )
-        field_object.save()
-
-        messages.success(request, 'Field Added Successfully')
-        return HttpResponse("OK")
-
-def delete_pivot_field(request, field_id):
-
-    field = get_object_or_404(DataField, pk=field_id)
-    mb_id = field.munger_builder.id
-
-    # if not request.user.has_perm('script_builder.change_datafield', field):
-    #     return INDEX_REDIRECT
-
-    field.delete()
-    messages.success(request, '{0} Deleted Successfully'.format(field.current_name))
-    if request.is_ajax():
-        return HttpResponse("OK")
-    else:
-        return HttpResponseRedirect(reverse('field_parser', args=(mb_id,)))
-
-def clear_field_data(munger_builder_id):
-    for field in MungerBuilder.objects.get(pk=munger_builder_id).data_fields.all():
-        field.field_types.clear()
-        field.save()
 
 def anon_check(request):
     if 'anon_' in request.user.username:

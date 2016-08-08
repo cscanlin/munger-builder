@@ -1,0 +1,17 @@
+extends: airbnb
+installedESLint: true
+plugins:
+  - react
+rules:
+  no-console: 0
+  no-param-reassign: 0
+  semi: [2, "never"]
+  new-cap: ["error", { "capIsNewExceptions": ["Map", "DragDropContext", "DragSource", "DropTarget"] }]
+  radix: ["error", "as-needed"]
+
+parserOptions:
+  ecmaVersion: 6
+  sourceType: module
+  ecmaFeatures:
+      jsx: true
+      experimentalObjectRestSpread: true

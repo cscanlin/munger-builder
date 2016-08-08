@@ -47,17 +47,26 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.sites',
-    'pipeline',
+    'django_extensions',
     'crispy_forms',
     'bootstrap3',
     'kombu.transport.django',
     'smuggler',
     'guardian',
     'ordered_model',
+    'rest_framework',
+    'webpack_loader',
     'script_builder',
     'script_runner',
     'munger_builder',
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.DjangoObjectPermissions',
+    ),
+    'PAGE_SIZE': 50
+}
 
 ROOT_URLCONF = 'munger_builder.urls'
 
@@ -118,6 +127,12 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
 
+# We do this so that django's collectstatic copies or our bundles to the
+# STATIC_ROOT or syncs them to whatever storage we use.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'assets'),
+)
+
 # redis server address
 # BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 # CELERY_RESULT_BACKEND = 'amqp://guest:guest@localhost:5672//'
@@ -155,9 +170,8 @@ middleware_list = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'script_builder.current_user.RequestMiddleware'
 ]
-
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 SMUGGLER_EXCLUDE_LIST = [
     'contenttypes.contenttype',
@@ -188,7 +202,7 @@ ANONYMOUS_USER_ID = -1
 # GUARDIAN_GET_INIT_ANONYMOUS_USER = 'script_builder.models.get_anonymous_user_instance'
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', # default
+    'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
 
@@ -196,9 +210,19 @@ MIDDLEWARE_CLASSES = (
     middleware_list
 )
 
-if os.getenv('DJANGO_CONFIGURATION') == 'Prod':
-    DEBUG = False
+environment_type = os.getenv('DJANGO_CONFIGURATION')
+
+if environment_type in ['Prod', 'Stage']:
+    DEBUG = False if environment_type == 'Prod' else True
     DATABASES = {'default': dj_database_url.config()}
+    WEBPACK_LOADER = {
+        'DEFAULT': {
+            'CACHE': True,
+            'BUNDLE_DIR_NAME': 'bundles/',
+            'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-prod.json'),
+            'IGNORE': ['.+\.map']
+        }
+    }
     # MIDDLEWARE_CLASSES = (
     #     ['sslify.middleware.SSLifyMiddleware'] + middleware_list
     # )
@@ -212,8 +236,11 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
-    # MIDDLEWARE_CLASSES = (
-    #     middleware_list
-    # )
+    WEBPACK_LOADER = {
+        'DEFAULT': {
+            'BUNDLE_DIR_NAME': 'bundles/',
+            'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+        }
+    }
 
-    STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+    # STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'

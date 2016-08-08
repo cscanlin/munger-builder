@@ -21,10 +21,10 @@ def run_munger(munger_builder_id=1):
 def download_munger_async(munger_builder_id=1):
     mb = MungerBuilder.objects.get(pk=munger_builder_id)
     script_string = scripts.build_munger.main(munger_builder_id)
-    file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}.py'.format(mb.munger_name))
+    file_path = os.path.join(settings.MEDIA_ROOT, 'user_munger_scripts', '{0}.py'.format(mb.safe_file_name))
 
     with open(file_path, 'r') as mf:
         response = HttpResponse(mf, content_type='application/octet-stream')
-        response['Content-Disposition'] = 'filename={0}.py'.format(mb.munger_name)
+        response['Content-Disposition'] = 'filename={0}.py'.format(mb.safe_file_name)
         print(response)
         return response

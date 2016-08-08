@@ -45,8 +45,8 @@ def main(munger_builder_id=1):
         df,
         index=mb.index_fields,
         columns=mb.column_fields,
-        values=list(mb.agg_fields().keys()),
-        aggfunc=mb.agg_fields(evaled=True),
+        values=list(mb.aggregate_names_with_functions().keys()),
+        aggfunc=mb.aggregate_names_with_functions(evaled=True),
         fill_value=0,
     )
 
@@ -68,7 +68,9 @@ def main(munger_builder_id=1):
     print(pivot_output)
     yield pivot_output.to_html()
 
-    pivot_output.to_csv('media/user_munger_output/{0}-output_{1}.csv'.format(mb.munger_name, formatted_date))
+
+    munger_output_path = 'media/user_munger_output/{0}-output.csv'.format(mb.safe_file_name)
+    pivot_output.to_csv(os.path.join(settings.BASE_DIR, munger_output_path))
 
     print_run_status(run_start_time, 'Finished!')
     yield 'Finished!'
