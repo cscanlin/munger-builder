@@ -28,6 +28,5 @@ partial==1.0
 pytz==2014.3
 queuelib==1.2.2
 redis==2.10.3
-djangorestframework==3.4.0
 django-webpack-loader==0.3.0
 git+git://github.com/cscanlin/django-rest-framework.git@object-permission-fix
