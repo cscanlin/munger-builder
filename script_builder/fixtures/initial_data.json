@@ -178,6 +178,14 @@
     }
   },
   {
+    "model": "auth.group",
+    "pk": 1,
+    "fields": {
+      "name": "Global Sample",
+      "permissions": []
+    }
+  },
+  {
     "model": "guardian.groupobjectpermission",
     "pk": 1,
     "fields": {
