@@ -7,7 +7,7 @@ import time
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login
 from django.conf import settings
 
@@ -44,6 +44,9 @@ def get_user_or_create_anon(request):
         assign_perm('script_builder.add_fieldtype', user)
         assign_perm('script_builder.add_datafield', user)
         assign_perm('script_builder.add_pivotfield', user)
+        group = Group.objects.get(name='Global Sample')
+        user.groups.add(group)
+        user.save()
         anon_user = authenticate(**credentials)
         login(request, anon_user)
     else:

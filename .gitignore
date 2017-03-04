@@ -70,4 +70,4 @@ webpack-stats.json
 
 test_script.py
 
-*.DS_Store
+.DS_Store

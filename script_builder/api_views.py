@@ -34,37 +34,36 @@ class MungerBuilderAPIView(MungerPermissions,
         return self.update(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+        user = request.user
+        if self.under_limit(user):
+            return self.create(request, *args, **kwargs)
+        else:
+            error_string = 'Cannot Create more {} - Delete some to make space'.format(
+                self._meta.model_name
+            )
+            return Response(error_string, status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
-class Mungers(MungerBuilderAPIView):
+    def under_limit(self, user):
+        permission_name = 'script_builder.change_{}'.format(self._meta.model_name)
+        current_objects = get_objects_for_user(user, permission_name)
+        return len(current_objects) <= self.USER_OBJECT_LIMIT or user.is_superuser
 
+class Mungers(MungerBuilderAPIView):
+    USER_OBJECT_LIMIT = 5
     serializer_class = MungerSerializer
     filter_backends = (filters.DjangoObjectPermissionsFilter,)
 
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        if not self.over_munger_limit(user):
-            return self.create(request, *args, **kwargs)
-        else:
-            return Response('Cannot Create more Munger Builders - Delete some to make space',
-                            status=status.HTTP_403_FORBIDDEN)
-
-    @staticmethod
-    def over_munger_limit(user, max_munger_builders=5):
-        current_munger_builders = get_objects_for_user(user, 'script_builder.change_mungerbuilder')
-        if len(current_munger_builders) >= max_munger_builders and not user.is_superuser:
-            return True
-        else:
-            return False
-
 class DataFields(MungerBuilderAPIView):
+    USER_OBJECT_LIMIT = 100
     serializer_class = DataFieldSerializer
 
 class PivotFields(MungerBuilderAPIView):
+    USER_OBJECT_LIMIT = 100
     serializer_class = PivotFieldSerializer
 
 class FieldTypes(MungerBuilderAPIView):
+    USER_OBJECT_LIMIT = 10
     serializer_class = FieldTypeSerializer

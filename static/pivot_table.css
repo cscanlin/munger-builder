@@ -215,6 +215,7 @@
 .munger-name-input {
   border: none;
   background: inherit;
+  width: 420px;
 }
 
 .script-builder-button {

@@ -1,18 +1,13 @@
 import os
-import json
-import datetime
-import numpy as np
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
-from django.http import HttpResponse
 
 from guardian.shortcuts import assign_perm
 
 from ordered_model.models import OrderedModel
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 
 from .current_user import current_user
 
@@ -75,7 +70,7 @@ class MungerBuilder(models.Model, PermissionedModel):
         self.assign_perms(current_user())
 
     def user_is_authorized(self):
-        return current_user().has_perm('script_builder.change_mungerbuilder', self)
+        return self.id == 1 or current_user().has_perm('script_builder.change_mungerbuilder', self)
 
     @property
     def pivot_fields(self):

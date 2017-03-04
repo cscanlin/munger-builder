@@ -46,5 +46,145 @@
       "type_name": "median",
       "type_function": "np.median"
     }
+  },
+  {
+    "model": "script_builder.mungerbuilder",
+    "pk": 1,
+    "fields": {
+      "munger_name": "Global Sample",
+      "munger_template": "pandas_munger_template_basic.html",
+      "input_path": "test_data.csv",
+      "output_path": "test_output.csv",
+      "rows_to_delete_top": 0,
+      "rows_to_delete_bottom": 0,
+      "default_aggregate_field_type": 3,
+      "is_sample": true,
+      "field_types": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    }
+  },
+  {
+    "model": "script_builder.datafield",
+    "pk": 1,
+    "fields": {
+      "munger_builder": 1,
+      "current_name": "revenue",
+      "new_name": null
+    }
+  },
+  {
+    "model": "script_builder.datafield",
+    "pk": 2,
+    "fields": {
+      "munger_builder": 1,
+      "current_name": "order_num",
+      "new_name": null
+    }
+  },
+  {
+    "model": "script_builder.datafield",
+    "pk": 3,
+    "fields": {
+      "munger_builder": 1,
+      "current_name": "sales_name",
+      "new_name": null
+    }
+  },
+  {
+    "model": "script_builder.datafield",
+    "pk": 4,
+    "fields": {
+      "munger_builder": 1,
+      "current_name": "product",
+      "new_name": null
+    }
+  },
+  {
+    "model": "script_builder.datafield",
+    "pk": 5,
+    "fields": {
+      "munger_builder": 1,
+      "current_name": "region",
+      "new_name": null
+    }
+  },
+  {
+    "model": "script_builder.datafield",
+    "pk": 6,
+    "fields": {
+      "munger_builder": 1,
+      "current_name": "shipping",
+      "new_name": null
+    }
+  },
+  {
+    "model": "script_builder.pivotfield",
+    "pk": 1,
+    "fields": {
+      "order": 0,
+      "data_field": 1,
+      "field_type": 5
+    }
+  },
+  {
+    "model": "script_builder.pivotfield",
+    "pk": 2,
+    "fields": {
+      "order": 1,
+      "data_field": 1,
+      "field_type": 4
+    }
+  },
+  {
+    "model": "script_builder.pivotfield",
+    "pk": 3,
+    "fields": {
+      "order": 2,
+      "data_field": 2,
+      "field_type": 3
+    }
+  },
+  {
+    "model": "script_builder.pivotfield",
+    "pk": 4,
+    "fields": {
+      "order": 3,
+      "data_field": 3,
+      "field_type": 1
+    }
+  },
+  {
+    "model": "script_builder.pivotfield",
+    "pk": 5,
+    "fields": {
+      "order": 4,
+      "data_field": 5,
+      "field_type": 2
+    }
+  },
+  {
+    "model": "script_builder.pivotfield",
+    "pk": 6,
+    "fields": {
+      "order": 5,
+      "data_field": 6,
+      "field_type": 6
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 1,
+    "fields": {
+      "permission": 65,
+      "content_type": 21,
+      "object_pk": "1",
+      "group": 1
+    }
   }
 ]

@@ -20,10 +20,6 @@ class PivotFieldSerializer(PartialAllowed):
     class Meta:
         model = PivotField
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.partial = True
-
 class MungerSerializer(PartialAllowed):
     data_fields = DataFieldSerializer(many=True, read_only=True)
     pivot_fields = PivotFieldSerializer(many=True, read_only=True)
