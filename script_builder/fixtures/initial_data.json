@@ -1,5 +1,25 @@
 [
   {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "!XN2I0yxfjqNcnUs9enWtTa250XW1NfQrl46LcGH5",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "AnonymousUser",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2017-03-04T23:46:04Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
     "model": "script_builder.fieldtype",
     "pk": 1,
     "fields": {
