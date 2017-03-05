@@ -194,5 +194,125 @@
       "object_pk": "1",
       "group": 1
     }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 2,
+    "fields": {
+      "permission": 69,
+      "content_type": 22,
+      "object_pk": "1",
+      "group": 1
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 3,
+    "fields": {
+      "permission": 69,
+      "content_type": 22,
+      "object_pk": "2",
+      "group": 1
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 4,
+    "fields": {
+      "permission": 69,
+      "content_type": 22,
+      "object_pk": "3",
+      "group": 1
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 5,
+    "fields": {
+      "permission": 69,
+      "content_type": 22,
+      "object_pk": "4",
+      "group": 1
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 6,
+    "fields": {
+      "permission": 69,
+      "content_type": 22,
+      "object_pk": "5",
+      "group": 1
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 7,
+    "fields": {
+      "permission": 69,
+      "content_type": 22,
+      "object_pk": "6",
+      "group": 1
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 8,
+    "fields": {
+      "permission": 73,
+      "content_type": 23,
+      "object_pk": "1",
+      "group": 1
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 9,
+    "fields": {
+      "permission": 73,
+      "content_type": 23,
+      "object_pk": "2",
+      "group": 1
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 10,
+    "fields": {
+      "permission": 73,
+      "content_type": 23,
+      "object_pk": "3",
+      "group": 1
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 11,
+    "fields": {
+      "permission": 73,
+      "content_type": 23,
+      "object_pk": "4",
+      "group": 1
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 12,
+    "fields": {
+      "permission": 73,
+      "content_type": 23,
+      "object_pk": "5",
+      "group": 1
+    }
+  },
+  {
+    "model": "guardian.groupobjectpermission",
+    "pk": 13,
+    "fields": {
+      "permission": 73,
+      "content_type": 23,
+      "object_pk": "6",
+      "group": 1
+    }
   }
 ]
