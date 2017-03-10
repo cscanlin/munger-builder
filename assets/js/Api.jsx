@@ -17,7 +17,7 @@ class Api {
       method: 'GET',
       headers: csrfHeader,
     })
-    const result = await response.json();
+    const result = await response.json()
     this.setState({ ...result })
   }
 
@@ -47,7 +47,7 @@ class Api {
       headers: csrfHeader,
       body: JSON.stringify({ ...newDataField }),
     })
-    const data = await response.json();
+    const data = await response.json()
     this.setState({ data_fields: this.state.data_fields.concat([data]) })
   }
 
@@ -87,20 +87,20 @@ class Api {
       headers: csrfHeader,
       body: JSON.stringify({ ...newPivotField }),
     })
-    const data = await response.json();
+    const data = await response.json()
     this.setState({ pivot_fields: this.state.pivot_fields.concat([data]) })
   }
 
   static async updatePivotField(pivotFieldId, fieldTypeID) {
-    Logger.log('update pivot field');
+    Logger.log('update pivot field')
     const response = await fetch(`/script_builder/pivot_fields/${pivotFieldId}`, {
       credentials: 'same-origin',
       method: 'PUT',
       headers: csrfHeader,
       body: JSON.stringify({ field_type: fieldTypeID }),
     })
-    const data = await response.json();
-    const pivotFields = await this.state.pivot_fields.map(pivotField => {
+    const data = await response.json()
+    const pivotFields = await this.state.pivot_fields.map((pivotField) => {
       if (pivotField.id === data.id) {
         pivotField.field_type = data.field_type
       }
