@@ -63,6 +63,7 @@ target/
 node_modules/
 assets/bundles/*
 !assets/bundles/bundle.js
+!assets/bundles/bundle.js.map
 webpack-stats.json
 
 **/media/*/*.*
