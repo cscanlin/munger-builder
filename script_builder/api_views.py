@@ -39,7 +39,7 @@ class MungerBuilderAPIView(MungerPermissions,
             return self.create(request, *args, **kwargs)
         else:
             error_string = 'Cannot Create more {} - Delete some to make space'.format(
-                self._meta.model_name
+                self.__class__.__name__
             )
             return Response(error_string, status=status.HTTP_403_FORBIDDEN)
 
@@ -47,7 +47,8 @@ class MungerBuilderAPIView(MungerPermissions,
         return self.destroy(request, *args, **kwargs)
 
     def under_limit(self, user):
-        permission_name = 'script_builder.change_{}'.format(self._meta.model_name)
+        meta_name = self.serializer_class.Meta.model._meta.model_name
+        permission_name = 'script_builder.change_{}'.format(meta_name)
         current_objects = get_objects_for_user(user, permission_name)
         return len(current_objects) <= self.USER_OBJECT_LIMIT or user.is_superuser
 
