@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "./node_modules/.bin/webpack --config webpack_prod.config.js",
-    "predeploy": "npm run build",
-    "deploy": "bash deploy.sh"
+    "predeploy": "git br -D heroku-deploy; git co -b heroku-deploy; npm run build; git commit -am \"heroku-deploy\"",
+    "deploy": "git push heroku heroku-deploy"
   },
   "repository": {
     "type": "git",
