@@ -3,11 +3,11 @@ const update = require('react-addons-update')
 
 const Logger = require('./Logger')
 
-const csrfHeader = new Headers({
+const csrfHeader = {
   'x-csrftoken': Cookie.get('csrftoken'),
   'Accept': 'application/json',
   'Content-Type': 'application/json',
-})
+}
 
 class Api {
 
