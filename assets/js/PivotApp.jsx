@@ -54,7 +54,7 @@ class PivotApp extends React.Component {
 
   getFieldTypeName(fieldTypeId, returnFunctionName = false) {
     const fieldTypeMap = {}
-    this.state.field_types.map(fieldType => {
+    this.state.field_types.map((fieldType) => {
       if (returnFunctionName) {
         fieldTypeMap[fieldType.id] = fieldType.type_function
       } else {
@@ -67,7 +67,7 @@ class PivotApp extends React.Component {
 
   getNewName(dataFieldId) {
     const newNameMap = {}
-    this.state.data_fields.map(dataField => {
+    this.state.data_fields.map((dataField) => {
       newNameMap[dataField.id] = dataField.new_name || dataField.current_name
       return newNameMap
     })
@@ -83,7 +83,7 @@ class PivotApp extends React.Component {
 
   handleNewNameChange(dataFieldId, newName) {
     Logger.log('change new_name')
-    this.state.data_fields.map(dataField => {
+    this.state.data_fields.map((dataField) => {
       if (dataField.id === dataFieldId) {
         dataField.new_name = newName
       }
@@ -94,7 +94,7 @@ class PivotApp extends React.Component {
 
   handleOriginalNameChange(dataFieldId, newOriginalName) {
     Logger.log('change original')
-    this.state.data_fields.map(dataField => {
+    this.state.data_fields.map((dataField) => {
       if (dataField.id === dataFieldId) {
         dataField.current_name = newOriginalName
       }
@@ -118,8 +118,8 @@ class PivotApp extends React.Component {
             type="text"
             value={this.state.munger_name}
             className="munger-name-input"
-            onChange={(e) => this.setState({ munger_name: e.target.value })}
-            onBlur={(e) => this.updateMunger({ munger_name: this.state.munger_name }, e)}
+            onChange={e => this.setState({ munger_name: e.target.value })}
+            onBlur={e => this.updateMunger({ munger_name: this.state.munger_name }, e)}
           />
         </h3>
         <FieldBank {...this} {...this.state}>
