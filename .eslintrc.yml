@@ -12,10 +12,6 @@ rules:
 
 parser: babel-eslint
 
-globals:
-  fetch: true
-  Headers: true
-
 parserOptions:
   ecmaVersion: 7
   sourceType: module

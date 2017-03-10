@@ -1,5 +1,6 @@
 const Cookie = require('js-cookie')
 const update = require('react-addons-update')
+const fetch = require('isomorphic-fetch')
 
 const Logger = require('./Logger')
 

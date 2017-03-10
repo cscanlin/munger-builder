@@ -8,7 +8,6 @@
     "build": "./node_modules/.bin/webpack --config webpack_prod.config.js",
     "predeploy": "npm run build",
     "deploy": "bash deploy.sh"
-
   },
   "repository": {
     "type": "git",
@@ -28,6 +27,7 @@
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-0": "^6.5.0",
     "immutable": "^3.8.1",
+    "isomorphic-fetch": "^2.2.1",
     "js-cookie": "^2.1.2",
     "json-loader": "^0.5.4",
     "react": "^15.3.0",
