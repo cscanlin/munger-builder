@@ -212,6 +212,7 @@ MIDDLEWARE_CLASSES = (
 
 environment_type = os.getenv('DJANGO_CONFIGURATION')
 
+
 if environment_type in ['Prod', 'Stage']:
     DEBUG = False if environment_type == 'Prod' else True
     DATABASES = {'default': dj_database_url.config()}
@@ -227,6 +228,21 @@ if environment_type in ['Prod', 'Stage']:
     #     ['sslify.middleware.SSLifyMiddleware'] + middleware_list
     # )
     # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
+            },
+        },
+    }
 
 else:
     DEBUG = True

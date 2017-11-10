@@ -9,4 +9,4 @@ heroku run python manage.py migrate -a munger-builder
 # heroku run python manage.py loaddata initial_data -a munger-builder
 # heroku run python manage.py createsuperuser -a munger-builder
 # (Enter Credentials)
-# heroku restart -a app_name
+# heroku restart -a munger-builder
